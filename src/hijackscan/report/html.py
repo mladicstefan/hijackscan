@@ -13,17 +13,19 @@ th{background:#f4f4f4;font-weight:600} td.num,th.num{text-align:right;font-varia
 .bar{display:flex;height:28px;border-radius:4px;overflow:hidden;margin:.5rem 0}
 .bar span{display:block;height:100%} .legend span{display:inline-block;margin-right:1rem}
 .sw{display:inline-block;width:.9em;height:.9em;border-radius:2px;vertical-align:-.1em;margin-right:.3em}
-.c-closed{background:#2a9d8f} .c-caa-only{background:#8ab17d} .c-contested-only{background:#e9c46a}
-.c-caa-erasable{background:#f4a261} .c-open{background:#e76f51}
 .badge{display:inline-block;padding:.1rem .5rem;border-radius:3px;color:#fff;font-weight:600}
 code{background:#f4f4f4;padding:0 .25rem;border-radius:2px} .ok{color:#2a9d8f} .bad{color:#e76f51}
 .explain{background:#f7f7f2;border-left:3px solid #c9c9b8;padding:.4rem .8rem;margin:.6rem 0;font-size:.92rem}
 .explain p,.explain ul{margin:.2rem 0} .explain li{margin:.15rem 0}
 details{border:1px solid #e5e5e5;border-radius:4px;padding:.3rem .7rem;margin:.5rem 0} summary{cursor:pointer;font-weight:600}
 details table{margin:.3rem 0} h3{font-size:1rem;margin:1.2rem 0 .2rem}
+pre{white-space:pre-wrap;font-size:.85rem;background:#f7f7f7;padding:.6rem;border-radius:4px;overflow-x:auto}
+.risk{border:1px solid #e5e5e5;border-radius:6px;padding:.6rem .9rem;margin:.8rem 0} .risk p{margin:.4rem 0}
+.c-None,.sev-none{background:#2a9d8f} .c-Low,.sev-low{background:#457b9d} .c-Medium,.sev-medium{background:#e9a23b}
+.c-High,.sev-high{background:#e76f51} .c-Critical,.sev-critical{background:#9b2226} .c-Unknown,.sev-unknown{background:#999}
 """
 
-CLASS_ORDER = ("closed", "caa-only", "contested-only", "caa-erasable", "open")
+SEVERITY_ORDER = ("None", "Low", "Medium", "High", "Critical", "Unknown")
 
 
 def page(title: str, body: str, subtitle: str = "") -> str:
@@ -34,15 +36,14 @@ def page(title: str, body: str, subtitle: str = "") -> str:
     )
 
 
-def bar(counts: dict[str, int]) -> str:
+def bar(counts: dict[str, int], order: tuple[str, ...] = SEVERITY_ORDER) -> str:
     total = sum(counts.values()) or 1
     segs = "".join(
-        f'<span class="c-{c}" style="width:{100 * counts.get(c, 0) / total:.1f}%" title="{c}"></span>'
-        for c in CLASS_ORDER
+        f'<span class="c-{c}" style="width:{100 * counts.get(c, 0) / total:.1f}%" title="{c}"></span>' for c in order
     )
     legend = "".join(
         f'<span><i class="sw c-{c}"></i>{c} {counts.get(c, 0)} ({100 * counts.get(c, 0) / total:.0f}%)</span>'
-        for c in CLASS_ORDER
+        for c in order
     )
     return f"<div class=bar>{segs}</div><div class=legend>{legend}</div>"
 

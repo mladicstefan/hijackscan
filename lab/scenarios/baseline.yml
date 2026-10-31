@@ -1,0 +1,38 @@
+# Single source of truth for the lab: ASes, prefixes, ROAs, zone signing state and CAA policy.
+# Everything else (link addressing, perspectives, management IPs) is fixed in lab/render/topology.py; the ASes
+# and the victim/attacker addresses below must agree with it: `labctl render` refuses a mismatch (check_topology).
+name: baseline
+domain: victim.rs
+victim:
+  asn: 65000
+  prefix: 203.0.113.0/24
+  web: 203.0.113.10
+  ns: 203.0.113.100
+attacker:
+  asn: 65010
+  announce: []            # rendered initial state; `labctl attack web|web+ns|off` changes it live
+  more_specifics:
+    web: 203.0.113.0/28
+    ns: 203.0.113.96/28
+transits: [65002, 65003]
+collector: 65100
+rov: true                 # transits drop RPKI-invalid routes (the collector never filters, like RIS)
+roas:
+  - {prefix: 203.0.113.0/24, asn: 65000, max_length: 28}
+dns:
+  signed: false
+  caa: []                 # e.g. ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']
+ca:
+  id: lab-ca
+  accounts:
+    legit: https://ca.lab/acct/legit
+    attacker: https://ca.lab/acct/attacker
+  tokens:
+    legit: legit-token
+    attacker: attacker-token
+as_names:
+  65000: LAB-VICTIM-HOSTING
+  65002: LAB-TRANSIT-1
+  65003: LAB-TRANSIT-2
+  65010: LAB-ATTACKER
+  65100: LAB-COLLECTOR

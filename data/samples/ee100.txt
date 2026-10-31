@@ -1,0 +1,129 @@
+# hijackscan-sample v1
+# source=zone.ee.part-aa zone.ee.part-ab
+# apex=ee
+# soa_serial=1793464230
+# seed=1
+# n=100
+# population=204698
+# population_ds=52785
+# sample_ds=23
+# ns_operator=zone.eu delegations=78228 ds=50446
+# ns_operator=zone.ee delegations=78223 ds=50446
+# ns_operator=zonedata.net delegations=78197 ds=50446
+# ns_operator=elkdata.ee delegations=34556 ds=2
+# ns_operator=elkdata.net delegations=32582 ds=1
+# ns_operator=cloudflare.com delegations=16174 ds=1265
+# ns_operator=netsto.net delegations=8688 ds=0
+# ns_operator=estpak.ee delegations=5600 ds=1
+# ns_operator=dnsip.com delegations=5199 ds=0
+# ns_operator=radicenter.eu delegations=4963 ds=5
+# ns_operator=radicenter.com delegations=4855 ds=5
+# ns_operator=radicenter.ee delegations=4854 ds=5
+# ns_operator=radicenter.fi delegations=4853 ds=5
+# ns_operator=xundns.com delegations=3833 ds=0
+# ns_operator=domeeninimi.ee delegations=2846 ds=0
+# ns_operator=virtuaal.com delegations=2587 ds=1
+# ns_operator=serveriai.lt delegations=1784 ds=1
+# ns_operator=alidns.com delegations=1678 ds=1
+# ns_operator=netim.net delegations=1648 ds=111
+# ns_operator=wavecom.ee delegations=1646 ds=5
+bekamora.ee
+raudlatalu.ee
+xn--mlgimeister-ffb.ee
+84k.ee
+free-lance.ee
+aurala.ee
+ntfr.ee
+xn--krvauss-10a.ee
+metallikunst.ee
+murutuul.ee
+svnap.ee
+kronos.ee
+ei.ee
+allbrewcoffee.ee
+nob.ee
+3678.ee
+laanoja.ee
+marcopolo.ee
+scholar.ee
+xn--lo-wka.ee
+xn--r-zfaa.ee
+03183.ee
+trump24.ee
+meliorprojekt.ee
+globalauto.ee
+veelind.ee
+estarbaltic.ee
+roosiait.ee
+annetatargalt.ee
+iso9001.ee
+3a.ee
+2b.ee
+33671.ee
+surmaplaneet.ee
+poniga.ee
+13487.ee
+kubothome.ee
+toomeelekter.ee
+elmaritalu.ee
+luxelekter.ee
+vesihunt.ee
+3768.ee
+perekinnisvara.ee
+energyfactor.com.ee
+xn--mk-xkaa.ee
+matchabear.ee
+nuiamoto.ee
+pugritsa.ee
+eulerhermes.ee
+katrily.ee
+estoniatransfer.ee
+tgtislerid.ee
+em.ee
+xn--krvaklapikeskus-ssb.ee
+mizon.ee
+hexestmaterials.ee
+28784.ee
+lootostrade.ee
+purtsepark.ee
+stepp2.ee
+andmebaas.ee
+dicehouse.ee
+snug.ee
+vendauctions.ee
+hooldus.com.ee
+autolist.ee
+wallamajahostel.ee
+k4medical.ee
+veekann.ee
+uzskb.ee
+ofuar.ee
+luxecar.ee
+openweb.ee
+tektelic.ee
+disconnect.ee
+idealstandard.ee
+heahommik.ee
+roberiehitus.ee
+ocheltr.ee
+omm.ee
+landmark3d.ee
+rohelineelekter.ee
+4451.ee
+navilaw.ee
+fernonorden.ee
+warnetehitus.ee
+lhevents.ee
+lonashome.ee
+taustainfo.ee
+cpp.ee
+kogemusrada.ee
+profline.ee
+ubbws.ee
+ylar.ee
+terravool.ee
+voistebrikett.ee
+korteriomanik.ee
+aindpro.ee
+matter.ee
+tarvascup.ee

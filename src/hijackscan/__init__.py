@@ -1,8 +1,11 @@
 """hijackscan: configuration exposure of .rs domains to certificate theft through BGP hijacks below DNS.
 
+hijackscan sample <zone parts...> --out domains.txt    seeded sample of a TLD zone (dig axfr text)
 hijackscan collect <domain|domains.txt> [--force]       raw facts -> data/collected/<domain>.json
 hijackscan zone <domains.txt> --out dir/                 zone report (report.json + report.html)
-hijackscan <domain> [--html file]                        one domain: facts, class, attack path, fixes
+hijackscan <domain> [--details] [--html file]            one domain: risk summary; --details for everything
+hijackscan list [domains.txt|domain] [filters]           filter and sort collected domains by risk (no network)
+hijackscan browse <domains.jsonl> [--out file]           one HTML page of every domain, details on click
 """
 
 from __future__ import annotations
@@ -25,8 +28,20 @@ def parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--workers", type=int)
     p.add_argument("--data-dir", type=Path, help=f"default {Config.data_dir}")
+    p.add_argument("--ripestat-url", help=f"RIPEstat Data API template (default {Config.ripestat_url})")
+    p.add_argument(
+        "--routable-cap-v4", type=int, help=f"longest routable IPv4 prefix (default {Config.routable_cap_v4})"
+    )
+    p.add_argument(
+        "--routable-cap-v6", type=int, help=f"longest routable IPv6 prefix (default {Config.routable_cap_v6})"
+    )
     p.add_argument("-v", "--verbose", action="store_true")
     sub = p.add_subparsers(dest="cmd")
+    s = sub.add_parser("sample", help="draw a reproducible sample of delegations from a zone file")
+    s.add_argument("zone", nargs="+", type=Path, help="dig axfr output, one or more parts in order")
+    s.add_argument("--n", type=int, default=100)
+    s.add_argument("--seed", type=int, default=1)
+    s.add_argument("--out", type=Path, required=True)
     c = sub.add_parser("collect", help="collect raw facts")
     c.add_argument("target", help="a domain or a file with one domain per line")
     c.add_argument("--force", action="store_true", help="ignore fresh cached records")
@@ -38,12 +53,31 @@ def parser() -> argparse.ArgumentParser:
     d.add_argument("name")
     d.add_argument("--html", type=Path)
     d.add_argument("--force", action="store_true")
+    d.add_argument("--details", action="store_true", help="calculation, findings, vectors, references, raw facts")
+    b = sub.add_parser("browse", help="HTML page of every domain in a domains.jsonl, worst first, details on click")
+    b.add_argument("jsonl", type=Path, help="a domains.jsonl written by `hijackscan zone`")
+    b.add_argument("--out", type=Path, help="default: domains.html next to the jsonl")
+    li = sub.add_parser("list", help="filter and sort collected domains by risk (reads data/collected, no network)")
+    li.add_argument("target", nargs="?", help="a domain or a file of domains (default: every collected record)")
+    li.add_argument(
+        "--severity", help="comma list: None,Low,Medium,High,Critical,Unknown (e.g. High,Critical)", default=""
+    )
+    li.add_argument("--min-score", type=float, help="only domains scoring at least this")
+    li.add_argument("--label", default="", help="comma list, e.g. ns-partial,open-dns")
+    li.add_argument("--finding", default="", help="comma list of finding ids; a domain must have all of them")
+    li.add_argument("--sort", choices=("score", "domain", "label"), default="score")
+    li.add_argument("--details", action="store_true", help="print the full details of every match")
+    li.add_argument("--json", action="store_true", help="one JSON object per line (summary, or full with --details)")
     return p
 
 
 def main() -> None:
     argv = sys.argv[1:]
-    if argv and not argv[0].startswith("-") and argv[0] not in ("collect", "zone", "domain"):
+    if (
+        argv
+        and not argv[0].startswith("-")
+        and argv[0] not in ("sample", "collect", "zone", "domain", "list", "browse")
+    ):
         argv = ["domain", *argv]  # `hijackscan blic.rs`
     a = parser().parse_args(argv)
     logging.basicConfig(
@@ -60,11 +94,21 @@ def main() -> None:
         ("max_age_hours", a.max_age),
         ("workers", a.workers),
         ("data_dir", a.data_dir),
+        ("ripestat_url", a.ripestat_url),
+        ("routable_cap_v4", a.routable_cap_v4),
+        ("routable_cap_v6", a.routable_cap_v6),
     ):
         if value is not None:
             cfg = replace(cfg, **{field: value})
 
-    from .collect import Collector, read_domains
+    if a.cmd == "sample":
+        from .collect.zonefile import read_zone, sample, write_sample
+
+        z = read_zone(a.zone)
+        write_sample(z, sample(z, a.n, a.seed), a.seed, a.out)
+        return
+
+    from .collect import Collector, read_domains, read_list
 
     if a.cmd == "collect":
         Collector(cfg).run(read_domains(a.target), force=a.force)
@@ -72,10 +116,22 @@ def main() -> None:
     if a.cmd == "zone":
         from .report.zone import zone_report
 
-        sys.exit(zone_report(cfg, read_domains(a.domains), a.out, force=a.force))
+        domains, meta = read_list(a.domains)
+        sys.exit(zone_report(cfg, domains, a.out, meta=meta, force=a.force))
     if a.cmd == "domain":
         from .report.domain import domain_report
 
-        sys.exit(domain_report(cfg, a.name.lower().rstrip("."), html_path=a.html, force=a.force))
+        sys.exit(domain_report(cfg, a.name.lower().rstrip("."), html_path=a.html, force=a.force, details=a.details))
+    if a.cmd == "browse":
+        from .report.browse import browse
+
+        if not a.jsonl.is_file():
+            raise SystemExit(f"no such file: {a.jsonl}")
+        print(f"wrote {browse(a.jsonl, a.out)}")
+        return
+    if a.cmd == "list":
+        from .report.listing import listing
+
+        sys.exit(listing(cfg, a))
     parser().print_help()
     sys.exit(2)
