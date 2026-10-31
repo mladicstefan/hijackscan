@@ -1,6 +1,6 @@
 {
  "domain": "rtv.rs",
- "fetched_at": "2026-10-31T13:10:45+00:00",
+ "fetched_at": "2026-10-31T13:45:20+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -118,6 +118,11 @@
    "origin_asns": [
     201278
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -133,6 +138,11 @@
    "origin_asns": [
     201278
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -148,6 +158,11 @@
    "origin_asns": [
     201278
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -163,6 +178,13 @@
    "origin_asns": [
     8400
    ],
+   "routing": {
+    "more_specifics": [
+     "212.200.246.0/24 AS43940"
+    ],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

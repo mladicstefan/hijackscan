@@ -30,6 +30,8 @@ class AddressDerived:
     roa_too_permissive: bool  # some ROA maxLength exceeds the announced length (RFC 9319 hygiene)
     exact_prefix_contestable: bool = True  # same-prefix forged origin always competes, absent ASPA
     roas: list[dict] = field(default_factory=list)  # covering ROAs: prefix, origin_asn, max_length, ta
+    announced_more_specifics: list[str] = field(default_factory=list)  # "prefix ASn" announced inside this prefix
+    ris_visibility: str | None = None  # "323/323" RIS peers seeing the announced prefix
 
     @property
     def roa_summary(self) -> str:
@@ -45,9 +47,16 @@ def derive_address(ip: str, raw: dict) -> AddressDerived:
     net = ipaddress.ip_network(prefix, strict=False)
     limit = 24 if net.version == 4 else 48
     announced_len = net.prefixlen
+    routing = raw.get("routing") or {}
+    extra = {
+        "announced_more_specifics": routing.get("more_specifics", []),
+        "ris_visibility": (
+            f"{routing['ris_peers_seeing']}/{routing['ris_peers_total']}" if routing.get("ris_peers_total") else None
+        ),
+    }
     if not roas:
         return AddressDerived(
-            ip, prefix, raw.get("origin_asns", []), raw.get("rpki_state"), "not-found", True, False, roas=[]
+            ip, prefix, raw.get("origin_asns", []), raw.get("rpki_state"), "not-found", True, False, roas=[], **extra
         )
     longest_allowed = max(r["max_length"] for r in roas)
     return AddressDerived(
@@ -59,6 +68,7 @@ def derive_address(ip: str, raw: dict) -> AddressDerived:
         forgeable_more_specific=announced_len < min(longest_allowed, limit),
         roa_too_permissive=any(r["max_length"] > announced_len for r in roas),
         roas=roas,
+        **extra,
     )
 
 

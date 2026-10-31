@@ -1,6 +1,6 @@
 {
  "domain": "informer.rs",
- "fetched_at": "2026-10-31T13:10:41+00:00",
+ "fetched_at": "2026-10-31T13:45:03+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -13,8 +13,8 @@
  "names": {
   "informer.rs": {
    "A": [
-    "212.200.255.252",
-    "212.200.255.253"
+    "212.200.255.253",
+    "212.200.255.252"
    ],
    "AAAA": [],
    "ad": {
@@ -102,6 +102,11 @@
    "origin_asns": [
     8400
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -129,6 +134,11 @@
    "origin_asns": [
     8400
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -156,6 +166,13 @@
    "origin_asns": [
     8400
    ],
+   "routing": {
+    "more_specifics": [
+     "212.200.246.0/24 AS43940"
+    ],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -183,6 +200,13 @@
    "origin_asns": [
     8400
    ],
+   "routing": {
+    "more_specifics": [
+     "212.200.246.0/24 AS43940"
+    ],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

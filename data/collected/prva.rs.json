@@ -1,6 +1,6 @@
 {
  "domain": "prva.rs",
- "fetched_at": "2026-10-31T13:10:52+00:00",
+ "fetched_at": "2026-10-31T13:45:43+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -65,9 +65,9 @@
   }
  ],
  "nameservers": {
-  "primary.b92.net": {
+  "ns2.b92.net": {
    "A": [
-    "212.102.128.2"
+    "212.102.132.3"
    ],
    "AAAA": [],
    "ad": {
@@ -79,9 +79,9 @@
     "AAAA": "NOERROR"
    }
   },
-  "ns2.b92.net": {
+  "primary.b92.net": {
    "A": [
-    "212.102.132.3"
+    "212.102.128.2"
    ],
    "AAAA": [],
    "ad": {
@@ -100,6 +100,11 @@
    "origin_asns": [
     24940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -115,6 +120,13 @@
    "origin_asns": [
     9081
    ],
+   "routing": {
+    "more_specifics": [
+     "212.102.132.0/24 AS9081"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -130,6 +142,11 @@
    "origin_asns": [
     9081
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

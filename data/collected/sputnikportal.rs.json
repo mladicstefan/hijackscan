@@ -1,6 +1,6 @@
 {
  "domain": "sputnikportal.rs",
- "fetched_at": "2026-10-31T13:10:50+00:00",
+ "fetched_at": "2026-10-31T13:45:38+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -63,9 +63,9 @@
   }
  ],
  "nameservers": {
-  "ns10.sputniknews.ru": {
+  "ns9.sputniknews.ru": {
    "A": [
-    "178.248.233.32"
+    "178.248.236.20"
    ],
    "AAAA": [],
    "ad": {
@@ -77,9 +77,9 @@
     "AAAA": "NOERROR"
    }
   },
-  "ns9.sputniknews.ru": {
+  "ns10.sputniknews.ru": {
    "A": [
-    "178.248.236.20"
+    "178.248.233.32"
    ],
    "AAAA": [],
    "ad": {
@@ -98,6 +98,11 @@
    "origin_asns": [
     51115
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -113,6 +118,13 @@
    "origin_asns": [
     51115
    ],
+   "routing": {
+    "more_specifics": [
+     "178.248.237.0/24 AS51115"
+    ],
+    "ris_peers_seeing": 320,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -128,6 +140,11 @@
    "origin_asns": [
     57352
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "unknown",
    "roas": []
   }

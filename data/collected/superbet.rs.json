@@ -1,6 +1,6 @@
 {
  "domain": "superbet.rs",
- "fetched_at": "2026-10-31T13:10:48+00:00",
+ "fetched_at": "2026-10-31T13:45:28+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -13,9 +13,9 @@
  "names": {
   "superbet.rs": {
    "A": [
+    "13.32.12.117",
     "13.32.12.47",
     "13.32.12.32",
-    "13.32.12.117",
     "13.32.12.35"
    ],
    "AAAA": [],
@@ -32,8 +32,8 @@
    "A": [
     "13.32.12.47",
     "13.32.12.32",
-    "13.32.12.35",
-    "13.32.12.117"
+    "13.32.12.117",
+    "13.32.12.35"
    ],
    "AAAA": [],
    "ad": {
@@ -153,6 +153,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -174,6 +179,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -195,6 +205,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -216,6 +231,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -237,6 +257,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -264,6 +289,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -291,6 +321,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -318,6 +353,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -345,6 +385,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -378,6 +423,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -411,6 +461,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -444,6 +499,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {

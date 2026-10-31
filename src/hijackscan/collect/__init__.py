@@ -91,6 +91,7 @@ class Collector:
         return {
             "prefix": prefix,
             "origin_asns": asns,
+            "routing": self.ripe.routing_status(prefix) if prefix else None,
             "rpki_state": self.ripe.rpki_state(asns[0], prefix) if prefix and asns else None,
             "roas": self.roas.covering(prefix) if prefix else [],
         }

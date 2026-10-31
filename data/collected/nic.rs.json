@@ -1,6 +1,6 @@
 {
  "domain": "nic.rs",
- "fetched_at": "2026-10-31T13:10:41+00:00",
+ "fetched_at": "2026-10-31T13:45:09+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -137,6 +137,11 @@
    "origin_asns": [
     8674
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -158,6 +163,11 @@
    "origin_asns": [
     8674
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -179,6 +189,11 @@
    "origin_asns": [
     47267
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -194,6 +209,11 @@
    "origin_asns": [
     47267
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -209,6 +229,11 @@
    "origin_asns": [
     208366
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -236,6 +261,11 @@
    "origin_asns": [
     208366
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -263,6 +293,11 @@
    "origin_asns": [
     47267
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -278,6 +313,11 @@
    "origin_asns": [
     47267
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

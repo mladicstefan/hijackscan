@@ -1,6 +1,6 @@
 {
  "domain": "cpanelhosting.rs",
- "fetched_at": "2026-10-31T13:10:43+00:00",
+ "fetched_at": "2026-10-31T13:45:17+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -65,9 +65,9 @@
   }
  ],
  "nameservers": {
-  "dns2.sbb.rs": {
+  "dns1.sbb.rs": {
    "A": [
-    "89.216.1.1"
+    "82.117.194.2"
    ],
    "AAAA": [],
    "ad": {
@@ -93,9 +93,9 @@
     "AAAA": "NOERROR"
    }
   },
-  "dns3.sbb.rs": {
+  "dns2.sbb.rs": {
    "A": [
-    "82.117.194.3"
+    "89.216.1.1"
    ],
    "AAAA": [],
    "ad": {
@@ -107,9 +107,9 @@
     "AAAA": "NOERROR"
    }
   },
-  "dns1.sbb.rs": {
+  "dns3.sbb.rs": {
    "A": [
-    "82.117.194.2"
+    "82.117.194.3"
    ],
    "AAAA": [],
    "ad": {
@@ -128,6 +128,11 @@
    "origin_asns": [
     31042
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -143,6 +148,13 @@
    "origin_asns": [
     31042
    ],
+   "routing": {
+    "more_specifics": [
+     "82.117.195.0/24 AS31042"
+    ],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -158,6 +170,13 @@
    "origin_asns": [
     31042
    ],
+   "routing": {
+    "more_specifics": [
+     "82.117.195.0/24 AS31042"
+    ],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -173,6 +192,11 @@
    "origin_asns": [
     31042
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -188,6 +212,11 @@
    "origin_asns": [
     31042
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

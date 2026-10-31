@@ -1,6 +1,6 @@
 {
  "domain": "maxi.rs",
- "fetched_at": "2026-10-31T13:10:54+00:00",
+ "fetched_at": "2026-10-31T13:45:48+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -13,8 +13,8 @@
  "names": {
   "maxi.rs": {
    "A": [
-    "104.126.37.161",
-    "104.126.37.186"
+    "95.100.110.12",
+    "95.100.110.15"
    ],
    "AAAA": [],
    "ad": {
@@ -28,8 +28,8 @@
   },
   "www.maxi.rs": {
    "A": [
-    "95.101.23.98",
-    "95.101.23.88"
+    "104.83.4.58",
+    "104.83.4.48"
    ],
    "AAAA": [],
    "ad": {
@@ -101,44 +101,54 @@
   }
  },
  "addresses": {
-  "104.126.37.161": {
-   "prefix": "104.126.36.0/23",
+  "104.83.4.48": {
+   "prefix": "104.83.4.0/23",
    "origin_asns": [
     20940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 318,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
-    {
-     "prefix": "104.126.36.0/23",
-     "origin_asn": 20940,
-     "max_length": 23,
-     "ta": "arin"
-    },
     {
      "prefix": "104.64.0.0/10",
      "origin_asn": 20940,
      "max_length": 10,
+     "ta": "arin"
+    },
+    {
+     "prefix": "104.83.4.0/23",
+     "origin_asn": 20940,
+     "max_length": 23,
      "ta": "arin"
     }
    ]
   },
-  "104.126.37.186": {
-   "prefix": "104.126.36.0/23",
+  "104.83.4.58": {
+   "prefix": "104.83.4.0/23",
    "origin_asns": [
     20940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 318,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
-    {
-     "prefix": "104.126.36.0/23",
-     "origin_asn": 20940,
-     "max_length": 23,
-     "ta": "arin"
-    },
     {
      "prefix": "104.64.0.0/10",
      "origin_asn": 20940,
      "max_length": 10,
+     "ta": "arin"
+    },
+    {
+     "prefix": "104.83.4.0/23",
+     "origin_asn": 20940,
+     "max_length": 23,
      "ta": "arin"
     }
    ]
@@ -148,6 +158,11 @@
    "origin_asns": [
     12008
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -355,6 +370,11 @@
    "origin_asns": [
     12008
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -562,6 +582,11 @@
    "origin_asns": [
     12008
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -769,6 +794,11 @@
    "origin_asns": [
     12008
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -971,11 +1001,16 @@
     }
    ]
   },
-  "95.101.23.88": {
-   "prefix": "95.101.23.0/24",
+  "95.100.110.12": {
+   "prefix": "95.100.110.0/24",
    "origin_asns": [
     20940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -985,18 +1020,23 @@
      "ta": "ripencc"
     },
     {
-     "prefix": "95.101.23.0/24",
+     "prefix": "95.100.110.0/24",
      "origin_asn": 20940,
      "max_length": 24,
      "ta": "ripencc"
     }
    ]
   },
-  "95.101.23.98": {
-   "prefix": "95.101.23.0/24",
+  "95.100.110.15": {
+   "prefix": "95.100.110.0/24",
    "origin_asns": [
     20940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1006,7 +1046,7 @@
      "ta": "ripencc"
     },
     {
-     "prefix": "95.101.23.0/24",
+     "prefix": "95.100.110.0/24",
      "origin_asn": 20940,
      "max_length": 24,
      "ta": "ripencc"

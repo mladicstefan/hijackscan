@@ -39,6 +39,11 @@ def _explain_address(a, asn_names: dict, rpki_date: str) -> list[str]:
     out.append(f"{a.ip}")
     out.append(f"    announced as   {a.prefix}  (length /{net.prefixlen})  by {origin}")
     out.append(f"    RIPEstat RPKI  {a.rpki_state or '-'}  (live verdict for that origin + prefix)")
+    seen = f"seen by {a.ris_visibility} RIS peers" if a.ris_visibility else "RIS visibility unknown"
+    if a.announced_more_specifics:
+        out.append(f"    announced more-specifics inside it: {', '.join(a.announced_more_specifics)}  ({seen})")
+    else:
+        out.append(f"    no more-specific of {a.prefix} is announced by anyone  ({seen})")
     if not a.roas:
         out.append(f"    ROAs {rpki_date}  none cover this prefix")
         out.append(
@@ -61,8 +66,9 @@ def _explain_address(a, asn_names: dict, rpki_date: str) -> list[str]:
     usable = min(longest, limit)
     if a.forgeable_more_specific:
         out.append(
-            f"    → FORGEABLE: announced /{net.prefixlen}, a ROA allows up to /{longest}; an attacker can announce a "
-            f"/{net.prefixlen + 1}–/{usable} with the ROA's origin AS, RPKI-valid, and win by longest match everywhere"
+            f"    → FORGEABLE: announced /{net.prefixlen}, a ROA allows up to /{longest}; a forged "
+            f"/{net.prefixlen + 1}–/{usable} with the ROA's origin AS is RPKI-valid and, since the holder announces "
+            f"nothing more specific here, becomes the longest match everywhere"
         )
     else:
         why = (

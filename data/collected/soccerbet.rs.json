@@ -1,6 +1,6 @@
 {
  "domain": "soccerbet.rs",
- "fetched_at": "2026-10-31T13:10:51+00:00",
+ "fetched_at": "2026-10-31T13:45:41+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -13,8 +13,8 @@
  "names": {
   "soccerbet.rs": {
    "A": [
-    "87.237.203.81",
-    "87.237.203.82"
+    "87.237.203.82",
+    "87.237.203.81"
    ],
    "AAAA": [],
    "ad": {
@@ -28,8 +28,8 @@
   },
   "www.soccerbet.rs": {
    "A": [
-    "87.237.203.81",
-    "87.237.203.82"
+    "87.237.203.82",
+    "87.237.203.81"
    ],
    "AAAA": [],
    "ad": {
@@ -130,6 +130,11 @@
    "origin_asns": [
     30633
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": []
   },
@@ -138,6 +143,11 @@
    "origin_asns": [
     51859
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -165,6 +175,11 @@
    "origin_asns": [
     51859
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -192,6 +207,11 @@
    "origin_asns": [
     51859
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -213,6 +233,11 @@
    "origin_asns": [
     51859
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

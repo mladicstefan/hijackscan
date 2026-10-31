@@ -1,6 +1,6 @@
 {
  "domain": "lilly.rs",
- "fetched_at": "2026-10-31T13:10:52+00:00",
+ "fetched_at": "2026-10-31T13:45:43+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -31,12 +31,12 @@
   },
   "www.lilly.rs": {
    "A": [
-    "104.20.23.5",
-    "172.66.175.35"
+    "172.66.175.35",
+    "104.20.23.5"
    ],
    "AAAA": [
-    "2606:4700:10::ac42:af23",
-    "2606:4700:10::6814:1705"
+    "2606:4700:10::6814:1705",
+    "2606:4700:10::ac42:af23"
    ],
    "ad": {
     "A": false,
@@ -62,17 +62,17 @@
   {
    "name": "lilly.rs",
    "records": [
-    "0 issue \"pki.goog; cansignhttpexchanges=yes\"",
     "0 issue \"letsencrypt.org\"",
-    "0 issuewild \"sectigo.com\"",
-    "0 issuewild \"ssl.com\"",
-    "0 issue \"digicert.com; cansignhttpexchanges=yes\"",
-    "0 issuewild \"letsencrypt.org\"",
-    "0 issuewild \"digicert.com; cansignhttpexchanges=yes\"",
-    "0 issue \"ssl.com\"",
     "0 issuewild \"comodoca.com\"",
+    "0 issue \"pki.goog; cansignhttpexchanges=yes\"",
+    "0 issue \"ssl.com\"",
+    "0 issue \"digicert.com; cansignhttpexchanges=yes\"",
+    "0 issuewild \"digicert.com; cansignhttpexchanges=yes\"",
+    "0 issuewild \"letsencrypt.org\"",
     "0 issue \"comodoca.com\"",
-    "0 issuewild \"pki.goog; cansignhttpexchanges=yes\""
+    "0 issuewild \"ssl.com\"",
+    "0 issuewild \"pki.goog; cansignhttpexchanges=yes\"",
+    "0 issuewild \"sectigo.com\""
    ],
    "ad": false,
    "rcode": "NOERROR"
@@ -132,6 +132,11 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -147,6 +152,11 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -168,6 +178,11 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -189,6 +204,18 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "162.159.32.0/23 AS13335",
+     "162.159.34.0/23 AS13335",
+     "162.159.40.0/23 AS13335",
+     "162.159.42.0/23 AS13335",
+     "162.159.36.0/24 AS13335",
+     "162.159.46.0/24 AS13335"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -204,6 +231,18 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "162.159.32.0/23 AS13335",
+     "162.159.34.0/23 AS13335",
+     "162.159.40.0/23 AS13335",
+     "162.159.42.0/23 AS13335",
+     "162.159.36.0/24 AS13335",
+     "162.159.46.0/24 AS13335"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -219,6 +258,11 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -240,6 +284,11 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -261,6 +310,11 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -276,6 +330,13 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "2606:4700:11::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -291,6 +352,13 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "2606:4700:11::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -306,6 +374,18 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "2606:4700:52::/48 AS13335",
+     "2606:4700:54::/48 AS13335",
+     "2606:4700:56::/48 AS13335",
+     "2606:4700:57::/48 AS13335",
+     "2606:4700:5a::/48 AS13335",
+     "2606:4700:5c::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -321,6 +401,18 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "2606:4700:52::/48 AS13335",
+     "2606:4700:54::/48 AS13335",
+     "2606:4700:56::/48 AS13335",
+     "2606:4700:57::/48 AS13335",
+     "2606:4700:5a::/48 AS13335",
+     "2606:4700:5c::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -336,6 +428,14 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "2803:f800:52::/48 AS13335",
+     "2803:f800:55::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -351,6 +451,14 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "2803:f800:52::/48 AS13335",
+     "2803:f800:55::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -366,6 +474,15 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "2a06:98c1:54::/48 AS13335",
+     "2a06:98c1:55::/48 AS13335",
+     "2a06:98c1:56::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -381,6 +498,15 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "2a06:98c1:54::/48 AS13335",
+     "2a06:98c1:55::/48 AS13335",
+     "2a06:98c1:56::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {

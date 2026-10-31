@@ -1,6 +1,6 @@
 {
  "domain": "alo.rs",
- "fetched_at": "2026-10-31T13:10:42+00:00",
+ "fetched_at": "2026-10-31T13:45:11+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -73,12 +73,12 @@
   }
  ],
  "nameservers": {
-  "ns1.loopia.se": {
+  "ns2.loopia.se": {
    "A": [
-    "93.188.0.20"
+    "185.71.156.20"
    ],
    "AAAA": [
-    "2a02:250:ffff::20"
+    "2a02:250:fffe::20"
    ],
    "ad": {
     "A": true,
@@ -89,12 +89,12 @@
     "AAAA": "NOERROR"
    }
   },
-  "ns2.loopia.se": {
+  "ns1.loopia.se": {
    "A": [
-    "185.71.156.20"
+    "93.188.0.20"
    ],
    "AAAA": [
-    "2a02:250:fffe::20"
+    "2a02:250:ffff::20"
    ],
    "ad": {
     "A": true,
@@ -112,6 +112,11 @@
    "origin_asns": [
     215836
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -127,6 +132,11 @@
    "origin_asns": [
     215836
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -142,6 +152,11 @@
    "origin_asns": [
     39570
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -157,6 +172,11 @@
    "origin_asns": [
     8400
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -172,6 +192,11 @@
    "origin_asns": [
     8400
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -187,6 +212,11 @@
    "origin_asns": [
     39570
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

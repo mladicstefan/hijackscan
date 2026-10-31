@@ -1,6 +1,6 @@
 {
  "domain": "lcwaikiki.rs",
- "fetched_at": "2026-10-31T13:10:57+00:00",
+ "fetched_at": "2026-10-31T13:45:54+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -13,12 +13,12 @@
  "names": {
   "lcwaikiki.rs": {
    "A": [
-    "104.18.25.250",
-    "104.18.24.250"
+    "104.18.24.250",
+    "104.18.25.250"
    ],
    "AAAA": [
-    "2606:4700::6812:18fa",
-    "2606:4700::6812:19fa"
+    "2606:4700::6812:19fa",
+    "2606:4700::6812:18fa"
    ],
    "ad": {
     "A": false,
@@ -31,8 +31,8 @@
   },
   "www.lcwaikiki.rs": {
    "A": [
-    "104.18.25.250",
-    "104.18.24.250"
+    "104.18.24.250",
+    "104.18.25.250"
    ],
    "AAAA": [
     "2606:4700::6812:18fa",
@@ -75,8 +75,8 @@
  "nameservers": {
   "eu.atakdomain.com": {
    "A": [
-    "51.75.28.75",
-    "168.119.233.136"
+    "168.119.233.136",
+    "51.75.28.75"
    ],
    "AAAA": [],
    "ad": {
@@ -109,6 +109,11 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -124,6 +129,11 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -139,6 +149,11 @@
    "origin_asns": [
     24940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -154,6 +169,11 @@
    "origin_asns": [
     211401
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -169,6 +189,13 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "2606:4700:1::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -184,6 +211,13 @@
    "origin_asns": [
     13335
    ],
+   "routing": {
+    "more_specifics": [
+     "2606:4700:1::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -199,6 +233,11 @@
    "origin_asns": [
     16276
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

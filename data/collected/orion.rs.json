@@ -1,6 +1,6 @@
 {
  "domain": "orion.rs",
- "fetched_at": "2026-10-31T13:10:43+00:00",
+ "fetched_at": "2026-10-31T13:45:11+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -156,6 +156,11 @@
    "origin_asns": [
     36351
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
    "rpki_state": "unknown",
    "roas": []
   },
@@ -164,6 +169,11 @@
    "origin_asns": [
     24459
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -179,6 +189,11 @@
    "origin_asns": [
     9125
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -200,6 +215,11 @@
    "origin_asns": [
     9125
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -221,6 +241,11 @@
    "origin_asns": [
     9125
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -236,6 +261,11 @@
    "origin_asns": [
     9125
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -251,6 +281,11 @@
    "origin_asns": [
     9125
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

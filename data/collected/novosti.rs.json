@@ -1,6 +1,6 @@
 {
  "domain": "novosti.rs",
- "fetched_at": "2026-10-31T13:10:08+00:00",
+ "fetched_at": "2026-10-31T13:44:26+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -13,8 +13,8 @@
  "names": {
   "novosti.rs": {
    "A": [
-    "79.101.48.73",
-    "79.101.48.74"
+    "79.101.48.74",
+    "79.101.48.73"
    ],
    "AAAA": [],
    "ad": {
@@ -28,8 +28,8 @@
   },
   "www.novosti.rs": {
    "A": [
-    "79.101.48.74",
-    "79.101.48.73"
+    "79.101.48.73",
+    "79.101.48.74"
    ],
    "AAAA": [],
    "ad": {
@@ -110,6 +110,11 @@
     1921,
     207021
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -137,6 +142,11 @@
    "origin_asns": [
     1921
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -165,6 +175,11 @@
     1921,
     207021
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -192,6 +207,11 @@
    "origin_asns": [
     1921
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -219,6 +239,11 @@
    "origin_asns": [
     8400
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -234,6 +259,11 @@
    "origin_asns": [
     8400
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

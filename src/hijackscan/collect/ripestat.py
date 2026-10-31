@@ -54,6 +54,16 @@ class RipeStat:
         """RIPEstat's own verdict for (origin, prefix): valid | invalid | unknown (as reported)."""
         return self.call("rpki-validation", resource=str(asn), prefix=prefix).get("status")
 
+    def routing_status(self, prefix: str) -> dict:
+        """Announced more-specifics of a prefix and how many RIS peers see it."""
+        d = self.call("routing-status", resource=prefix)
+        vis = d.get("visibility", {}).get("v6" if ":" in prefix else "v4", {})
+        return {
+            "more_specifics": [f"{m['prefix']} AS{m['origin']}" for m in d.get("more_specifics", [])],
+            "ris_peers_seeing": vis.get("ris_peers_seeing"),
+            "ris_peers_total": vis.get("total_ris_peers"),
+        }
+
     def as_overview(self, asn: int) -> dict:
         d = self.call("as-overview", resource=f"AS{asn}")
         return {"name": d.get("holder"), "announced": d.get("announced")}

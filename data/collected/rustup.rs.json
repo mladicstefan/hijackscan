@@ -1,6 +1,6 @@
 {
  "domain": "rustup.rs",
- "fetched_at": "2026-10-31T13:10:48+00:00",
+ "fetched_at": "2026-10-31T13:45:28+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -13,20 +13,20 @@
  "names": {
   "rustup.rs": {
    "A": [
-    "18.239.255.128",
-    "18.239.255.46",
     "18.239.255.111",
+    "18.239.255.46",
+    "18.239.255.128",
     "18.239.255.14"
    ],
    "AAAA": [
-    "2600:9000:26a2:6800:1:6a0b:1280:93a1",
-    "2600:9000:26a2:e400:1:6a0b:1280:93a1",
+    "2600:9000:26a2:ca00:1:6a0b:1280:93a1",
+    "2600:9000:26a2:2800:1:6a0b:1280:93a1",
+    "2600:9000:26a2:9400:1:6a0b:1280:93a1",
     "2600:9000:26a2:2e00:1:6a0b:1280:93a1",
-    "2600:9000:26a2:3200:1:6a0b:1280:93a1",
-    "2600:9000:26a2:4c00:1:6a0b:1280:93a1",
-    "2600:9000:26a2:aa00:1:6a0b:1280:93a1",
-    "2600:9000:26a2:fc00:1:6a0b:1280:93a1",
-    "2600:9000:26a2:1200:1:6a0b:1280:93a1"
+    "2600:9000:26a2:4e00:1:6a0b:1280:93a1",
+    "2600:9000:26a2:d000:1:6a0b:1280:93a1",
+    "2600:9000:26a2:f800:1:6a0b:1280:93a1",
+    "2600:9000:26a2:a00:1:6a0b:1280:93a1"
    ],
    "ad": {
     "A": false,
@@ -41,17 +41,17 @@
    "A": [
     "13.32.12.128",
     "13.32.12.41",
-    "13.32.12.108",
-    "13.32.12.89"
+    "13.32.12.89",
+    "13.32.12.108"
    ],
    "AAAA": [
-    "2600:9000:211a:1400:10:5db6:67c0:93a1",
-    "2600:9000:211a:3e00:10:5db6:67c0:93a1",
-    "2600:9000:211a:8e00:10:5db6:67c0:93a1",
+    "2600:9000:211a:0:10:5db6:67c0:93a1",
+    "2600:9000:211a:7600:10:5db6:67c0:93a1",
     "2600:9000:211a:7000:10:5db6:67c0:93a1",
-    "2600:9000:211a:d600:10:5db6:67c0:93a1",
-    "2600:9000:211a:fa00:10:5db6:67c0:93a1",
-    "2600:9000:211a:f600:10:5db6:67c0:93a1",
+    "2600:9000:211a:fc00:10:5db6:67c0:93a1",
+    "2600:9000:211a:1000:10:5db6:67c0:93a1",
+    "2600:9000:211a:5000:10:5db6:67c0:93a1",
+    "2600:9000:211a:7e00:10:5db6:67c0:93a1",
     "2600:9000:211a:400:10:5db6:67c0:93a1"
    ],
    "ad": {
@@ -160,6 +160,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -181,6 +186,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -202,6 +212,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -223,6 +238,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -244,6 +264,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -259,6 +284,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -274,6 +304,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -289,6 +324,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -304,6 +344,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -331,6 +376,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -358,6 +408,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -385,6 +440,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -407,11 +467,16 @@
     }
    ]
   },
-  "2600:9000:211a:1400:10:5db6:67c0:93a1": {
+  "2600:9000:211a:0:10:5db6:67c0:93a1": {
    "prefix": "2600:9000:211a::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 292,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -470,11 +535,16 @@
     }
    ]
   },
-  "2600:9000:211a:3e00:10:5db6:67c0:93a1": {
+  "2600:9000:211a:1000:10:5db6:67c0:93a1": {
    "prefix": "2600:9000:211a::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 292,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -538,6 +608,79 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 292,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/43",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:211a:5000:10:5db6:67c0:93a1": {
+   "prefix": "2600:9000:211a::/48",
+   "origin_asns": [
+    16509
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 292,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -601,6 +744,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 292,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -659,11 +807,16 @@
     }
    ]
   },
-  "2600:9000:211a:8e00:10:5db6:67c0:93a1": {
+  "2600:9000:211a:7600:10:5db6:67c0:93a1": {
    "prefix": "2600:9000:211a::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 292,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -722,11 +875,16 @@
     }
    ]
   },
-  "2600:9000:211a:d600:10:5db6:67c0:93a1": {
+  "2600:9000:211a:7e00:10:5db6:67c0:93a1": {
    "prefix": "2600:9000:211a::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 292,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -785,11 +943,16 @@
     }
    ]
   },
-  "2600:9000:211a:f600:10:5db6:67c0:93a1": {
+  "2600:9000:211a:fc00:10:5db6:67c0:93a1": {
    "prefix": "2600:9000:211a::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 292,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -848,74 +1011,16 @@
     }
    ]
   },
-  "2600:9000:211a:fa00:10:5db6:67c0:93a1": {
-   "prefix": "2600:9000:211a::/48",
-   "origin_asns": [
-    16509
-   ],
-   "rpki_state": "valid",
-   "roas": [
-    {
-     "prefix": "2600:9000:2000::/36",
-     "origin_asn": 16509,
-     "max_length": 36,
-     "ta": "arin"
-    },
-    {
-     "prefix": "2600:9000:2000::/37",
-     "origin_asn": 16509,
-     "max_length": 37,
-     "ta": "arin"
-    },
-    {
-     "prefix": "2600:9000:2000::/38",
-     "origin_asn": 16509,
-     "max_length": 38,
-     "ta": "arin"
-    },
-    {
-     "prefix": "2600:9000:2000::/39",
-     "origin_asn": 16509,
-     "max_length": 39,
-     "ta": "arin"
-    },
-    {
-     "prefix": "2600:9000:2100::/40",
-     "origin_asn": 16509,
-     "max_length": 40,
-     "ta": "arin"
-    },
-    {
-     "prefix": "2600:9000:2100::/41",
-     "origin_asn": 16509,
-     "max_length": 41,
-     "ta": "arin"
-    },
-    {
-     "prefix": "2600:9000:2100::/42",
-     "origin_asn": 16509,
-     "max_length": 42,
-     "ta": "arin"
-    },
-    {
-     "prefix": "2600:9000:2100::/43",
-     "origin_asn": 16509,
-     "max_length": 48,
-     "ta": "arin"
-    },
-    {
-     "prefix": "2600:9000::/28",
-     "origin_asn": 16509,
-     "max_length": 28,
-     "ta": "arin"
-    }
-   ]
-  },
-  "2600:9000:26a2:1200:1:6a0b:1280:93a1": {
+  "2600:9000:26a2:2800:1:6a0b:1280:93a1": {
    "prefix": "2600:9000:26a2::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 293,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -991,6 +1096,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 293,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1061,11 +1171,16 @@
     }
    ]
   },
-  "2600:9000:26a2:3200:1:6a0b:1280:93a1": {
+  "2600:9000:26a2:4e00:1:6a0b:1280:93a1": {
    "prefix": "2600:9000:26a2::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 293,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1136,11 +1251,16 @@
     }
    ]
   },
-  "2600:9000:26a2:4c00:1:6a0b:1280:93a1": {
+  "2600:9000:26a2:9400:1:6a0b:1280:93a1": {
    "prefix": "2600:9000:26a2::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 293,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1211,11 +1331,16 @@
     }
    ]
   },
-  "2600:9000:26a2:6800:1:6a0b:1280:93a1": {
+  "2600:9000:26a2:a00:1:6a0b:1280:93a1": {
    "prefix": "2600:9000:26a2::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 293,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1286,11 +1411,16 @@
     }
    ]
   },
-  "2600:9000:26a2:aa00:1:6a0b:1280:93a1": {
+  "2600:9000:26a2:ca00:1:6a0b:1280:93a1": {
    "prefix": "2600:9000:26a2::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 293,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1361,11 +1491,16 @@
     }
    ]
   },
-  "2600:9000:26a2:e400:1:6a0b:1280:93a1": {
+  "2600:9000:26a2:d000:1:6a0b:1280:93a1": {
    "prefix": "2600:9000:26a2::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 293,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1436,11 +1571,16 @@
     }
    ]
   },
-  "2600:9000:26a2:fc00:1:6a0b:1280:93a1": {
+  "2600:9000:26a2:f800:1:6a0b:1280:93a1": {
    "prefix": "2600:9000:26a2::/48",
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 293,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1516,6 +1656,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1549,6 +1694,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1582,6 +1732,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -1615,6 +1770,11 @@
    "origin_asns": [
     16509
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {

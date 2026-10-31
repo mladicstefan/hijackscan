@@ -1,6 +1,6 @@
 {
  "domain": "direktno.rs",
- "fetched_at": "2026-10-31T13:10:43+00:00",
+ "fetched_at": "2026-10-31T13:45:14+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -13,11 +13,11 @@
  "names": {
   "direktno.rs": {
    "A": [
-    "144.76.77.80",
-    "5.9.235.232",
     "144.76.55.238",
+    "5.9.225.170",
+    "5.9.235.232",
     "5.9.225.178",
-    "5.9.225.170"
+    "144.76.77.80"
    ],
    "AAAA": [],
    "ad": {
@@ -31,11 +31,11 @@
   },
   "www.direktno.rs": {
    "A": [
-    "144.76.77.80",
     "5.9.225.178",
+    "144.76.77.80",
+    "5.9.235.232",
     "144.76.55.238",
-    "5.9.225.170",
-    "5.9.235.232"
+    "5.9.225.170"
    ],
    "AAAA": [],
    "ad": {
@@ -122,6 +122,11 @@
    "origin_asns": [
     24940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "unknown",
    "roas": []
   },
@@ -130,6 +135,11 @@
    "origin_asns": [
     24940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "unknown",
    "roas": []
   },
@@ -138,6 +148,11 @@
    "origin_asns": [
     24940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -153,6 +168,11 @@
    "origin_asns": [
     24940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -168,6 +188,11 @@
    "origin_asns": [
     24940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -183,6 +208,11 @@
    "origin_asns": [
     31042
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -198,6 +228,11 @@
    "origin_asns": [
     31042
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -213,6 +248,11 @@
    "origin_asns": [
     31042
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

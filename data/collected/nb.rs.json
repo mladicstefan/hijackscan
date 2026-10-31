@@ -1,6 +1,6 @@
 {
  "domain": "nb.rs",
- "fetched_at": "2026-10-31T13:10:50+00:00",
+ "fetched_at": "2026-10-31T13:45:34+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -116,6 +116,11 @@
    "origin_asns": [
     13092
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "unknown",
    "roas": []
   },
@@ -124,6 +129,11 @@
    "origin_asns": [
     13092
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "unknown",
    "roas": []
   },
@@ -132,6 +142,11 @@
    "origin_asns": [
     13092
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "unknown",
    "roas": []
   },
@@ -140,6 +155,11 @@
    "origin_asns": [
     13092
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "unknown",
    "roas": []
   },
@@ -148,6 +168,11 @@
    "origin_asns": [
     13092
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": []
   }

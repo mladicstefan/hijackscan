@@ -1,6 +1,6 @@
 {
  "domain": "beotel.rs",
- "fetched_at": "2026-10-31T13:10:47+00:00",
+ "fetched_at": "2026-10-31T13:45:25+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -100,6 +100,14 @@
    "origin_asns": [
     6700
    ],
+   "routing": {
+    "more_specifics": [
+     "194.106.166.0/24 AS6700",
+     "194.106.170.0/24 AS6700"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -121,6 +129,14 @@
    "origin_asns": [
     6700
    ],
+   "routing": {
+    "more_specifics": [
+     "194.106.166.0/24 AS6700",
+     "194.106.170.0/24 AS6700"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -142,6 +158,14 @@
    "origin_asns": [
     6700
    ],
+   "routing": {
+    "more_specifics": [
+     "194.106.166.0/24 AS6700",
+     "194.106.170.0/24 AS6700"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {

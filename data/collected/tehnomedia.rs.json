@@ -1,6 +1,6 @@
 {
  "domain": "tehnomedia.rs",
- "fetched_at": "2026-10-31T13:10:53+00:00",
+ "fetched_at": "2026-10-31T13:45:47+00:00",
  "resolver": "9.9.9.9:853 (DoT)",
  "resolver_check": {
   "resolver": "9.9.9.9:853 (DoT)",
@@ -104,6 +104,11 @@
    "origin_asns": [
     24940
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "unknown",
    "roas": []
   },
@@ -112,6 +117,11 @@
    "origin_asns": [
     44273
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -123,13 +133,13 @@
     {
      "prefix": "173.201.64.0/20",
      "origin_asn": 26496,
-     "max_length": 24,
+     "max_length": 23,
      "ta": "arin"
     },
     {
      "prefix": "173.201.64.0/20",
      "origin_asn": 26496,
-     "max_length": 23,
+     "max_length": 24,
      "ta": "arin"
     },
     {
@@ -151,6 +161,11 @@
    "origin_asns": [
     44273
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -190,6 +205,11 @@
    "origin_asns": [
     44273
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
    "rpki_state": "valid",
    "roas": [
     {
@@ -201,13 +221,13 @@
     {
      "prefix": "2603:5:2200::/40",
      "origin_asn": 26496,
-     "max_length": 48,
+     "max_length": 44,
      "ta": "arin"
     },
     {
      "prefix": "2603:5:2200::/40",
      "origin_asn": 26496,
-     "max_length": 44,
+     "max_length": 48,
      "ta": "arin"
     },
     {
@@ -229,6 +249,11 @@
    "origin_asns": [
     44273
    ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
    "rpki_state": "valid",
    "roas": [
     {
