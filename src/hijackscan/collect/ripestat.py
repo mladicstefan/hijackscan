@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import threading
 import time
 from pathlib import Path
@@ -25,7 +26,9 @@ class RipeStat:
 
     def call(self, call: str, **params: str) -> dict:
         key = call + "_" + "_".join(f"{k}={v}" for k, v in sorted(params.items()))
-        path = self.cache_dir / (key.replace("/", "_") + ".json")
+        # IPv6 colons are not allowed in Windows file names; other platforms keep their existing cache names.
+        safe = key.replace("/", "_").replace(":", "-") if os.name == "nt" else key.replace("/", "_")
+        path = self.cache_dir / (safe + ".json")
         if path.exists():
             return json.loads(path.read_text())["data"]
         last: Exception | None = None

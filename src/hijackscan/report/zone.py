@@ -7,11 +7,13 @@ from __future__ import annotations
 
 import json
 from collections import Counter, defaultdict
+from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 
 from ..collect import Collector
 from ..config import Config
+from ..risk import COMPLEXITY_STEP, SEVERITIES, Risk, assess
 from ..score import CLASSES, Scored, score
 from . import html
 
@@ -30,13 +32,43 @@ def zone_report(cfg: Config, domains: list[str], out: Path, *, meta: dict | None
     """`meta` is the header of a `hijackscan sample` list (population facts); None for a plain domain list."""
     records = Collector(cfg).run(domains, force=force)
     scored = [score(r) for r in records]
+    risks = [assess(r, s) for r, s in zip(records, scored, strict=True)]
     report = build(scored, records, cfg, meta)
+    report["risk"] = build_risk(risks)
     out.mkdir(parents=True, exist_ok=True)
-    (out / "report.json").write_text(json.dumps(report, indent=1) + "\n")
-    (out / "report.html").write_text(render_html(report))
-    print(f"{len(scored)} domains: " + ", ".join(f"{c} {report['classes'][c]}" for c in CLASSES))
-    print(f"wrote {out / 'report.json'} and {out / 'report.html'}")
+    (out / "report.json").write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
+    (out / "report.html").write_text(render_html(report), encoding="utf-8")
+    # Per-domain records name domains, so they live in their own file, never in report.json / report.html.
+    with (out / "domains.jsonl").open("w", encoding="utf-8") as f:
+        for r in sorted(risks, key=lambda r: (-(r.score if r.score is not None else -1), r.domain)):
+            f.write(json.dumps(r.to_json(), ensure_ascii=False) + "\n")
+    sev = report["risk"]["severity"]
+    print(f"{len(scored)} domains: " + ", ".join(f"{c} {sev[c]}" for c in SEVERITIES))
+    print(f"wrote {out / 'report.json'}, {out / 'report.html'} and {out / 'domains.jsonl'}")
     return 0
+
+
+def build_risk(risks: list[Risk]) -> dict:
+    """Aggregate risk: counts only, no domain names."""
+    scored = [r.score for r in risks if r.score is not None]
+    prm = risks[0].params if risks else None
+    return {
+        "scale": "CVSS v3.1/v4.0 qualitative rating: None 0.0, Low 0.1-3.9, Medium 4.0-6.9, High 7.0-8.9, "
+        "Critical 9.0-10.0; Unknown = not scored",
+        "formula": "design/formula.md",
+        "params": (asdict(prm) | {"complexity_step": round(COMPLEXITY_STEP, 4)}) if prm else None,
+        "severity": {c: sum(r.severity == c for r in risks) for c in SEVERITIES},
+        "labels": dict(Counter(r.label for r in risks).most_common()),
+        "findings": dict(Counter(f.id for r in risks for f in {x.id: x for x in r.findings}.values()).most_common()),
+        "score_mean": round(sum(scored) / len(scored), 2) if scored else None,
+        "first_fix": dict(Counter(r.fix.action for r in risks if r.fix).most_common()),
+        "fix_to_close": dict(Counter(f.action for r in risks if (f := _closing(r))).most_common()),
+    }
+
+
+def _closing(r: Risk):
+    """The fewest actions that bring this domain to 0, or None."""
+    return r.full_fix or (r.fix if r.fix and r.fix.score_after == 0 else None)
 
 
 def _share_bad(items: list[Scored]) -> float:
@@ -209,6 +241,36 @@ def render_html(r: dict) -> str:
             ],
             {1, 2, 3, 4},
         )
+    rk = r.get("risk")
+    if rk:
+        body += "<h2>Risk severity</h2>" + html.bar(rk["severity"], html.SEVERITY_ORDER)
+        body += html.explain(
+            "How the score works",
+            "Each domain gets a 0–10 score: the best attack path's chance of success within "
+            f"{rk['params']['attempts']} certificate requests, under the CA/B Forum multi-perspective rule "
+            f"({rk['params']['remote_perspectives']} remote perspectives, {rk['params']['allowed_non_corroborations']} may "
+            f"disagree), discounted by {rk['params']['complexity_step']:.2f} per high-complexity step (the CVSS 3.1 "
+            "AC:H/AC:L ratio). Severity uses the CVSS rating scale. Full derivation: design/formula.md.",
+        )
+        body += html.table(
+            ["severity", "domains", "share"], [[html.badge(c), v, pct(v)] for c, v in rk["severity"].items()], {1, 2}
+        )
+        body += "<h3>What drives the score</h3>" + html.table(
+            ["label", "domains", "share"], [[e(k), v, pct(v)] for k, v in rk["labels"].items()], {1, 2}
+        )
+        body += "<details><summary>Findings and fixes</summary>"
+        body += html.table(
+            ["finding", "domains", "share"], [[e(k), v, pct(v)] for k, v in rk["findings"].items()], {1, 2}
+        )
+        body += html.table(
+            ["single fix that lowers the score most", "domains"], [[e(k), v] for k, v in rk["first_fix"].items()], {1}
+        )
+        body += html.table(
+            ["fewest actions that bring the score to 0", "domains"],
+            [[e(k), v] for k, v in rk["fix_to_close"].items()],
+            {1},
+        )
+        body += "</details>"
     body += "<h2>Exposure classes</h2>" + html.bar(r["classes"])
     body += html.table(
         ["class", "domains", "share", "meaning"],

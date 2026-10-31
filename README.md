@@ -5,7 +5,7 @@ BGP hijacks below DNS, and how much of it does DNSSEC + CAA close? (team dogma, 
 
 ## Usage
 
-Four commands, in this order. Every step is cached, so re-running is cheap.
+Four commands, in this order, plus `list` to filter the results. Every step is cached, so re-running is cheap.
 
 ```bash
 uv sync                                                  # once
@@ -19,14 +19,23 @@ uv run hijackscan sample data/samples/zone.ee.part-* --n 100 --seed 1 --out data
 # 2. collect raw facts, one JSON per domain (about 2 min cold for 100, 0 s when cached)
 uv run hijackscan collect data/samples/ee100.txt
 
-# 3. aggregate report: report.json + report.html, no domain names in it
+# 3. aggregate report: report.json + report.html (no domain names), domains.jsonl (per domain, names included)
 uv run hijackscan zone data/samples/ee100.txt --out data/out/ee/
 firefox data/out/ee/report.html
 
-# 4. drill into one domain: facts, class, attack path, who fixes what (exit 0 closed, 1 contested/caa-only, 2 open)
+# 4. drill into one domain: risk summary and the fix that helps most; --details for the calculation and raw facts
 uv run hijackscan rnids.rs
-uv run hijackscan <name>.ee --html out.html
+uv run hijackscan <name>.ee --details --html out.html
+
+# 5. filter and sort collected domains by risk (reads data/collected, no network)
+uv run hijackscan list data/samples/ee100.txt --severity High,Critical
+uv run hijackscan list --label ns-partial --details
+uv run hijackscan list --finding NO_CAA,UNSIGNED --min-score 4 --json
 ```
+
+Every domain gets a risk score 0–10 with the CVSS severity scale (None / Low / Medium / High / Critical, plus
+Unknown when the record is incomplete). Formula, parameters and references: [design/formula.md](design/formula.md).
+Exit codes of `hijackscan <domain>`: 0 None, 1 Low / Medium, 2 High / Critical, 3 Unknown.
 
 Step 2 is optional: `zone` and the drill-down collect what is missing. Step 1 is optional too: any plain list of
 domains (one per line, `#` comments) works, e.g. the 100 `.rs` names in `data/samples/dev100.txt`:
@@ -62,6 +71,7 @@ Global flags go before the subcommand: `--resolver host[:port]` (853 = DoT, 53 =
 | sample | `hijackscan/collect/zonefile.py` | reads a TLD zone (dig axfr text, split parts in order), draws `random.Random(seed).sample(sorted(delegations), n)`, writes a domain list whose `#` header carries the population facts. |
 | collect | `hijackscan/collect/` | observes only: DNS answers with AD flag and rcode, prefixes, ROAs, AS names. No judgement, no derived field. |
 | score | `hijackscan/score.py` | pure functions over one collected record; every boolean and the exposure class are derived here. `score(record, overrides)` is the what-if mechanism. |
+| risk | `hijackscan/risk.py` | pure: the 0–10 risk score and CVSS severity from a scored record (design/formula.md); paths, findings, re-scored fixes, summary / details JSON. |
 | report | `hijackscan/report/` | renders: terminal + HTML per domain, aggregate JSON + HTML per zone. Self-contained HTML, inline CSS, no CDN. |
 
 ## Zone file and sample (`data/samples/ee100.txt`)

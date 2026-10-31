@@ -1,8 +1,8 @@
-"""`hijackscan <domain>`: facts, exposure class, attack path, remediations by owner.
+"""`hijackscan <domain> [--details]`: risk summary first; calculation and raw facts on request.
 
 The terminal and the HTML page say the same things in the same order; the HTML adds a short
-explanation under every heading. Exit code: 0 closed, 1 caa-only / contested-only,
-2 open / caa-erasable.
+explanation under every heading and folds the details away. Exit code (CVSS severity):
+0 None, 1 Low / Medium, 2 High / Critical, 3 Unknown.
 """
 
 from __future__ import annotations
@@ -13,10 +13,11 @@ from pathlib import Path
 
 from ..collect import Collector
 from ..config import Config
+from ..risk import Risk, assess
 from ..score import AddressDerived, Scored, score
-from . import html
+from . import html, risk_view
 
-EXIT = {"closed": 0, "caa-only": 1, "contested-only": 1, "caa-erasable": 2, "open": 2}
+EXIT = {"None": 0, "Low": 1, "Medium": 1, "High": 2, "Critical": 2, "Unknown": 3}
 
 CLASS_MEANING = {
     "closed": "CAA pins issuance to one ACME account and the zone validates: a CA that validates DNSSEC "
@@ -39,14 +40,22 @@ DNSSEC_MEANING = {
 }
 
 
-def domain_report(cfg: Config, domain: str, *, html_path: Path | None = None, force: bool = False) -> int:
+def domain_report(
+    cfg: Config, domain: str, *, html_path: Path | None = None, force: bool = False, details: bool = False
+) -> int:
     rec = Collector(cfg).run([domain], force=force)[0]
     s = score(rec)
-    print(render_text(s, rec))
+    r = assess(rec, s)
+    lines = risk_view.summary_text(r)
+    if details:
+        lines += risk_view.details_text(r) + ["", "RAW FACTS", "", render_text(s, rec)]
+    else:
+        lines.append("  (--details: the calculation, every finding, vectors, references and the raw facts)")
+    print("\n".join(lines))
     if html_path:
-        html_path.write_text(render_html(s, rec))
+        html_path.write_text(render_html(s, rec, r), encoding="utf-8")
         print(f"\nwrote {html_path}")
-    return EXIT[s.exposure]
+    return EXIT[r.severity]
 
 
 # --------------------------------------------------------------------------- one address, explained
@@ -245,10 +254,12 @@ def _story_html(st: AddressStory) -> str:
     return f"<details open><summary><code>{e(st.ip)}</code> {'<span class=bad>forgeable</span>' if st.bad else '<span class=ok>not forgeable</span>'}</summary>{body}</details>"
 
 
-def render_html(s: Scored, rec: dict) -> str:
+def render_html(s: Scored, rec: dict, r: Risk | None = None) -> str:
     e = html.e
+    r = r or assess(rec, s)
     asns, day = rec.get("asns", {}), rec["rpki_date"]
     n_ds, n_key = len(rec["ds"]["records"]), len(rec["dnskey"]["records"])
+    head = risk_view.summary_html(r) + risk_view.details_html(r)
     body = f"<p>{html.badge(s.exposure)} <b>{e(CLASS_MEANING[s.exposure])}</b></p>"
     body += f"<p><b>Why here:</b> {e(s.reason)}<br><b>Attack path:</b> {e(s.attack_path)}</p>"
     body += html.explain(
@@ -334,6 +345,7 @@ def render_html(s: Scored, rec: dict) -> str:
     )
     if s.errors:
         body += "<p class=bad>Errors: " + e("; ".join(s.errors)) + "</p>"
+    body = head + "<details><summary>Raw facts: DNS, addresses, ROAs, legacy class</summary>" + body + "</details>"
     return html.page(
         f"hijackscan: {s.domain}",
         body,

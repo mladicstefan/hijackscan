@@ -3,7 +3,8 @@
 hijackscan sample <zone parts...> --out domains.txt    seeded sample of a TLD zone (dig axfr text)
 hijackscan collect <domain|domains.txt> [--force]       raw facts -> data/collected/<domain>.json
 hijackscan zone <domains.txt> --out dir/                 zone report (report.json + report.html)
-hijackscan <domain> [--html file]                        one domain: facts, class, attack path, fixes
+hijackscan <domain> [--details] [--html file]            one domain: risk summary; --details for everything
+hijackscan list [domains.txt|domain] [filters]           filter and sort collected domains by risk (no network)
 """
 
 from __future__ import annotations
@@ -44,12 +45,24 @@ def parser() -> argparse.ArgumentParser:
     d.add_argument("name")
     d.add_argument("--html", type=Path)
     d.add_argument("--force", action="store_true")
+    d.add_argument("--details", action="store_true", help="calculation, findings, vectors, references, raw facts")
+    li = sub.add_parser("list", help="filter and sort collected domains by risk (reads data/collected, no network)")
+    li.add_argument("target", nargs="?", help="a domain or a file of domains (default: every collected record)")
+    li.add_argument(
+        "--severity", help="comma list: None,Low,Medium,High,Critical,Unknown (e.g. High,Critical)", default=""
+    )
+    li.add_argument("--min-score", type=float, help="only domains scoring at least this")
+    li.add_argument("--label", default="", help="comma list, e.g. ns-partial,open-dns")
+    li.add_argument("--finding", default="", help="comma list of finding ids; a domain must have all of them")
+    li.add_argument("--sort", choices=("score", "domain", "label"), default="score")
+    li.add_argument("--details", action="store_true", help="print the full details of every match")
+    li.add_argument("--json", action="store_true", help="one JSON object per line (summary, or full with --details)")
     return p
 
 
 def main() -> None:
     argv = sys.argv[1:]
-    if argv and not argv[0].startswith("-") and argv[0] not in ("sample", "collect", "zone", "domain"):
+    if argv and not argv[0].startswith("-") and argv[0] not in ("sample", "collect", "zone", "domain", "list"):
         argv = ["domain", *argv]  # `hijackscan blic.rs`
     a = parser().parse_args(argv)
     logging.basicConfig(
@@ -90,6 +103,10 @@ def main() -> None:
     if a.cmd == "domain":
         from .report.domain import domain_report
 
-        sys.exit(domain_report(cfg, a.name.lower().rstrip("."), html_path=a.html, force=a.force))
+        sys.exit(domain_report(cfg, a.name.lower().rstrip("."), html_path=a.html, force=a.force, details=a.details))
+    if a.cmd == "list":
+        from .report.listing import listing
+
+        sys.exit(listing(cfg, a))
     parser().print_help()
     sys.exit(2)
