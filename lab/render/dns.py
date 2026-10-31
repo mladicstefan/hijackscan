@@ -1,0 +1,200 @@
+"""The lab's DNS tree: a local root with its trust anchor, `rs` and `org`, the victim zone (signed or not), the forgery.
+
+Served by Unbound auth-zones on the resolver (root, rs, org, dnssec-failed.org: never reachable through the
+fabric) and by NSD on the victim and attacker hosts (victim.rs). `rnids.rs` and `dnssec-failed.org` exist
+because hijackscan's collector refuses a resolver that does not return AD for the first and SERVFAIL for the
+second (collect/resolver_check.py).
+"""
+
+from __future__ import annotations
+
+import subprocess
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
+
+import dns.dnssec
+import dns.name
+import dns.rdata
+import dns.rdataclass
+import dns.rdatatype
+
+from .topology import RESOLVER_IP
+
+TTL = 5  # seconds: scenario rows change zone content, the resolver must not serve the previous row
+NS_NAME = "ns.lab."  # the in-root name of the resolver's own authoritative side
+SOA = f"@ {TTL} IN SOA {NS_NAME} hostmaster.lab. {{serial}} 300 60 86400 {TTL}"
+
+
+def _zone(origin: str, records: list[str]) -> str:
+    serial = datetime.now(UTC).strftime("%Y%m%d%H")[:10]
+    return "\n".join([f"$ORIGIN {origin}", f"$TTL {TTL}", SOA.format(serial=serial), *records]) + "\n"
+
+
+def _keygen(keys: Path, name: str) -> Path:
+    """ECDSA P-256 CSK (KSK flag, used for every RRset); returns the key base path (no extension)."""
+    r = subprocess.run(
+        ["ldns-keygen", "-a", "ECDSAP256SHA256", "-k", "-r", "/dev/urandom", name],
+        cwd=keys,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return keys / r.stdout.strip()
+
+
+def _dnskey_line(keybase: Path) -> str:
+    # not Path.with_suffix: the key id "+013+12345" would be taken for a suffix
+    return next(line for line in Path(f"{keybase}.key").read_text().splitlines() if "DNSKEY" in line)
+
+
+def _ds(keybase: Path, name: str, *, corrupt: bool = False) -> str:
+    """`<name>. DS ...` SHA-256 from the key file; `corrupt` flips the first digest hex digit (bogus chain)."""
+    line = _dnskey_line(keybase)
+    rdata_text = line.split("DNSKEY", 1)[1].strip()
+    key = dns.rdata.from_text(dns.rdataclass.IN, dns.rdatatype.DNSKEY, rdata_text)
+    ds = dns.dnssec.make_ds(dns.name.from_text(name), key, "SHA256")
+    text = ds.to_text()
+    if corrupt:
+        digest = text.split()[-1]
+        flipped = ("0" if digest[0] != "0" else "1") + digest[1:]
+        text = text.replace(digest, flipped)
+    return f"{name} {TTL} IN DS {text}"
+
+
+def _sign(unsigned: Path, origin: str, keybase: Path, signed: Path) -> None:
+    exp = (datetime.now(UTC) + timedelta(days=30)).strftime("%Y%m%d%H%M%S")
+    subprocess.run(
+        ["ldns-signzone", "-o", origin, "-e", exp, "-f", str(signed), str(unsigned), str(keybase)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+
+def _write_zone(d: Path, origin: str, records: list[str], keybase: Path | None) -> Path:
+    """Write <d>/<file>.zone; signed with `keybase` when given (the unsigned text stays beside it)."""
+    stem = "root" if origin == "." else origin.rstrip(".")
+    out = d / f"{stem}.zone"
+    if keybase is None:
+        out.write_text(_zone(origin, records))
+    else:
+        unsigned = d / f"{stem}.unsigned"
+        unsigned.write_text(_zone(origin, records))
+        _sign(unsigned, origin, keybase, out)
+    return out
+
+
+def render_dns(sc: dict, build: Path) -> None:
+    keys = build / "dns" / "keys"
+    keys.mkdir(parents=True, exist_ok=True)
+    zones = build / "resolver" / "zones"
+    zones.mkdir(parents=True, exist_ok=True)
+    domain = sc["domain"]
+    victim, attacker = build / "victim", build / "attacker"
+    victim.mkdir(exist_ok=True)
+    attacker.mkdir(exist_ok=True)
+
+    k_root, k_rs, k_org, k_failed = (_keygen(keys, n) for n in (".", "rs", "org", "dnssec-failed.org"))
+    k_victim = _keygen(keys, domain) if sc["dns"]["signed"] else None
+
+    # --- the victim zone (NSD on the victim host) and the attacker's forgery (NSD on the attacker host)
+    web, ns_ip = sc["victim"]["web"], sc["victim"]["ns"]
+    base = [f"@ NS ns1.{domain}.", f"ns1 A {ns_ip}", f"@ A {web}", f"www A {web}"]
+    caa = [f"@ CAA {c}" for c in sc["dns"]["caa"]]
+    _write_zone(victim, f"{domain}.", base + caa, k_victim)
+    _write_zone(attacker, f"{domain}.", base, None)  # no CAA, no signatures: the "no CAA here" answer
+    for host in (victim, attacker):
+        # Bound to the nameserver address: a wildcard socket answers from the interface's primary address, which
+        # is the web address here, and the resolver drops such replies. ip-freebind because containerlab adds
+        # the address after NSD has started.
+        (host / "nsd.conf").write_text(
+            f"server:\n  ip-address: {ns_ip}\n  ip-address: 127.0.0.1\n  ip-freebind: yes\n  do-ip6: no\n"
+            f"  identity: {host.name}\n"
+            '  verbosity: 1\n  zonesdir: /lab\n  pidfile: ""\n'
+            f"zone:\n  name: {domain}\n  zonefile: {domain}.zone\n"
+        )
+
+    # --- the parents, served only on the resolver
+    ds_victim = [_ds(k_victim, f"{domain}.")] if k_victim else []
+    _write_zone(
+        zones,
+        "rs.",
+        [
+            f"@ NS {NS_NAME}",
+            f"rnids A {RESOLVER_IP}",
+            f"{domain}. NS ns1.{domain}.",
+            f"ns1.{domain}. A {ns_ip}",
+            *ds_victim,
+        ],
+        k_rs,
+    )
+    _write_zone(zones, "dnssec-failed.org.", [f"@ NS {NS_NAME}", f"@ A {RESOLVER_IP}"], k_failed)
+    _write_zone(
+        zones,
+        "org.",
+        [f"@ NS {NS_NAME}", f"dnssec-failed.org. NS {NS_NAME}", _ds(k_failed, "dnssec-failed.org.", corrupt=True)],
+        k_org,
+    )
+    _write_zone(
+        zones,
+        ".",
+        [
+            f"@ NS {NS_NAME}",
+            f"{NS_NAME} A {RESOLVER_IP}",
+            f"rs. NS {NS_NAME}",
+            f"org. NS {NS_NAME}",
+            _ds(k_rs, "rs."),
+            _ds(k_org, "org."),
+        ],
+        k_root,
+    )
+    (build / "resolver" / "root.key").write_text(_dnskey_line(k_root) + "\n")
+    (build / "resolver" / "unbound.conf").write_text(UNBOUND)
+
+
+UNBOUND = """\
+# generated by lab/render/dns.py
+server:
+  verbosity: 1
+  use-syslog: no
+  logfile: ""
+  do-daemonize: no
+  username: ""
+  chroot: ""
+  directory: "/lab"
+  pidfile: ""
+  interface: 0.0.0.0
+  do-ip6: no
+  access-control: 0.0.0.0/0 allow
+  module-config: "validator iterator"
+  trust-anchor-file: "/lab/root.key"
+  val-log-level: 2
+  cache-max-ttl: 5
+  cache-max-negative-ttl: 5
+  infra-host-ttl: 10
+  val-bogus-ttl: 5
+  infra-keep-probing: yes
+  serve-expired: no
+  harden-dnssec-stripped: yes
+  qname-minimisation: no
+auth-zone:
+  name: "."
+  zonefile: "/lab/zones/root.zone"
+  for-upstream: yes
+  for-downstream: no
+auth-zone:
+  name: "rs"
+  zonefile: "/lab/zones/rs.zone"
+  for-upstream: yes
+  for-downstream: no
+auth-zone:
+  name: "org"
+  zonefile: "/lab/zones/org.zone"
+  for-upstream: yes
+  for-downstream: no
+auth-zone:
+  name: "dnssec-failed.org"
+  zonefile: "/lab/zones/dnssec-failed.org.zone"
+  for-upstream: yes
+  for-downstream: no
+"""

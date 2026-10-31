@@ -30,7 +30,7 @@ def load(cfg: Config, target: str | None) -> list[Risk]:
     for p in paths:
         if p.exists():
             rec = json.loads(p.read_text(encoding="utf-8"))
-            out.append(assess(rec, score(rec)))
+            out.append(assess(rec, score(rec, caps=cfg.routable_caps)))
     return out
 
 

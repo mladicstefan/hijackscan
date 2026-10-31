@@ -44,7 +44,7 @@ def domain_report(
     cfg: Config, domain: str, *, html_path: Path | None = None, force: bool = False, details: bool = False
 ) -> int:
     rec = Collector(cfg).run([domain], force=force)[0]
-    s = score(rec)
+    s = score(rec, caps=cfg.routable_caps)
     r = assess(rec, s)
     lines = risk_view.summary_text(r)
     if details:

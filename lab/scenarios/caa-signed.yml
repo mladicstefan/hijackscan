@@ -1,0 +1,6 @@
+# CAA pinned to the legitimate ACME account in a DNSSEC-signed zone: the central claim.
+extends: baseline.yml
+name: caa-signed
+dns:
+  signed: true
+  caa: ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']

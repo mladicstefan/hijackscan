@@ -33,6 +33,19 @@ uv run hijackscan list --label ns-partial --details
 uv run hijackscan list --finding NO_CAA,UNSIGNED --min-score 4 --json
 ```
 
+## Validation lab (containerlab, offline)
+
+`lab/` holds a sealed containerlab fabric (private ASNs, RFC 5737 addresses, local RPKI/DNS/CA) that runs the
+real scanner against one domain under four scenario states and checks that a minimal CA's issuance decision
+matches the scanner's verdict. Walk-through and results: [lab/demo.md](lab/demo.md); decisions:
+[design/lab.md](design/lab.md).
+
+```bash
+uv run lab/labctl.py matrix        # every row: render, deploy, scan, attack, CA (about 4 min)
+uv run lab/labctl.py check         # containment: no route off the box, private ASNs, RFC 5737 only
+uv run lab/labctl.py destroy
+```
+
 Every domain gets a risk score 0–10 with the CVSS severity scale (None / Low / Medium / High / Critical, plus
 Unknown when the record is incomplete). Formula, parameters and references: [design/formula.md](design/formula.md).
 Exit codes of `hijackscan <domain>`: 0 None, 1 Low / Medium, 2 High / Critical, 3 Unknown.

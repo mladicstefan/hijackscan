@@ -6,3 +6,6 @@ dist/
 
 data/*
 !data/samples/
+.superpowers/
+lab/build/
+lab/logs/

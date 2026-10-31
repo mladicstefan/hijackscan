@@ -1,0 +1,5 @@
+# CAA pinned to the legitimate ACME account (RFC 8657), zone still unsigned.
+extends: baseline.yml
+name: caa-unsigned
+dns:
+  caa: ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']

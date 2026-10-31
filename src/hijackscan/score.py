@@ -39,13 +39,14 @@ class AddressDerived:
         return ", ".join(f"{r['prefix']}→{r['max_length']} AS{r['origin_asn']}" for r in self.roas) or "-"
 
 
-def derive_address(ip: str, raw: dict) -> AddressDerived:
+def derive_address(ip: str, raw: dict, caps: tuple[int, int] = (24, 48)) -> AddressDerived:
+    """`caps` = (v4, v6) longest routable prefix lengths (Config.routable_caps)."""
     prefix = raw.get("prefix")
     roas = raw.get("roas") or []
     if not prefix:
         return AddressDerived(ip, None, [], raw.get("rpki_state"), "no-prefix", True, False)
     net = ipaddress.ip_network(prefix, strict=False)
-    limit = 24 if net.version == 4 else 48
+    limit = caps[0] if net.version == 4 else caps[1]
     announced_len = net.prefixlen
     routing = raw.get("routing") or {}
     extra = {
@@ -153,9 +154,9 @@ def _ns_operators(rec: dict) -> list[str]:
     return sorted(ops)
 
 
-def score(rec: dict, overrides: dict | None = None) -> Scored:
+def score(rec: dict, overrides: dict | None = None, caps: tuple[int, int] = (24, 48)) -> Scored:
     ov = overrides or {}
-    addr = {ip: derive_address(ip, a) for ip, a in rec.get("addresses", {}).items()}
+    addr = {ip: derive_address(ip, a, caps) for ip, a in rec.get("addresses", {}).items()}
 
     def addrs_of(entry: dict) -> list[AddressDerived]:
         return [addr[ip] for ip in entry.get("A", []) + entry.get("AAAA", []) if ip in addr]

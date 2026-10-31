@@ -31,7 +31,7 @@ WHAT_IFS: dict[str, dict] = {
 def zone_report(cfg: Config, domains: list[str], out: Path, *, meta: dict | None = None, force: bool = False) -> int:
     """`meta` is the header of a `hijackscan sample` list (population facts); None for a plain domain list."""
     records = Collector(cfg).run(domains, force=force)
-    scored = [score(r) for r in records]
+    scored = [score(r, caps=cfg.routable_caps) for r in records]
     risks = [assess(r, s) for r, s in zip(records, scored, strict=True)]
     report = build(scored, records, cfg, meta)
     report["risk"] = build_risk(risks)
@@ -118,9 +118,9 @@ def build(scored: list[Scored], records: list[dict], cfg: Config, meta: dict | N
     top_ops = [op for op, _ in sorted(by_op.items(), key=lambda kv: -len(kv[1]))[:3]]
     what_if = {}
     for label, ov in WHAT_IFS.items():
-        what_if[label] = Counter(score(r, ov).exposure for r in records)
+        what_if[label] = Counter(score(r, ov, cfg.routable_caps).exposure for r in records)
     top_ov = Counter(
-        score(r, {"signed": True}).exposure if set(s.ns_operators) & set(top_ops) else s.exposure
+        score(r, {"signed": True}, cfg.routable_caps).exposure if set(s.ns_operators) & set(top_ops) else s.exposure
         for r, s in zip(records, scored, strict=True)
     )
     what_if[f"top-3 NS operators sign by default ({', '.join(top_ops)})"] = top_ov
