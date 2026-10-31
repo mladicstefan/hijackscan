@@ -53,7 +53,7 @@ victim.rs
   meaning       No more-specific hijack is possible (ROAs are tight or nothing longer is routable). What remains is an exact-prefix origin contest that wins only part of the Internet, or a partial nameserver capture, and there is no DNS-side defence either.
   why here      no more-specific hijack captures the web prefix or all nameservers; an exact-prefix contest remains, with no DNS-side defence
   attack path   announce the same prefix with the victim's origin AS (or capture a subset of nameservers); win only where the attacker's path is preferred
-  collected     2026-10-31T22:41:05+00:00  resolver 172.31.40.20:53  routing http://172.31.40.15:8080/...  ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab, lab
+  collected     2026-10-31T22:50:09+00:00  resolver 172.31.40.20:53  routing http://172.31.40.15:8080/...  ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab, lab
 
 DNS
   DNSSEC        unsigned   DS records at parent: 0   DNSKEY records at apex: 0
@@ -90,7 +90,7 @@ REMEDIATIONS  (DNS-side fixes first: they hold regardless of routing)
                     closes: the same, from the registrar side
 
 --- stderr ---
-23:41:05 INFO rpki: 1 ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab
-23:41:05 INFO 1 domains, 1 to collect (resolver 172.31.40.20:53, rpki lab, 8 workers)
-23:41:05 INFO victim.rs: 2 names, 1 ns, 2 addrs, caa labels with records=0, errors=0
-23:41:05 INFO collected 1 in 0s
+23:50:09 INFO rpki: 1 ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab
+23:50:09 INFO 1 domains, 1 to collect (resolver 172.31.40.20:53, rpki lab, 8 workers)
+23:50:09 INFO victim.rs: 2 names, 1 ns, 2 addrs, caa labels with records=0, errors=0
+23:50:09 INFO collected 1 in 0s

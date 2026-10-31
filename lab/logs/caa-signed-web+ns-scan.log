@@ -39,7 +39,7 @@ victim.rs
   meaning       CAA pins issuance to one ACME account and the zone validates: a CA that validates DNSSEC cannot be steered to issue, whatever happens in routing.
   why here      CAA pins issuance to one ACME account and the zone validates, so a CA validating DNSSEC cannot be fooled
   attack path   none: a hijack of the web or nameserver prefixes cannot satisfy the pinned account
-  collected     2026-10-31T22:42:40+00:00  resolver 172.31.40.20:53  routing http://172.31.40.15:8080/...  ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab, lab
+  collected     2026-10-31T22:51:43+00:00  resolver 172.31.40.20:53  routing http://172.31.40.15:8080/...  ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab, lab
 
 DNS
   DNSSEC        secure   DS records at parent: 1   DNSKEY records at apex: 1
@@ -77,7 +77,7 @@ REMEDIATIONS  (DNS-side fixes first: they hold regardless of routing)
                     closes: RPKI-valid more-specific hijacks of the web servers
 
 --- stderr ---
-23:42:40 INFO rpki: 1 ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab
-23:42:40 INFO 1 domains, 1 to collect (resolver 172.31.40.20:53, rpki lab, 8 workers)
-23:42:40 INFO victim.rs: 2 names, 1 ns, 2 addrs, caa labels with records=1, errors=0
-23:42:40 INFO collected 1 in 0s
+23:51:43 INFO rpki: 1 ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab
+23:51:43 INFO 1 domains, 1 to collect (resolver 172.31.40.20:53, rpki lab, 8 workers)
+23:51:43 INFO victim.rs: 2 names, 1 ns, 2 addrs, caa labels with records=1, errors=0
+23:51:43 INFO collected 1 in 0s

@@ -64,7 +64,7 @@ victim.rs
   meaning       No CAA, and a more-specific hijack captures the web prefix or every nameserver: the 28 August 2026 pattern applies as is.
   why here      no CAA, and a more-specific hijack can capture the web prefix or every nameserver prefix
   attack path   announce the forged more-specific(s), win route selection everywhere, pass HTTP-01 or DNS-01
-  collected     2026-10-31T22:40:27+00:00  resolver 172.31.40.20:53  routing http://172.31.40.15:8080/...  ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab, lab
+  collected     2026-10-31T22:49:30+00:00  resolver 172.31.40.20:53  routing http://172.31.40.15:8080/...  ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab, lab
 
 DNS
   DNSSEC        unsigned   DS records at parent: 0   DNSKEY records at apex: 0
@@ -105,7 +105,7 @@ REMEDIATIONS  (DNS-side fixes first: they hold regardless of routing)
                     closes: RPKI-valid more-specific hijacks of the web servers
 
 --- stderr ---
-23:40:27 INFO rpki: 1 ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab
-23:40:27 INFO 1 domains, 1 to collect (resolver 172.31.40.20:53, rpki lab, 8 workers)
-23:40:27 INFO victim.rs: 2 names, 1 ns, 2 addrs, caa labels with records=0, errors=0
-23:40:27 INFO collected 1 in 0s
+23:49:30 INFO rpki: 1 ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab
+23:49:30 INFO 1 domains, 1 to collect (resolver 172.31.40.20:53, rpki lab, 8 workers)
+23:49:31 INFO victim.rs: 2 names, 1 ns, 2 addrs, caa labels with records=0, errors=0
+23:49:31 INFO collected 1 in 0s

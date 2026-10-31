@@ -65,7 +65,7 @@ victim.rs
   meaning       CAA exists, but the zone is unsigned and every nameserver can be captured: the attacker answers 'no CAA' and validation proceeds.
   why here      CAA exists but the zone is unsigned and every nameserver prefix is forgeable
   attack path   hijack all nameserver prefixes with RPKI-valid more-specifics, answer 'no CAA', then pass validation
-  collected     2026-10-31T22:42:01+00:00  resolver 172.31.40.20:53  routing http://172.31.40.15:8080/...  ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab, lab
+  collected     2026-10-31T22:51:05+00:00  resolver 172.31.40.20:53  routing http://172.31.40.15:8080/...  ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab, lab
 
 DNS
   DNSSEC        unsigned   DS records at parent: 0   DNSKEY records at apex: 0
@@ -107,7 +107,7 @@ REMEDIATIONS  (DNS-side fixes first: they hold regardless of routing)
                     closes: RPKI-valid more-specific hijacks of the web servers
 
 --- stderr ---
-23:42:01 INFO rpki: 1 ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab
-23:42:01 INFO 1 domains, 1 to collect (resolver 172.31.40.20:53, rpki lab, 8 workers)
-23:42:01 INFO victim.rs: 2 names, 1 ns, 2 addrs, caa labels with records=1, errors=0
-23:42:01 INFO collected 1 in 0s
+23:51:05 INFO rpki: 1 ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab
+23:51:05 INFO 1 domains, 1 to collect (resolver 172.31.40.20:53, rpki lab, 8 workers)
+23:51:05 INFO victim.rs: 2 names, 1 ns, 2 addrs, caa labels with records=1, errors=0
+23:51:05 INFO collected 1 in 0s
