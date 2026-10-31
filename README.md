@@ -13,6 +13,33 @@ uv run hijackscan zone data/samples/dev100.txt --out data/out/   # report.json +
 
 Exit codes of `hijackscan <domain>`: 0 closed, 1 caa-only / contested-only, 2 open / caa-erasable.
 
+## Trying it
+
+```bash
+uv run scripts/check_resolver.py                        # exit 0: the resolver validates (AD on rnids.rs, SERVFAIL on dnssec-failed.org)
+uv run scripts/check_resolver.py --resolver 127.0.0.53:53   # the systemd stub: must FAIL
+
+uv run hijackscan collect blic.rs --force               # one raw record
+python -m json.tool data/collected/blic.rs.json | less
+uv run hijackscan collect data/samples/dev100.txt       # batch; records younger than --max-age (7 d) are reused
+
+uv run hijackscan blic.rs; echo "exit=$?"               # drill-down, exit 2 = open
+uv run hijackscan rnids.rs                              # a signed zone
+uv run hijackscan google.rs --html google.html
+
+uv run hijackscan zone data/samples/dev100.txt --out data/out/
+firefox data/out/report.html
+firefox --headless --window-size=1100,1900 --screenshot zone.png file://$PWD/data/out/report.html
+
+uv run python -c "                                      # scoring and a what-if override, no network
+import json; from hijackscan.score import score
+r = json.load(open('data/collected/blic.rs.json'))
+print(score(r).exposure, score(r, {'signed': True, 'has_caa': True, 'pinned': True}).exposure)"
+```
+
+Flags on every command: `--resolver host[:port]` (853 = DoT, 53 = plain; e.g. `127.0.0.1:53` for our Unbound),
+`--rpki-date YYYY-MM-DD` (fetches that archive day), `--max-age HOURS`, `--workers N`, `-v`.
+
 ## Layering
 
 | layer | code | rule |

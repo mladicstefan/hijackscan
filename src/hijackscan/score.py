@@ -29,6 +29,12 @@ class AddressDerived:
     forgeable_more_specific: bool  # an RPKI-valid, routable, more-specific forged announcement exists
     roa_too_permissive: bool  # some ROA maxLength exceeds the announced length (RFC 9319 hygiene)
     exact_prefix_contestable: bool = True  # same-prefix forged origin always competes, absent ASPA
+    roas: list[dict] = field(default_factory=list)  # covering ROAs: prefix, origin_asn, max_length, ta
+
+    @property
+    def roa_summary(self) -> str:
+        """'18.172.0.0/16→24 AS16509, 18.172.0.0/15→15 AS16509' — one entry per covering ROA."""
+        return ", ".join(f"{r['prefix']}→{r['max_length']} AS{r['origin_asn']}" for r in self.roas) or "-"
 
 
 def derive_address(ip: str, raw: dict) -> AddressDerived:
@@ -40,7 +46,9 @@ def derive_address(ip: str, raw: dict) -> AddressDerived:
     limit = 24 if net.version == 4 else 48
     announced_len = net.prefixlen
     if not roas:
-        return AddressDerived(ip, prefix, raw.get("origin_asns", []), raw.get("rpki_state"), "not-found", True, False)
+        return AddressDerived(
+            ip, prefix, raw.get("origin_asns", []), raw.get("rpki_state"), "not-found", True, False, roas=[]
+        )
     longest_allowed = max(r["max_length"] for r in roas)
     return AddressDerived(
         ip=ip,
@@ -50,6 +58,7 @@ def derive_address(ip: str, raw: dict) -> AddressDerived:
         rpki_derived="found",
         forgeable_more_specific=announced_len < min(longest_allowed, limit),
         roa_too_permissive=any(r["max_length"] > announced_len for r in roas),
+        roas=roas,
     )
 
 
@@ -206,7 +215,7 @@ def classify(
     if not has_caa and (web_forgeable or ns_forgeable):
         return (
             "open",
-            "no CAA and an RPKI-valid more-specific can capture the web or nameserver prefix (the Softaculous case)",
+            "no CAA, and an RPKI-valid more-specific can capture the web or nameserver prefix",
             "announce the forged more-specific, win route selection everywhere, pass HTTP-01 or DNS-01",
         )
     if not web_forgeable and not ns_forgeable:
