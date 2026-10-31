@@ -303,14 +303,16 @@ def assess(rec: dict, s: Scored, prm: RiskParams | None = None, ov: dict | None 
     ov = ov or {}
     errors = list(s.errors)
     ns_all = {a.ip: a for v in s.ns_addresses.values() for a in v}
+    quality = list(errors)
     if not s.web_addresses:
-        errors.append("no web address: apex and www do not resolve")
+        quality.append("no web address: apex and www do not resolve")
     if not ns_all:
         errors.append("no nameserver address")
+        quality.append("no nameserver address")
     if errors:
         return Risk(
-            s.domain, None, "Unknown", "unknown", "Not scored: " + errors[0], None, [], _data_finding(errors), [],
-            None, None, None, [], prm, errors,
+            s.domain, None, "Unknown", "unknown", "Not scored: " + quality[0], None, [], _data_finding(errors), [],
+            None, None, None, [], prm, quality,
         )  # fmt: skip
 
     pinned = ov.get("pinned", s.pinned)
@@ -354,10 +356,14 @@ def assess(rec: dict, s: Scored, prm: RiskParams | None = None, ov: dict | None 
             h_reasons.append(f"{len(prefixes)} prefixes must be hijacked at once")
         note = f"{len(ns_forged)} of {len(ns_all)} nameserver addresses forgeable"
         paths.append(_path("ns", "nameservers", ns_block, p, note, h_reasons, prm, [_why(a) for a in ns_forged]))
-    contest_block = web_block + ns_block if web_block and ns_block else []
+    has_web = bool(s.web_addresses)
+    if has_web:
+        contest_block = web_block + ns_block if web_block and ns_block else []
+    else:
+        contest_block = ns_block
     paths.append(
         _path(
-            "contest", "web + nameservers", contest_block, prm.contest_share,
+            "contest", "web + nameservers" if has_web else "nameservers", contest_block, prm.contest_share,
             "exact-prefix origin contest, always possible without ASPA (assumed share)",
             ["wins only where the attacker's route is preferred"], prm,
         )
@@ -383,7 +389,7 @@ def assess(rec: dict, s: Scored, prm: RiskParams | None = None, ov: dict | None 
         cvss40_vector=CVSS40_TEMPLATE.format(ac=ac) if score_ else None,
         attack_techniques=[{"id": i, "name": n} for i, n in ATTACK_TECHNIQUES[best.path]] if score_ else [],
         params=prm,
-        errors=[],
+        errors=quality,
     )
     if fixes and score_:
         risk.fixes = _fixes(rec, s, prm, ov, has_caa)
@@ -501,6 +507,10 @@ _FIX_ACTIONS = {
 def _fixes(rec: dict, s: Scored, prm: RiskParams, ov: dict, has_caa: bool) -> list[Fix]:
     """Re-score with each fix applied; best (lowest score, fewest actions) first."""
     candidates = [("pinned",), ("signed",), ("web_tight",), ("ns_tight",), ("pinned", "signed")]
+    if not s.web_addresses:
+        candidates = [c for c in candidates if "web_tight" not in c]
+    if s.dnssec == "secure":
+        candidates = [c for c in candidates if "signed" not in c]
     out = []
     for i, keys in enumerate(candidates):
         r = assess(rec, s, prm, ov | {k: True for k in keys}, fixes=False)
