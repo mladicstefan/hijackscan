@@ -262,7 +262,12 @@ The 13 collection errors were a Windows file-name bug (IPv6 colons in RIPEstat c
 - **Global propagation of a forgeable more-specific is assumed (p = 1).** Filtering reduced propagation slightly in
   the 2026 incident [9].
 - **Impact is constant.** Domain sensitivity is not modelled yet (`I` hook).
-- **ASPA is ignored.** An ASPA record (as Hetzner added after the incident [9]) would reduce `p` for some paths.
+- **ASPA is out of scope, deliberately.** ASPA lets routers reject forged AS paths, but on 2026-10-31 only 3,928
+  ASPA records existed across all five RPKI trust anchors, router-side verification deployment is unmeasured, and
+  protection needs every network on the forwarding path to verify (a verifying network whose upstream accepted a
+  forged more-specific still forwards to the attacker). Records are also bypassable: Hetzner's ASPA (published after
+  the incident [9]) lists nine providers, three of which (AS2914, AS3356, AS6453) publish no ASPA, so a path forged
+  through them passes verification. Modelling it would not change any score today.
 - **"No ROA" counts as forgeable at any prefix length** (inherited from `score.py`). For a /24 (IPv4) or /48 (IPv6)
   without a ROA, no routable more-specific exists; the attacker gets an exact-prefix contest that ROV never drops,
   not a guaranteed global win. Those domains may be over-scored; to be decided.
