@@ -17,6 +17,10 @@ th{background:#f4f4f4;font-weight:600} td.num,th.num{text-align:right;font-varia
 .c-caa-erasable{background:#f4a261} .c-open{background:#e76f51}
 .badge{display:inline-block;padding:.1rem .5rem;border-radius:3px;color:#fff;font-weight:600}
 code{background:#f4f4f4;padding:0 .25rem;border-radius:2px} .ok{color:#2a9d8f} .bad{color:#e76f51}
+.explain{background:#f7f7f2;border-left:3px solid #c9c9b8;padding:.4rem .8rem;margin:.6rem 0;font-size:.92rem}
+.explain p,.explain ul{margin:.2rem 0} .explain li{margin:.15rem 0}
+details{border:1px solid #e5e5e5;border-radius:4px;padding:.3rem .7rem;margin:.5rem 0} summary{cursor:pointer;font-weight:600}
+details table{margin:.3rem 0} h3{font-size:1rem;margin:1.2rem 0 .2rem}
 """
 
 CLASS_ORDER = ("closed", "caa-only", "contested-only", "caa-erasable", "open")
@@ -52,6 +56,11 @@ def table(headers: list[str], rows: list[list], numeric: set[int] = frozenset())
         for r in rows
     )
     return f"<table><thead><tr>{th}</tr></thead><tbody>{trs}</tbody></table>"
+
+
+def explain(title: str, text: str, *, as_list: bool = False) -> str:
+    inner = f"<ul>{text}</ul>" if as_list else f"<p>{text}</p>"
+    return f"<div class=explain><b>{escape(title)}.</b> {inner}</div>"
 
 
 def badge(cls: str) -> str:

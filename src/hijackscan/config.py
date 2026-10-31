@@ -5,7 +5,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-DATA_DIR = Path("data")
+
+def project_root() -> Path:
+    """The directory holding pyproject.toml, searched upwards from the cwd; else the cwd.
+    Lets `hijackscan` run from any subdirectory with the same data/ tree."""
+    for d in (Path.cwd(), *Path.cwd().parents):
+        if (d / "pyproject.toml").exists():
+            return d
+    return Path.cwd()
+
+
+DATA_DIR = project_root() / "data"
 
 
 @dataclass(frozen=True)
@@ -18,7 +28,7 @@ class Config:
     dns_qps: float = 50.0
     workers: int = 8
     ripestat_concurrency: int = 8  # the proposal's limit
-    rpki_date: str = "2026-08-28"  # RIPE NCC RPKI archive day used for ROAs
+    rpki_date: str = "latest"  # RIPE NCC RPKI archive day for ROAs: "latest" or YYYY-MM-DD (2026-08-28 = the replay)
     max_age_hours: float = 24 * 7  # re-use data/collected/<domain>.json younger than this
     data_dir: Path = DATA_DIR
 

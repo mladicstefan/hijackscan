@@ -71,7 +71,7 @@ def build(scored: list[Scored], records: list[dict], cfg: Config) -> dict:
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "domains": n,
         "resolver": records[0]["resolver"] if records else None,
-        "rpki_date": cfg.rpki_date,
+        "rpki_date": records[0]["rpki_date"] if records else cfg.rpki_date,
         "classes": {c: classes.get(c, 0) for c in CLASSES},
         "facts": {
             "dnssec_secure": sum(s.dnssec == "secure" for s in scored),
@@ -80,6 +80,7 @@ def build(scored: list[Scored], records: list[dict], cfg: Config) -> dict:
             "pinned": sum(s.pinned for s in scored),
             "web_forgeable": sum(s.web_forgeable for s in scored),
             "ns_forgeable": sum(s.ns_forgeable for s in scored),
+            "ns_partial": sum(bool(s.ns_forgeable_hosts) and not s.ns_forgeable for s in scored),
             "errors": sum(bool(s.errors) for s in scored),
         },
         "by_ns_operator": [
@@ -105,30 +106,78 @@ def build(scored: list[Scored], records: list[dict], cfg: Config) -> dict:
     }
 
 
+CLASS_MEANING = {
+    "closed": "CAA pins issuance to one ACME account and the zone validates: nothing in routing can steer a CA "
+    "that validates DNSSEC.",
+    "caa-only": "CAA restricts the CA and the zone validates, but any account at that CA may issue after a web hijack.",
+    "caa-erasable": "CAA exists, but the zone is unsigned and every nameserver can be captured: the attacker answers "
+    "'no CAA' and validation proceeds. CAA bought nothing.",
+    "open": "No CAA, and a more-specific hijack captures the web prefix or every nameserver: the 28 August 2026 "
+    "pattern applies as is.",
+    "contested-only": "No more-specific hijack is possible (ROAs tight, or nothing longer is routable). Only an "
+    "exact-prefix origin contest or a partial nameserver capture remains - and there is still no DNS-side defence.",
+}
+
+WHAT_IF_MEANING = {
+    "sign all zones": "DNSSEC alone: makes CAA answers unforgeable, but protects nothing where there is no CAA.",
+    "CAA on all": "CAA alone: in unsigned zones a nameserver hijack erases it, so 'open' turns into 'caa-erasable'.",
+    "CAA + accounturi on all": "Pinning the ACME account: still erasable while the zone is unsigned.",
+    "sign all + CAA + accounturi": "Both fixes together. This row is 'closed' by definition - it shows the ceiling, "
+    "not a measurement.",
+    "tighten all ROAs (RFC 9319)": "Routing-side fix only: removes the win-everywhere more-specific, leaves the "
+    "exact-prefix contest and no DNS-side defence.",
+}
+
+
 def render_html(r: dict) -> str:
     e, n = html.e, r["domains"]
 
-    def pct(x):
+    def pct(x: int) -> str:
         return f"{100 * x / n:.0f}%" if n else "-"
 
     f = r["facts"]
-    body = "<h2>Exposure classes</h2>" + html.bar(r["classes"])
-    body += html.table(
-        ["class", "domains", "share"], [[html.badge(c), v, pct(v)] for c, v in r["classes"].items()], {1, 2}
+    body = html.explain(
+        "How to read this report",
+        f"Each of the {n} domains was looked up once (web and nameserver addresses, CAA, DS, DNSKEY with the AD flag) "
+        f"and every address was matched against BGP (announced prefix, origin AS) and the RPKI ROAs of {e(r['rpki_date'])}. "
+        "A prefix is <i>forgeable</i> when a ROA allows a longer prefix than is announced (and nothing longer is already "
+        "announced), or when no ROA covers it at all: an attacker can then announce a more-specific that is RPKI-valid "
+        "(or never invalid) and wins route selection everywhere - the 28 August 2026 Hetzner pattern. Each domain is "
+        "then put in exactly one exposure class, first match wins. No domain names appear below.",
     )
-    body += "<h2>Facts</h2>" + html.table(
+    body += "<h2>Exposure classes</h2>" + html.bar(r["classes"])
+    body += html.table(
+        ["class", "domains", "share", "meaning"],
+        [[html.badge(c), v, pct(v), e(CLASS_MEANING[c])] for c, v in r["classes"].items()],
+        {1, 2},
+    )
+    body += "<h2>Facts</h2>" + html.explain(
+        "Raw counts behind the classes",
+        "DNSSEC <i>secure</i> = DS at the registry and the validating resolver set AD; <i>bogus</i> = DS present but "
+        "answers do not validate. <i>accounturi</i> is the CAA parameter (RFC 8657) that pins issuance to one ACME "
+        "account. <i>forgeable</i> counts domains with at least one such address; the nameserver line counts domains "
+        "where <b>every</b> nameserver is forgeable, which is what the attack needs.",
+    )
+    body += html.table(
         ["fact", "domains", "share"],
         [
             ["DNSSEC secure (DS + validates)", f["dnssec_secure"], pct(f["dnssec_secure"])],
             ["DNSSEC bogus (DS but does not validate)", f["dnssec_bogus"], pct(f["dnssec_bogus"])],
             ["CAA present", f["has_caa"], pct(f["has_caa"])],
             ["CAA with accounturi", f["pinned"], pct(f["pinned"])],
-            ["web prefix forgeable (RPKI-valid more-specific)", f["web_forgeable"], pct(f["web_forgeable"])],
-            ["nameserver prefix forgeable", f["ns_forgeable"], pct(f["ns_forgeable"])],
+            ["web prefix forgeable", f["web_forgeable"], pct(f["web_forgeable"])],
+            ["all nameserver prefixes forgeable", f["ns_forgeable"], pct(f["ns_forgeable"])],
+            ["some (not all) nameserver prefixes forgeable", f["ns_partial"], pct(f["ns_partial"])],
         ],
         {1, 2},
     )
-    body += "<h2>By nameserver operator</h2>" + html.table(
+    body += "<h2>By nameserver operator</h2>" + html.explain(
+        "Who can fix the DNS side",
+        "Operator = registered domain of the nameserver hosts; a domain with nameservers at two operators counts for "
+        "both. <i>signed</i> = domains that validate. The last column is the share of that operator's domains in "
+        "open or caa-erasable. An operator that signs by default and keeps tight ROAs moves all of its rows at once.",
+    )
+    body += html.table(
         ["operator", "domains", "signed", "% open or caa-erasable"],
         [
             [e(x["operator"]), x["domains"], x["signed"], f"{100 * x['share_open_or_erasable']:.0f}%"]
@@ -136,7 +185,13 @@ def render_html(r: dict) -> str:
         ],
         {1, 2, 3},
     )
-    body += "<h2>By hosting AS (web)</h2>" + html.table(
+    body += "<h2>By hosting AS (web)</h2>" + html.explain(
+        "Who can fix the routing side",
+        "The AS originating the web addresses. <i>web forgeable</i> = domains whose web prefix at this AS admits an "
+        "RPKI-valid (or never-invalid) more-specific; a hosting provider fixes it by setting ROA maxLength equal to "
+        "what it announces (RFC 9319).",
+    )
+    body += html.table(
         ["AS", "name", "domains", "web forgeable", "% open or caa-erasable"],
         [
             [
@@ -150,23 +205,29 @@ def render_html(r: dict) -> str:
         ],
         {2, 3, 4},
     )
-    body += "<h2>What if</h2><p class=muted>Each row re-scores every domain as if that fix were applied.</p>"
+    body += "<h2>What if</h2>" + html.explain(
+        "Re-scoring under one fix applied to every domain",
+        "The same records, with one property overridden for all domains, re-classified with the same rules. "
+        "The informative rows are the partial ones: a single fix that moves nothing is a fix that does not work alone.",
+    )
     rows = [
         [
             "<i>as measured</i>",
             *[r["classes"][c] for c in CLASSES],
             pct(r["classes"]["open"] + r["classes"]["caa-erasable"]),
+            "",
         ]
     ]
     for label, cnt in r["what_if"].items():
-        rows.append([e(label), *[cnt[c] for c in CLASSES], pct(cnt["open"] + cnt["caa-erasable"])])
-    body += html.table(["scenario", *CLASSES, "open + erasable"], rows, set(range(1, 7)))
+        meaning = WHAT_IF_MEANING.get(label, "The three largest nameserver operators sign every zone they host.")
+        rows.append([e(label), *[cnt[c] for c in CLASSES], pct(cnt["open"] + cnt["caa-erasable"]), e(meaning)])
+    body += html.table(["scenario", *CLASSES, "open + erasable", "reads as"], rows, set(range(1, 7)))
     body += (
         f"<p class=muted>Resolver {e(r['resolver'])}; ROAs from the RIPE NCC RPKI archive, {e(r['rpki_date'])}; "
         f"generated {e(r['generated_at'])}. No domain names are listed.</p>"
     )
     return html.page(
-        f"hijackscan zone report — {n} domains",
+        f"hijackscan zone report - {n} domains",
         body,
         "Exposure to certificate theft through BGP hijacks below DNS, and what CAA + DNSSEC would close",
     )

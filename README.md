@@ -60,8 +60,8 @@ Flags on every command: `--resolver host[:port]` (853 = DoT, 53 = plain; e.g. `1
   including the TLD (`caa_chain`).
 - Per distinct address: announced prefix + origin ASNs (RIPEstat `network-info`), RIPEstat's RPKI verdict
   (`rpki-validation`), and **every covering ROA from the local RPKI archive** (`data/rpki/<date>/<ta>/roas.csv.xz`,
-  five trust anchors, ~1M ROAs, downloaded once with sha256 check; `--rpki-date`, default 2026-08-28 = the
-  Hetzner incident day). AS names from `as-overview`. RIPEstat ≤ 8 concurrent, `sourceapp=hijackscan`, every
+  five trust anchors, ~1M ROAs, downloaded once with sha256 check; `--rpki-date`, default `latest` = the newest
+  archive day; `2026-08-28` replays the Hetzner incident day). AS names from `as-overview`. RIPEstat ≤ 8 concurrent, `sourceapp=hijackscan`, every
   response cached under `data/cache/ripestat/`.
 - Per-domain failures land in `errors[]`; the batch never aborts. Records younger than `--max-age` (7 days) are
   reused. 8 domains in parallel, DNS capped at 50 qps.
@@ -73,7 +73,8 @@ Per address: `limit = 24 (v4) | 48 (v6)`; no covering ROA → `forgeable_more_sp
 any ROA maxLength > announced length (RFC 9319 hygiene). Exact-prefix contest is always possible absent ASPA.
 
 Per domain: `dnssec` = unsigned (no DS) | secure (DS and A/AAAA with AD) | bogus (DS but SERVFAIL or no AD);
-`web_forgeable`, `ns_forgeable`; CAA parsed from the first label with records (`issue`, `issuewild`,
+`web_forgeable` (any web address), `ns_forgeable` (**every** nameserver address — a CA's resolver and each MPIC
+perspective may ask any of them; `ns_forgeable_hosts`/`ns_hosts` records partial capture); CAA parsed from the first label with records (`issue`, `issuewild`,
 `accounturi`, `validationmethods`); `ns_operators` (registered domain of each NS host) and `hosting_asns`.
 
 Exposure class, first match wins:
@@ -82,22 +83,27 @@ Exposure class, first match wins:
 |---|---|
 | `closed` | pinned (`accounturi`) and signed |
 | `caa-only` | CAA and signed, no account pin |
-| `caa-erasable` | CAA, unsigned, nameserver prefix forgeable → forge "no CAA" |
-| `open` | no CAA and web or NS prefix forgeable (the Softaculous case) |
-| `contested-only` | nothing forgeable: only an exact-prefix origin contest, and no DNS-side defence |
+| `caa-erasable` | CAA, unsigned, every nameserver prefix forgeable → forge "no CAA" |
+| `open` | no CAA and the web prefix or every nameserver prefix forgeable (the 28 Aug 2026 pattern) |
+| `contested-only` | no win-everywhere hijack: exact-prefix contest or partial nameserver capture only, and no DNS-side defence |
 
 Remediations are listed per owner (domain-owner, dns-host, hosting-provider, registrar), DNS-side fixes first.
 
-## Results, 100 `.rs` domains (2026-10-31, ROAs of 2026-08-28)
+## Results, 100 `.rs` domains (collected 2026-10-31, ROAs of 2026-10-31)
 
-`closed 0 · caa-only 0 · caa-erasable 2 · open 31 · contested-only 67`. DNSSEC secure 4, bogus 1; CAA on 8,
-`accounturi` on 0; web prefix forgeable 26, nameserver prefix forgeable 19. All 8 domains hosted at Hetzner
-(AS24940) are forgeable; Cloudflare hosts 34 with 1 forgeable. What-if: signing every zone alone moves nothing
-out of `open` (CAA is missing); CAA + `accounturi` + DNSSEC on all closes all 100; tightening every ROA leaves
-all 100 `contested-only`.
+See `data/out/report.html`. Headline: no domain is `closed` or `caa-only`; nobody uses `accounturi`; CAA on 8,
+DNSSEC validating on 4. Roughly a quarter are `open` — hosted behind loose-maxLength ROAs (Hetzner `/16 → 24`,
+CloudFront `/16 → 24`, Yettel, Vultr) or in space with no ROA at all. What-if rows: signing alone and CAA alone
+each move almost nothing (the attack erases unsigned CAA; DNSSEC without CAA restricts nobody); only both together
+close, and that row is `closed` by definition.
 
-Note on dates: ROAs come from the archive day, RIPEstat's `rpki_state` is live, so an address can show
-`valid` today and `not-found` for 2026-08-28 (a ROA created since). Pick `--rpki-date` deliberately.
+What was checked after the first numbers looked too good: (1) re-scoring against a different archive day moves
+only domains whose exposure hinged on one nameserver — so (2) `ns_forgeable` now requires **every** nameserver,
+partial capture is reported as k of n and stays `contested-only`; (3) RIPEstat `routing-status` confirms no
+more-specific is already announced inside each forgeable prefix (e.g. Amazon announces /24s elsewhere in
+`18.172.0.0/16`, not inside the /21 in question); (4) "no ROA" is reported as *unknown origin, effectively
+forgeable* rather than *valid*.
+
 
 ## Data
 

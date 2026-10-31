@@ -24,6 +24,7 @@ def parser() -> argparse.ArgumentParser:
         "--max-age", type=float, help=f"hours a collected record stays fresh (default {Config.max_age_hours})"
     )
     p.add_argument("--workers", type=int)
+    p.add_argument("--data-dir", type=Path, help=f"default {Config.data_dir}")
     p.add_argument("-v", "--verbose", action="store_true")
     sub = p.add_subparsers(dest="cmd")
     c = sub.add_parser("collect", help="collect raw facts")
@@ -58,6 +59,7 @@ def main() -> None:
         ("rpki_date", a.rpki_date),
         ("max_age_hours", a.max_age),
         ("workers", a.workers),
+        ("data_dir", a.data_dir),
     ):
         if value is not None:
             cfg = replace(cfg, **{field: value})

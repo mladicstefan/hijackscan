@@ -35,6 +35,24 @@ class Roa:
     ta: str
 
 
+def latest_archive_day(http: httpx.Client | None = None) -> str:
+    """Newest day (today, yesterday, ...) for which the archive has a ripencc roas.csv.xz."""
+    from datetime import UTC, datetime, timedelta
+
+    own = http is None
+    http = http or httpx.Client(headers={"User-Agent": USER_AGENT}, timeout=30)
+    try:
+        for back in range(0, 7):
+            d = datetime.now(UTC).date() - timedelta(days=back)
+            url = ARCHIVE.format(ta="ripencc", y=d.year, m=f"{d.month:02d}", d=f"{d.day:02d}") + ".sha256"
+            if http.head(url).status_code == 200:
+                return d.isoformat()
+    finally:
+        if own:
+            http.close()
+    raise RuntimeError("no RPKI archive day found in the last week")
+
+
 def ensure_archive(rpki_dir: Path, date: str) -> None:
     """Download the five roas.csv.xz files for `date` (YYYY-MM-DD) if missing; verify sha256."""
     y, m, d = date.split("-")

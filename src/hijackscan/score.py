@@ -121,7 +121,9 @@ class Scored:
     caa_from: str | None
     caa: Caa
     web_forgeable: bool
-    ns_forgeable: bool
+    ns_forgeable: bool  # every nameserver can be captured (all addresses of all NS hosts forgeable)
+    ns_forgeable_hosts: int  # nameserver hosts with at least one forgeable address
+    ns_hosts: int
     web_addresses: list[AddressDerived]
     ns_addresses: dict[str, list[AddressDerived]]
     ns_operators: list[str]
@@ -172,7 +174,15 @@ def score(rec: dict, overrides: dict | None = None) -> Scored:
     has_caa = ov.get("has_caa", caa_from is not None)
     pinned = ov.get("pinned", has_caa and bool(caa.accounturi))
     web_forgeable = ov.get("web_forgeable", any(a.forgeable_more_specific for a in web))
-    ns_forgeable = ov.get("ns_forgeable", any(a.forgeable_more_specific for v in ns.values() for a in v))
+    # A CA's resolver (and each MPIC perspective) may ask any nameserver over v4 or v6, so the
+    # "forge no CAA / DNS-01" path needs every nameserver address captured, not just one.
+    ns_with_addr = {h: v for h, v in ns.items() if v}
+    ns_hosts = len(ns_with_addr)
+    ns_forgeable_hosts = sum(any(a.forgeable_more_specific for a in v) for v in ns_with_addr.values())
+    ns_forgeable = ov.get(
+        "ns_forgeable",
+        bool(ns_with_addr) and all(a.forgeable_more_specific for v in ns_with_addr.values() for a in v),
+    )
 
     exposure, reason, attack = classify(signed, has_caa, pinned, web_forgeable, ns_forgeable)
     hosting = {str(asn): (rec.get("asns", {}).get(str(asn)) or {}).get("name") for a in web for asn in a.origin_asns}
@@ -187,6 +197,8 @@ def score(rec: dict, overrides: dict | None = None) -> Scored:
         caa=caa,
         web_forgeable=web_forgeable,
         ns_forgeable=ns_forgeable,
+        ns_forgeable_hosts=ns_forgeable_hosts,
+        ns_hosts=ns_hosts,
         web_addresses=web,
         ns_addresses=ns,
         ns_operators=_ns_operators(rec),
@@ -219,20 +231,22 @@ def classify(
     if has_caa and not signed and ns_forgeable:
         return (
             "caa-erasable",
-            "CAA exists but the zone is unsigned and a nameserver prefix is forgeable",
-            "hijack the nameserver prefix with an RPKI-valid more-specific, answer 'no CAA', then pass validation",
+            "CAA exists but the zone is unsigned and every nameserver prefix is forgeable",
+            "hijack all nameserver prefixes with RPKI-valid more-specifics, answer 'no CAA', then pass validation",
         )
     if not has_caa and (web_forgeable or ns_forgeable):
         return (
             "open",
-            "no CAA, and an RPKI-valid more-specific can capture the web or nameserver prefix",
-            "announce the forged more-specific, win route selection everywhere, pass HTTP-01 or DNS-01",
+            "no CAA, and a more-specific hijack can capture the web prefix or every nameserver prefix",
+            "announce the forged more-specific(s), win route selection everywhere, pass HTTP-01 or DNS-01",
         )
     if not web_forgeable and not ns_forgeable:
         return (
             "contested-only",
-            "no RPKI-valid more-specific is possible; only an exact-prefix origin contest, and no DNS-side defence",
-            "announce the same prefix with the victim's origin AS; capture the ASes that prefer the attacker's path",
+            "no more-specific hijack captures the web prefix or all nameservers; an exact-prefix contest remains, "
+            "with no DNS-side defence",
+            "announce the same prefix with the victim's origin AS (or capture a subset of nameservers); "
+            "win only where the attacker's path is preferred",
         )
     return (
         "open",

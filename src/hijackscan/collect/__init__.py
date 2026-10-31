@@ -11,6 +11,7 @@ import json
 import logging
 import time
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -18,7 +19,7 @@ from ..config import Config
 from .dns import Dns
 from .resolver_check import check_resolver, passes
 from .ripestat import RipeStat
-from .rpki import RoaIndex, ensure_archive
+from .rpki import RoaIndex, ensure_archive, latest_archive_day
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +31,9 @@ class Collector:
         self.resolver_check = check_resolver(self.dns)
         if not passes(self.resolver_check):
             raise SystemExit(f"resolver {self.dns.address} does not validate DNSSEC: {self.resolver_check}")
+        if cfg.rpki_date == "latest":
+            cfg = replace(cfg, rpki_date=latest_archive_day())
+            self.cfg = cfg
         ensure_archive(cfg.rpki_dir, cfg.rpki_date)
         self.roas = RoaIndex(cfg.rpki_dir)
         self.ripe = RipeStat(cfg.cache_dir, cfg.ripestat_concurrency)
@@ -142,6 +146,8 @@ class Collector:
 def read_domains(arg: str) -> list[str]:
     """A file of domains (one per line, # comments) or a single domain name."""
     p = Path(arg)
-    if p.exists():
+    if p.is_file():
         return [d.strip().lower() for d in p.read_text().splitlines() if d.strip() and not d.startswith("#")]
+    if "/" in arg or arg.endswith(".txt"):
+        raise SystemExit(f"no such file: {arg} (cwd {Path.cwd()})")
     return [arg.strip().lower().rstrip(".")]
