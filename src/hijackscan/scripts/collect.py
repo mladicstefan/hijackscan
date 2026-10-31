@@ -19,7 +19,9 @@ import argparse
 import json
 import logging
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -35,6 +37,7 @@ log = logging.getLogger("hijackscan.collect")
 USER_AGENT = "hijackscan/0.1 (DNS SEC Hackathon 2026)"
 RIPESTAT = "https://stat.ripe.net/data/{call}/data.json"
 SOURCEAPP = "hijackscan"
+RIPESTAT_CONCURRENCY = 8  # the proposal's limit
 
 
 # --------------------------------------------------------------------------- records
@@ -99,57 +102,72 @@ class Dns:
         self.r.use_edns(0, dns.flags.DO, 1232)
         self.r.flags = dns.flags.RD | dns.flags.AD  # ask the resolver to tell us if it validated
         self._gap = 1 / qps
-        self._last = 0.0
-        self.last_servfail = False
+        self._next = 0.0
+        self._lock = threading.Lock()
+        self._cache: dict[tuple[str, str], dns.resolver.Answer | str | None] = {}
 
-    def query(self, name: str, rtype: str) -> dns.resolver.Answer | None:
-        wait = self._last + self._gap - time.monotonic()
+    def _throttle(self) -> None:
+        with self._lock:
+            now = time.monotonic()
+            wait = self._next - now
+            self._next = max(now, self._next) + self._gap
         if wait > 0:
             time.sleep(wait)
-        self._last = time.monotonic()
-        self.last_servfail = False
+
+    def query(self, name: str, rtype: str) -> dns.resolver.Answer | str | None:
+        """Answer, None (no such name / timeout) or the string 'SERVFAIL'. Cached per (name, type)."""
+        key = (name, rtype)
+        if key in self._cache:
+            return self._cache[key]
+        self._throttle()
         try:
-            return self.r.resolve(name, rtype, raise_on_no_answer=False)
+            result: dns.resolver.Answer | str | None = self.r.resolve(name, rtype, raise_on_no_answer=False)
         except dns.resolver.NoNameservers as e:
-            self.last_servfail = "SERVFAIL" in str(e)
+            result = "SERVFAIL" if "SERVFAIL" in str(e) else None
             log.debug("%s %s: %s", name, rtype, e)
-            return None
         except (dns.resolver.NXDOMAIN, dns.resolver.LifetimeTimeout) as e:
+            result = None
             log.debug("%s %s: %s", name, rtype, e)
-            return None
+        self._cache[key] = result
+        return result
+
+    def _rrset(self, name: str, rtype: str):
+        ans = self.query(name, rtype)
+        return ans.rrset if isinstance(ans, dns.resolver.Answer) and ans.rrset else None
 
     def addresses(self, name: str) -> list[str]:
         out: list[str] = []
         for rtype in ("A", "AAAA"):
-            ans = self.query(name, rtype)
-            if ans and ans.rrset:
-                out.extend(r.address for r in ans.rrset)
+            rrset = self._rrset(name, rtype)
+            if rrset:
+                out.extend(r.address for r in rrset)
         return out
 
     def names(self, name: str, rtype: str) -> list[str]:
-        ans = self.query(name, rtype)
-        return [str(r.target).rstrip(".").lower() for r in ans.rrset] if ans and ans.rrset else []
+        rrset = self._rrset(name, rtype)
+        return [str(r.target).rstrip(".").lower() for r in rrset] if rrset else []
 
     def caa(self, name: str) -> tuple[list[Caa], str | None]:
         """RFC 8659 tree climb: the first ancestor with a CAA RRset decides."""
         labels = name.split(".")
         while len(labels) > 1:  # stop before the TLD
             cand = ".".join(labels)
-            ans = self.query(cand, "CAA")
-            if ans and ans.rrset:
-                return [Caa(r.flags, r.tag.decode(), r.value.decode()) for r in ans.rrset], cand
+            rrset = self._rrset(cand, "CAA")
+            if rrset:
+                return [Caa(r.flags, r.tag.decode(), r.value.decode()) for r in rrset], cand
             labels = labels[1:]
         return [], None
 
     def exists(self, name: str, rtype: str) -> bool:
-        ans = self.query(name, rtype)
-        return bool(ans and ans.rrset)
+        return self._rrset(name, rtype) is not None
 
     def dnssec_status(self, name: str) -> str | None:
         """secure (AD set) | insecure (answer without AD) | bogus (validator returned SERVFAIL)."""
         ans = self.query(name, "A")
-        if ans is None:
-            return "bogus" if self.last_servfail else None
+        if ans == "SERVFAIL":
+            return "bogus"
+        if not isinstance(ans, dns.resolver.Answer):
+            return None
         return "secure" if ans.response.flags & dns.flags.AD else "insecure"
 
 
@@ -161,6 +179,7 @@ class RipeStat:
         self.cache_dir = cache_dir
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.http = httpx.Client(headers={"User-Agent": USER_AGENT}, timeout=30)
+        self._sem = threading.Semaphore(RIPESTAT_CONCURRENCY)
 
     def call(self, call: str, **params: str) -> dict:
         key = call + "_" + "_".join(f"{k}={v}" for k, v in sorted(params.items()))
@@ -169,10 +188,13 @@ class RipeStat:
             return json.loads(path.read_text())
         for attempt in range(4):
             try:
-                r = self.http.get(RIPESTAT.format(call=call), params={**params, "sourceapp": SOURCEAPP})
+                with self._sem:
+                    r = self.http.get(RIPESTAT.format(call=call), params={**params, "sourceapp": SOURCEAPP})
                 r.raise_for_status()
                 data = r.json()
-                path.write_text(json.dumps(data))
+                tmp = path.with_name(f"{path.name}.{threading.get_ident()}.part")
+                tmp.write_text(json.dumps(data))
+                tmp.replace(path)
                 return data
             except httpx.HTTPError as e:
                 log.warning("ripestat %s %s: %s (attempt %d)", call, params, e, attempt + 1)
@@ -225,8 +247,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument(
         "--resolver", default="9.9.9.9", help="validating resolver, host[:port]; port 853 = DoT (default), 53 = plain"
     )
-    p.add_argument("--qps", type=float, default=10.0, help="max DNS queries per second")
+    p.add_argument("--qps", type=float, default=50.0, help="max DNS queries per second")
     p.add_argument("--limit", type=int, help="only the first N domains")
+    p.add_argument("--workers", type=int, default=8, help="domains collected in parallel")
+    p.add_argument("--force", action="store_true", help="re-collect domains already in --out")
     p.add_argument("-v", "--verbose", action="store_true")
     a = p.parse_args(argv)
     logging.basicConfig(
@@ -241,28 +265,60 @@ def main(argv: list[str] | None = None) -> int:
     if a.limit:
         domains = domains[: a.limit]
     dns_, ripe = Dns(a.resolver, a.qps), RipeStat(a.cache)
-    log.info("%d domains, resolver %s", len(domains), dns_.address)
 
-    tmp = a.out.with_suffix(".jsonl.part")
-    with tmp.open("w") as f:
-        for i, d in enumerate(domains, 1):
-            facts = collect(d, dns_, ripe)
-            f.write(json.dumps(asdict(facts), ensure_ascii=False) + "\n")
-            f.flush()
+    done = {} if a.force else load_done(a.out, domains)
+    todo = [d for d in domains if d not in done]
+    log.info(
+        "%d domains (%d cached, %d to collect), resolver %s, %d workers",
+        len(domains),
+        len(done),
+        len(todo),
+        dns_.address,
+        a.workers,
+    )
+
+    t0 = time.monotonic()
+    with ThreadPoolExecutor(max_workers=a.workers) as pool:
+        for i, facts in enumerate(pool.map(lambda d: collect(d, dns_, ripe), todo), 1):
+            done[facts.domain] = asdict(facts)
             log.info(
                 "[%d/%d] %s web=%d ns=%d caa=%d ds=%s dnssec=%s",
                 i,
-                len(domains),
-                d,
+                len(todo),
+                facts.domain,
                 len(facts.web),
                 len(facts.nameservers),
                 len(facts.caa),
                 facts.ds,
                 facts.dnssec,
             )
-    tmp.replace(a.out)
-    log.info("wrote %s", a.out)
+            if i % 10 == 0:
+                write_facts(a.out, domains, done)  # checkpoint: a killed run resumes from here
+    write_facts(a.out, domains, done)
+    log.info("wrote %s (%d records) in %.0fs", a.out, len(done), time.monotonic() - t0)
     return 0
+
+
+def load_done(out: Path, domains: list[str]) -> dict[str, dict]:
+    """Records already collected (previous run, finished or checkpointed), keyed by domain."""
+    done: dict[str, dict] = {}
+    for path in (out, out.with_suffix(".jsonl.part")):
+        if path.exists():
+            for line in path.read_text().splitlines():
+                if line.strip():
+                    rec = json.loads(line)
+                    if rec["domain"] in domains and not rec.get("errors"):
+                        done[rec["domain"]] = rec
+    return done
+
+
+def write_facts(out: Path, domains: list[str], done: dict[str, dict]) -> None:
+    tmp = out.with_suffix(".jsonl.part")
+    with tmp.open("w") as f:
+        for d in domains:
+            if d in done:
+                f.write(json.dumps(done[d], ensure_ascii=False) + "\n")
+    tmp.replace(out)
 
 
 if __name__ == "__main__":
