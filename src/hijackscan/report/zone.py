@@ -1,11 +1,14 @@
-"""`hijackscan zone <domains.txt> --out dir/`: collect (cached) → score → report.json + report.html.
+"""`hijackscan zone <domains.txt> --out dir/`: collect (cached) → score → risk → report.json + report.html + domains.jsonl.
 
-Aggregate only: the HTML names operators and ASes, never domains.
+report.json and report.html are aggregate only: they name operators and ASes, never domains.
+domains.jsonl holds one risk record per domain (summary + details), worst first.
+Every number comes from the risk model in design/formula.md (risk.py).
 """
 
 from __future__ import annotations
 
 import json
+import statistics
 from collections import Counter, defaultdict
 from dataclasses import asdict
 from datetime import UTC, datetime
@@ -13,19 +16,38 @@ from pathlib import Path
 
 from ..collect import Collector
 from ..config import Config
-from ..risk import COMPLEXITY_STEP, SEVERITIES, Risk, assess
-from ..score import CLASSES, Scored, score
+from ..risk import COMPLEXITY_STEP, LABELS, SEVERITIES, SEVERITY_BANDS, Risk, assess
+from ..score import Scored, score
 from . import html
+from .browse import browse
 
-BAD = ("open", "caa-erasable")
+SCHEMA_VERSION = 2
+SEVERE = ("High", "Critical")
 
-WHAT_IFS: dict[str, dict] = {
-    "sign all zones": {"signed": True},
-    "CAA on all": {"has_caa": True},
-    "CAA + accounturi on all": {"has_caa": True, "pinned": True},
-    "sign all + CAA + accounturi": {"signed": True, "has_caa": True, "pinned": True},
-    "tighten all ROAs (RFC 9319)": {"web_forgeable": False, "ns_forgeable": False},
-}
+# Each scenario re-scores every domain with the same formula and one fix applied everywhere.
+WHAT_IFS: list[tuple[str, dict, str]] = [
+    ("sign all zones", {"signed": True}, "DNSSEC alone closes the nameserver path, not the web path."),
+    (
+        "CAA on all (no accounturi)",
+        {"has_caa": True},
+        "CAA without accounturi changes no score: the attacker opens an account at the allowed CA.",
+    ),
+    (
+        "CAA + accounturi on all",
+        {"pinned": True},
+        "Closes the web path; in unsigned zones a nameserver capture still erases CAA.",
+    ),
+    (
+        "sign all + CAA + accounturi",
+        {"signed": True, "pinned": True},
+        "Both DNS-side fixes: every path blocked. The ceiling, by definition.",
+    ),
+    (
+        "tighten all ROAs (RFC 9319)",
+        {"web_tight": True, "ns_tight": True},
+        "Routing-side fix only: removes forged more-specifics, leaves the exact-prefix contest.",
+    ),
+]
 
 
 def zone_report(cfg: Config, domains: list[str], out: Path, *, meta: dict | None = None, force: bool = False) -> int:
@@ -33,36 +55,38 @@ def zone_report(cfg: Config, domains: list[str], out: Path, *, meta: dict | None
     records = Collector(cfg).run(domains, force=force)
     scored = [score(r) for r in records]
     risks = [assess(r, s) for r, s in zip(records, scored, strict=True)]
-    report = build(scored, records, cfg, meta)
-    report["risk"] = build_risk(risks)
+    report = build(records, scored, risks, cfg, meta)
     out.mkdir(parents=True, exist_ok=True)
-    (out / "report.json").write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
+    (out / "report.json").write_text(json.dumps(report, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     (out / "report.html").write_text(render_html(report), encoding="utf-8")
     # Per-domain records name domains, so they live in their own file, never in report.json / report.html.
     with (out / "domains.jsonl").open("w", encoding="utf-8") as f:
         for r in sorted(risks, key=lambda r: (-(r.score if r.score is not None else -1), r.domain)):
             f.write(json.dumps(r.to_json(), ensure_ascii=False) + "\n")
-    sev = report["risk"]["severity"]
-    print(f"{len(scored)} domains: " + ", ".join(f"{c} {sev[c]}" for c in SEVERITIES))
-    print(f"wrote {out / 'report.json'}, {out / 'report.html'} and {out / 'domains.jsonl'}")
+    browse(out / "domains.jsonl")
+    sev = report["severity"]
+    print(f"{len(risks)} domains: " + ", ".join(f"{c} {sev[c]['domains']}" for c in SEVERITIES))
+    print(f"wrote {out / 'report.json'}, {out / 'report.html'}, {out / 'domains.jsonl'} and {out / 'domains.html'}")
     return 0
 
 
-def build_risk(risks: list[Risk]) -> dict:
-    """Aggregate risk: counts only, no domain names."""
-    scored = [r.score for r in risks if r.score is not None]
-    prm = risks[0].params if risks else None
+# --------------------------------------------------------------------------- aggregation
+
+
+def _counts(risks: list[Risk]) -> dict[str, int]:
+    c = Counter(r.severity for r in risks)
+    return {s: c.get(s, 0) for s in SEVERITIES}
+
+
+def _stats(risks: list[Risk]) -> dict:
+    """Severity counts, mean / median over scored domains, and how many are High or Critical."""
+    scores = [r.score for r in risks if r.score is not None]
     return {
-        "scale": "CVSS v3.1/v4.0 qualitative rating: None 0.0, Low 0.1-3.9, Medium 4.0-6.9, High 7.0-8.9, "
-        "Critical 9.0-10.0; Unknown = not scored",
-        "formula": "design/formula.md",
-        "params": (asdict(prm) | {"complexity_step": round(COMPLEXITY_STEP, 4)}) if prm else None,
-        "severity": {c: sum(r.severity == c for r in risks) for c in SEVERITIES},
-        "labels": dict(Counter(r.label for r in risks).most_common()),
-        "findings": dict(Counter(f.id for r in risks for f in {x.id: x for x in r.findings}.values()).most_common()),
-        "score_mean": round(sum(scored) / len(scored), 2) if scored else None,
-        "first_fix": dict(Counter(r.fix.action for r in risks if r.fix).most_common()),
-        "fix_to_close": dict(Counter(f.action for r in risks if (f := _closing(r))).most_common()),
+        "severity": _counts(risks),
+        "scored": len(scores),
+        "mean_score": round(statistics.fmean(scores), 2) if scores else None,
+        "median_score": round(statistics.median(scores), 2) if scores else None,
+        "high_or_critical": sum(r.severity in SEVERE for r in risks),
     }
 
 
@@ -71,16 +95,12 @@ def _closing(r: Risk):
     return r.full_fix or (r.fix if r.fix and r.fix.score_after == 0 else None)
 
 
-def _share_bad(items: list[Scored]) -> float:
-    return sum(s.exposure in BAD for s in items) / len(items) if items else 0.0
-
-
 def _tld(records: list[dict]) -> str | None:
     tlds = {r["domain"].rsplit(".", 1)[-1] for r in records}
     return tlds.pop() if len(tlds) == 1 else None
 
 
-def _population(meta: dict | None, scored: list[Scored]) -> dict | None:
+def _population(meta: dict | None, n: int) -> dict | None:
     """Zone-wide facts from the sample header, joined with the sampled DS ratio as the representativeness check."""
     if not meta:
         return None
@@ -93,62 +113,88 @@ def _population(meta: dict | None, scored: list[Scored]) -> dict | None:
         "ds": pop_ds,
         "ds_share": round(pop_ds / pop, 4) if pop else None,
         "sample_ds": meta.get("sample_ds"),
-        "sample_ds_share": round(meta["sample_ds"] / len(scored), 4) if scored and "sample_ds" in meta else None,
+        "sample_ds_share": round(meta["sample_ds"] / n, 4) if n and "sample_ds" in meta else None,
         "ns_operators": meta.get("ns_operators", []),
     }
 
 
-def build(scored: list[Scored], records: list[dict], cfg: Config, meta: dict | None = None) -> dict:
-    n = len(scored)
-    classes = Counter(s.exposure for s in scored)
-    population = _population(meta, scored)
+def build(records: list[dict], scored: list[Scored], risks: list[Risk], cfg: Config, meta: dict | None = None) -> dict:
+    n = len(risks)
+    population = _population(meta, n)
     pop_ops = {x["operator"]: x for x in population["ns_operators"]} if population else {}
+    prm = risks[0].params if risks else None
+    sev = _counts(risks)
 
-    by_op: dict[str, list[Scored]] = defaultdict(list)
-    for s in scored:
+    by_op: dict[str, list[tuple[Scored, Risk]]] = defaultdict(list)
+    by_as: dict[str, list[tuple[Scored, Risk]]] = defaultdict(list)
+    as_names: dict[str, str | None] = {}
+    for s, r in zip(scored, risks, strict=True):
         for op in s.ns_operators:
-            by_op[op].append(s)
-    by_as: dict[str, list[Scored]] = defaultdict(list)
-    names: dict[str, str | None] = {}
-    for s in scored:
+            by_op[op].append((s, r))
         for asn, name in s.hosting_asns.items():
-            by_as[asn].append(s)
-            names[asn] = name
+            by_as[asn].append((s, r))
+            as_names[asn] = name
 
+    what_if = []
+    for label, ov, reads in WHAT_IFS:
+        rs = [assess(rec, s, ov=ov, fixes=False) for rec, s in zip(records, scored, strict=True)]
+        what_if.append({"scenario": label, "overrides": ov, "reads_as": reads, **_stats(rs)})
     top_ops = [op for op, _ in sorted(by_op.items(), key=lambda kv: -len(kv[1]))[:3]]
-    what_if = {}
-    for label, ov in WHAT_IFS.items():
-        what_if[label] = Counter(score(r, ov).exposure for r in records)
-    top_ov = Counter(
-        score(r, {"signed": True}).exposure if set(s.ns_operators) & set(top_ops) else s.exposure
-        for r, s in zip(records, scored, strict=True)
+    rs = [
+        assess(rec, s, ov={"signed": True}, fixes=False) if set(s.ns_operators) & set(top_ops) else r
+        for rec, s, r in zip(records, scored, risks, strict=True)
+    ]
+    what_if.append(
+        {
+            "scenario": f"top-3 NS operators sign by default ({', '.join(top_ops)})",
+            "overrides": {"signed": True, "only_ns_operators": top_ops},
+            "reads_as": "The three largest nameserver operators sign every zone they host.",
+            **_stats(rs),
+        }
     )
-    what_if[f"top-3 NS operators sign by default ({', '.join(top_ops)})"] = top_ov
 
     return {
+        "schema_version": SCHEMA_VERSION,
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
-        "domains": n,
-        "tld": _tld(records),
-        "population": population,
-        "resolver": records[0]["resolver"] if records else None,
-        "rpki_date": records[0]["rpki_date"] if records else cfg.rpki_date,
-        "classes": {c: classes.get(c, 0) for c in CLASSES},
-        "facts": {
+        "scope": {
+            "domains": n,
+            "tld": _tld(records),
+            "resolver": records[0]["resolver"] if records else None,
+            "rpki_date": records[0]["rpki_date"] if records else cfg.rpki_date,
+            "population": population,
+        },
+        "model": {
+            "formula": "design/formula.md",
+            "score": "10 x I x max over paths (open x K x L); L = 1-(1-P)^N; K = complexity_step^h",
+            "scale": SEVERITY_BANDS,
+            "params": (asdict(prm) | {"complexity_step": round(COMPLEXITY_STEP, 4)}) if prm else None,
+        },
+        "severity": {
+            c: {"band": SEVERITY_BANDS[c], "domains": sev[c], "share": round(sev[c] / n, 4) if n else None}
+            for c in SEVERITIES
+        },
+        "summary": _stats(risks),
+        "labels": {
+            k: {"domains": v, "meaning": LABELS.get(k, "")} for k, v in Counter(r.label for r in risks).most_common()
+        },
+        "findings": dict(Counter(f.id for r in risks for f in {x.id: x for x in r.findings}.values()).most_common()),
+        "defences": {
             "dnssec_secure": sum(s.dnssec == "secure" for s in scored),
             "dnssec_bogus": sum(s.dnssec == "bogus" for s in scored),
-            "has_caa": sum(s.has_caa for s in scored),
-            "pinned": sum(s.pinned for s in scored),
-            "web_forgeable": sum(s.web_forgeable for s in scored),
-            "ns_forgeable": sum(s.ns_forgeable for s in scored),
-            "ns_partial": sum(bool(s.ns_forgeable_hosts) and not s.ns_forgeable for s in scored),
-            "errors": sum(bool(s.errors) for s in scored),
+            "dnssec_unsigned": sum(s.dnssec == "unsigned" for s in scored),
+            "caa": sum(s.has_caa for s in scored),
+            "caa_accounturi": sum(s.pinned for s in scored),
+        },
+        "fixes": {
+            "first_fix": dict(Counter(r.fix.action for r in risks if r.fix).most_common()),
+            "to_close": dict(Counter(f.action for r in risks if (f := _closing(r))).most_common()),
         },
         "by_ns_operator": [
             {
                 "operator": op,
                 "domains": len(v),
-                "share_open_or_erasable": round(_share_bad(v), 3),
-                "signed": sum(s.signed for s in v),
+                **_stats([r for _, r in v]),
+                "signed": sum(s.signed for s, _ in v),
                 "zone_delegations": pop_ops[op]["delegations"] if op in pop_ops else None,
                 "zone_ds": pop_ops[op]["ds"] if op in pop_ops else None,
             }
@@ -157,49 +203,36 @@ def build(scored: list[Scored], records: list[dict], cfg: Config, meta: dict | N
         "by_hosting_as": [
             {
                 "asn": asn,
-                "name": names[asn],
+                "name": as_names[asn],
                 "domains": len(v),
-                "share_open_or_erasable": round(_share_bad(v), 3),
-                "web_forgeable": sum(s.web_forgeable for s in v),
+                **_stats([r for _, r in v]),
+                "web_forgeable": sum(s.web_forgeable for s, _ in v),
             }
             for asn, v in sorted(by_as.items(), key=lambda kv: -len(kv[1]))
         ],
-        "what_if": {label: {c: cnt.get(c, 0) for c in CLASSES} for label, cnt in what_if.items()},
+        "what_if": what_if,
     }
 
 
-CLASS_MEANING = {
-    "closed": "CAA pins issuance to one ACME account and the zone validates: nothing in routing can steer a CA "
-    "that validates DNSSEC.",
-    "caa-only": "CAA restricts the CA and the zone validates, but any account at that CA may issue after a web hijack.",
-    "caa-erasable": "CAA exists, but the zone is unsigned and every nameserver can be captured: the attacker answers "
-    "'no CAA' and validation proceeds. CAA bought nothing.",
-    "open": "No CAA, and a more-specific hijack captures the web prefix or every nameserver: the 28 August 2026 "
-    "pattern applies as is.",
-    "contested-only": "No more-specific hijack is possible (ROAs tight, or nothing longer is routable). Only an "
-    "exact-prefix origin contest or a partial nameserver capture remains - and there is still no DNS-side defence.",
-}
-
-WHAT_IF_MEANING = {
-    "sign all zones": "DNSSEC alone: makes CAA answers unforgeable, but protects nothing where there is no CAA.",
-    "CAA on all": "CAA alone: in unsigned zones a nameserver hijack erases it, so 'open' turns into 'caa-erasable'.",
-    "CAA + accounturi on all": "Pinning the ACME account: still erasable while the zone is unsigned.",
-    "sign all + CAA + accounturi": "Both fixes together. This row is 'closed' by definition - it shows the ceiling, "
-    "not a measurement.",
-    "tighten all ROAs (RFC 9319)": "Routing-side fix only: removes the win-everywhere more-specific, leaves the "
-    "exact-prefix contest and no DNS-side defence.",
-}
+# --------------------------------------------------------------------------- HTML
 
 
 def render_html(r: dict) -> str:
-    e, n = html.e, r["domains"]
+    e = html.e
+    scope, summ, model = r["scope"], r["summary"], r["model"]
+    n = scope["domains"]
+    prm = model["params"] or {}
+    sev = {c: v["domains"] for c, v in r["severity"].items()}
 
     def pct(x: int) -> str:
         return f"{100 * x / n:.0f}%" if n else "-"
 
-    f = r["facts"]
-    pop = r.get("population")
-    zone_name = f".{r['tld']}" if r.get("tld") else "the zone"
+    def mean(x: float | None) -> str:
+        return "-" if x is None else f"{x:.1f}"
+
+    d = r["defences"]
+    pop = scope.get("population")
+    zone_name = f".{scope['tld']}" if scope.get("tld") else "the zone"
     sampled = (
         f"The {n} domains are a seeded random sample (seed {e(str(pop['seed']))}) of the {pop['delegations']:,} "
         f"delegations in the {e(zone_name)} zone file (SOA serial {e(str(pop['soa_serial']))}). "
@@ -210,11 +243,13 @@ def render_html(r: dict) -> str:
         "How to read this report",
         sampled
         + f"Each of the {n} domains was looked up once (web and nameserver addresses, CAA, DS, DNSKEY with the AD flag) "
-        f"and every address was matched against BGP (announced prefix, origin AS) and the RPKI ROAs of {e(r['rpki_date'])}. "
-        "A prefix is <i>forgeable</i> when a ROA allows a longer prefix than is announced (and nothing longer is already "
-        "announced), or when no ROA covers it at all: an attacker can then announce a more-specific that is RPKI-valid "
-        "(or never invalid) and wins route selection everywhere - the 28 August 2026 Hetzner pattern. Each domain is "
-        "then put in exactly one exposure class, first match wins. No domain names appear below.",
+        f"and every address was matched against BGP (announced prefix, origin AS) and the RPKI ROAs of "
+        f"{e(scope['rpki_date'])}. Each domain then gets a risk score from 0 to 10: the chance that the best attack "
+        f"path yields a certificate within {prm.get('attempts', '?')} requests, under the CA/B Forum multi-perspective "
+        f"rule ({prm.get('remote_perspectives', '?')} remote perspectives, {prm.get('allowed_non_corroborations', '?')} "
+        f"may disagree), discounted by {prm.get('complexity_step', 0):.2f} per high-complexity step (the CVSS 3.1 "
+        "AC:H / AC:L ratio). Severity uses the CVSS rating scale. Derivation and references: design/formula.md. "
+        "No domain names appear below.",
     )
     if pop:
         body += f"<h2>The whole {e(zone_name)} zone</h2>" + html.explain(
@@ -236,72 +271,69 @@ def render_html(r: dict) -> str:
                     pop["sample_ds"] if pop["sample_ds"] is not None else "-",
                     f"{100 * pop['sample_ds_share']:.0f}%" if pop["sample_ds_share"] is not None else "-",
                 ],
-                ["DNSSEC secure (live)", "-", "-", f["dnssec_secure"], pct(f["dnssec_secure"])],
-                ["DNSSEC bogus (live)", "-", "-", f["dnssec_bogus"], pct(f["dnssec_bogus"])],
+                ["DNSSEC secure (live)", "-", "-", d["dnssec_secure"], pct(d["dnssec_secure"])],
+                ["DNSSEC bogus (live)", "-", "-", d["dnssec_bogus"], pct(d["dnssec_bogus"])],
             ],
             {1, 2, 3, 4},
         )
-    rk = r.get("risk")
-    if rk:
-        body += "<h2>Risk severity</h2>" + html.bar(rk["severity"], html.SEVERITY_ORDER)
-        body += html.explain(
-            "How the score works",
-            "Each domain gets a 0–10 score: the best attack path's chance of success within "
-            f"{rk['params']['attempts']} certificate requests, under the CA/B Forum multi-perspective rule "
-            f"({rk['params']['remote_perspectives']} remote perspectives, {rk['params']['allowed_non_corroborations']} may "
-            f"disagree), discounted by {rk['params']['complexity_step']:.2f} per high-complexity step (the CVSS 3.1 "
-            "AC:H/AC:L ratio). Severity uses the CVSS rating scale. Full derivation: design/formula.md.",
-        )
-        body += html.table(
-            ["severity", "domains", "share"], [[html.badge(c), v, pct(v)] for c, v in rk["severity"].items()], {1, 2}
-        )
-        body += "<h3>What drives the score</h3>" + html.table(
-            ["label", "domains", "share"], [[e(k), v, pct(v)] for k, v in rk["labels"].items()], {1, 2}
-        )
-        body += "<details><summary>Findings and fixes</summary>"
-        body += html.table(
-            ["finding", "domains", "share"], [[e(k), v, pct(v)] for k, v in rk["findings"].items()], {1, 2}
-        )
-        body += html.table(
-            ["single fix that lowers the score most", "domains"], [[e(k), v] for k, v in rk["first_fix"].items()], {1}
-        )
-        body += html.table(
-            ["fewest actions that bring the score to 0", "domains"],
-            [[e(k), v] for k, v in rk["fix_to_close"].items()],
-            {1},
-        )
-        body += "</details>"
-    body += "<h2>Exposure classes</h2>" + html.bar(r["classes"])
+
+    body += "<h2>Risk severity</h2>" + html.bar(sev, html.SEVERITY_ORDER)
     body += html.table(
-        ["class", "domains", "share", "meaning"],
-        [[html.badge(c), v, pct(v), e(CLASS_MEANING[c])] for c, v in r["classes"].items()],
+        ["severity", "score", "domains", "share"],
+        [[html.badge(c), e(v["band"]), v["domains"], pct(v["domains"])] for c, v in r["severity"].items()],
+        {2, 3},
+    )
+    body += (
+        f"<p>Mean score {mean(summ['mean_score'])}, median {mean(summ['median_score'])} over {summ['scored']} "
+        f"scored domains; <b>{summ['high_or_critical']} High or Critical ({pct(summ['high_or_critical'])})</b>.</p>"
+    )
+
+    body += "<h2>What drives the score</h2>" + html.explain(
+        "Label",
+        "The attack path with the highest score, and the defence state around it. The label names the specific "
+        "weakness; the severity is the number.",
+    )
+    body += html.table(
+        ["label", "domains", "share", "meaning"],
+        [[f"<code>{e(k)}</code>", v["domains"], pct(v["domains"]), e(v["meaning"])] for k, v in r["labels"].items()],
         {1, 2},
     )
-    body += "<h2>Facts</h2>" + html.explain(
-        "Raw counts behind the classes",
+
+    body += "<h2>Defences and findings</h2>" + html.explain(
+        "Raw counts",
         "DNSSEC <i>secure</i> = DS at the registry and the validating resolver set AD; <i>bogus</i> = DS present but "
-        "answers do not validate. <i>accounturi</i> is the CAA parameter (RFC 8657) that pins issuance to one ACME "
-        "account. <i>forgeable</i> counts domains with at least one such address; the nameserver line counts domains "
-        "where <b>every</b> nameserver is forgeable, which is what the attack needs.",
+        "answers do not validate. <i>accounturi</i> (RFC 8657) pins issuance to one ACME account. A finding counts "
+        "each domain once.",
     )
     body += html.table(
-        ["fact", "domains", "share"],
+        ["defence", "domains", "share"],
         [
-            ["DNSSEC secure (DS + validates)", f["dnssec_secure"], pct(f["dnssec_secure"])],
-            ["DNSSEC bogus (DS but does not validate)", f["dnssec_bogus"], pct(f["dnssec_bogus"])],
-            ["CAA present", f["has_caa"], pct(f["has_caa"])],
-            ["CAA with accounturi", f["pinned"], pct(f["pinned"])],
-            ["web prefix forgeable", f["web_forgeable"], pct(f["web_forgeable"])],
-            ["all nameserver prefixes forgeable", f["ns_forgeable"], pct(f["ns_forgeable"])],
-            ["some (not all) nameserver prefixes forgeable", f["ns_partial"], pct(f["ns_partial"])],
+            ["DNSSEC secure", d["dnssec_secure"], pct(d["dnssec_secure"])],
+            ["DNSSEC bogus", d["dnssec_bogus"], pct(d["dnssec_bogus"])],
+            ["unsigned", d["dnssec_unsigned"], pct(d["dnssec_unsigned"])],
+            ["CAA present", d["caa"], pct(d["caa"])],
+            ["CAA with accounturi", d["caa_accounturi"], pct(d["caa_accounturi"])],
         ],
         {1, 2},
     )
+    body += html.table(
+        ["finding", "domains", "share"], [[f"<code>{e(k)}</code>", v, pct(v)] for k, v in r["findings"].items()], {1, 2}
+    )
+
+    body += "<h2>Fixes</h2>" + html.explain(
+        "Re-scored per domain",
+        "<i>First fix</i>: the single action that lowers that domain's score most. <i>To close</i>: the fewest "
+        "actions that bring it to 0.0.",
+    )
+    body += html.table(
+        ["first fix", "domains"], [[e(k), v] for k, v in r["fixes"]["first_fix"].items()], {1}
+    ) + html.table(["to close", "domains"], [[e(k), v] for k, v in r["fixes"]["to_close"].items()], {1})
+
     body += "<h2>By nameserver operator</h2>" + html.explain(
         "Who can fix the DNS side",
         "Operator = registered domain of the nameserver hosts; a domain with nameservers at two operators counts for "
-        "both. <i>signed</i> = sampled domains that validate. The last column is the share of that operator's domains in "
-        "open or caa-erasable. An operator that signs by default and keeps tight ROAs moves all of its rows at once."
+        "both. <i>signed</i> = sampled domains that validate. An operator that signs by default moves all of its rows "
+        "at once."
         + (
             " <i>share of zone</i> and <i>DS at parent, zone-wide</i> come from the zone file (top operators only): "
             "the gap between DS published and DNSSEC validating is visible per operator."
@@ -309,39 +341,21 @@ def render_html(r: dict) -> str:
             else ""
         ),
     )
+    cols = ["operator", "domains", "signed", "mean score", "High + Critical"]
+    rows = []
+    for x in r["by_ns_operator"][:25]:
+        row = [e(x["operator"]), x["domains"], x["signed"], mean(x["mean_score"]), x["high_or_critical"]]
+        if pop:
+            z = x["zone_delegations"]
+            row += [
+                f"{100 * z / pop['delegations']:.1f}%" if z else "-",
+                f"{100 * x['zone_ds'] / z:.0f}%" if z else "-",
+            ]
+        rows.append(row)
     if pop:
-        total = pop["delegations"]
-        body += html.table(
-            [
-                "operator",
-                "sampled",
-                "signed (secure)",
-                "% open or caa-erasable",
-                "share of zone",
-                "DS at parent, zone-wide",
-            ],
-            [
-                [
-                    e(x["operator"]),
-                    x["domains"],
-                    x["signed"],
-                    f"{100 * x['share_open_or_erasable']:.0f}%",
-                    f"{100 * x['zone_delegations'] / total:.1f}%" if x["zone_delegations"] else "-",
-                    f"{100 * x['zone_ds'] / x['zone_delegations']:.0f}%" if x["zone_delegations"] else "-",
-                ]
-                for x in r["by_ns_operator"][:25]
-            ],
-            {1, 2, 3, 4, 5},
-        )
-    else:
-        body += html.table(
-            ["operator", "domains", "signed", "% open or caa-erasable"],
-            [
-                [e(x["operator"]), x["domains"], x["signed"], f"{100 * x['share_open_or_erasable']:.0f}%"]
-                for x in r["by_ns_operator"][:25]
-            ],
-            {1, 2, 3},
-        )
+        cols += ["share of zone", "DS at parent, zone-wide"]
+    body += html.table(cols, rows, set(range(1, len(cols))))
+
     body += "<h2>By hosting AS (web)</h2>" + html.explain(
         "Who can fix the routing side",
         "The AS originating the web addresses. <i>web forgeable</i> = domains whose web prefix at this AS admits an "
@@ -349,44 +363,40 @@ def render_html(r: dict) -> str:
         "what it announces (RFC 9319).",
     )
     body += html.table(
-        ["AS", "name", "domains", "web forgeable", "% open or caa-erasable"],
+        ["AS", "name", "domains", "web forgeable", "mean score", "High + Critical"],
         [
             [
                 e(x["asn"]),
                 e(x["name"] or "-"),
                 x["domains"],
                 x["web_forgeable"],
-                f"{100 * x['share_open_or_erasable']:.0f}%",
+                mean(x["mean_score"]),
+                x["high_or_critical"],
             ]
             for x in r["by_hosting_as"][:25]
         ],
-        {2, 3, 4},
+        {2, 3, 4, 5},
     )
+
     body += "<h2>What if</h2>" + html.explain(
         "Re-scoring under one fix applied to every domain",
-        "The same records, with one property overridden for all domains, re-classified with the same rules. "
-        "The informative rows are the partial ones: a single fix that moves nothing is a fix that does not work alone.",
+        "The same records and the same formula, with one fix applied everywhere. The informative rows are the "
+        "partial ones: a fix that moves nothing does not work alone.",
     )
-    rows = [
-        [
-            "<i>as measured</i>",
-            *[r["classes"][c] for c in CLASSES],
-            pct(r["classes"]["open"] + r["classes"]["caa-erasable"]),
-            "",
-        ]
-    ]
-    for label, cnt in r["what_if"].items():
-        meaning = WHAT_IF_MEANING.get(label, "The three largest nameserver operators sign every zone they host.")
-        rows.append([e(label), *[cnt[c] for c in CLASSES], pct(cnt["open"] + cnt["caa-erasable"]), e(meaning)])
-    body += html.table(["scenario", *CLASSES, "open + erasable", "reads as"], rows, set(range(1, 7)))
+    rows = [["<i>as measured</i>", *[sev[c] for c in SEVERITIES], mean(summ["mean_score"]), ""]]
+    for w in r["what_if"]:
+        rows.append(
+            [e(w["scenario"]), *[w["severity"][c] for c in SEVERITIES], mean(w["mean_score"]), e(w["reads_as"])]
+        )
+    body += html.table(["scenario", *SEVERITIES, "mean score", "reads as"], rows, set(range(1, len(SEVERITIES) + 2)))
     body += (
-        f"<p class=muted>Resolver {e(r['resolver'])}; ROAs from the RIPE NCC RPKI archive, {e(r['rpki_date'])}; "
-        f"generated {e(r['generated_at'])}. No domain names are listed.</p>"
+        f"<p class=muted>Resolver {e(scope['resolver'])}; ROAs from the RIPE NCC RPKI archive, "
+        f"{e(scope['rpki_date'])}; generated {e(r['generated_at'])}. No domain names are listed.</p>"
     )
     return html.page(
         f"hijackscan zone report - {n} {e(zone_name)} domains"
-        if r.get("tld")
+        if scope.get("tld")
         else f"hijackscan zone report - {n} domains",
         body,
-        "Exposure to certificate theft through BGP hijacks below DNS, and what CAA + DNSSEC would close",
+        "Risk of certificate theft through BGP hijacks below DNS (CVSS severity scale), and what each fix closes",
     )

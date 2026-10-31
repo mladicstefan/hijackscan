@@ -83,6 +83,26 @@ COMPLEXITY_STEP = cvss31_base(CVSS31_TEMPLATE.format(ac="H")) / cvss31_base(CVSS
 # --------------------------------------------------------------------------- severity [1, 2]
 
 SEVERITIES = ("None", "Low", "Medium", "High", "Critical", "Unknown")
+SEVERITY_BANDS = {
+    "None": "0.0",
+    "Low": "0.1-3.9",
+    "Medium": "4.0-6.9",
+    "High": "7.0-8.9",
+    "Critical": "9.0-10.0",
+    "Unknown": "not scored",
+}
+
+# What drives a domain's score: the path with the highest score, and the defences around it (design/formula.md §5.2).
+LABELS = {
+    "open-web": "no CAA; a forged more-specific route to the web server wins everywhere (HTTP-01 at any CA)",
+    "caa-bypassable": "CAA without accounturi; the same web hijack passes at the CA that CAA allows, with any account",
+    "open-dns": "no CAA, unsigned; every nameserver address can be captured, forged answers pass DNS-01 at any CA",
+    "caa-erasable": "CAA, unsigned; every nameserver address can be captured, the attacker answers 'no CAA'",
+    "ns-partial": "unsigned; some nameserver addresses can be captured, success depends on the CA's perspectives",
+    "contested": "no forged more-specific route; only an exact-prefix contest remains, with no DNS-side defence",
+    "closed": "every path blocked: DNSSEC plus CAA accounturi (or an equivalent CAA restriction)",
+    "unknown": "the record is incomplete; not scored",
+}
 
 
 def severity(score: float | None) -> str:
@@ -294,7 +314,7 @@ def assess(rec: dict, s: Scored, prm: RiskParams | None = None, ov: dict | None 
         )  # fmt: skip
 
     pinned = ov.get("pinned", s.pinned)
-    has_caa = pinned or s.has_caa
+    has_caa = pinned or ov.get("has_caa", s.has_caa)
     dnssec = "secure" if ov.get("signed") else s.dnssec
     vm = set(s.caa.validationmethods) if has_caa and not ov.get("pinned") else set()
     forbids = has_caa and not ov.get("pinned") and s.caa.issue and all(x == "" for x in s.caa.issue)

@@ -19,7 +19,8 @@ uv run hijackscan sample data/samples/zone.ee.part-* --n 100 --seed 1 --out data
 # 2. collect raw facts, one JSON per domain (about 2 min cold for 100, 0 s when cached)
 uv run hijackscan collect data/samples/ee100.txt
 
-# 3. aggregate report: report.json + report.html (no domain names), domains.jsonl (per domain, names included)
+# 3. aggregate report: report.json + report.html (no domain names),
+#    domains.jsonl + domains.html (per domain, names included; the page filters, rows expand to details)
 uv run hijackscan zone data/samples/ee100.txt --out data/out/ee/
 firefox data/out/ee/report.html
 
@@ -31,6 +32,7 @@ uv run hijackscan <name>.ee --details --html out.html
 uv run hijackscan list data/samples/ee100.txt --severity High,Critical
 uv run hijackscan list --label ns-partial --details
 uv run hijackscan list --finding NO_CAA,UNSIGNED --min-score 4 --json
+uv run hijackscan browse data/out/ee/domains.jsonl      # (re)build domains.html from a domains.jsonl
 ```
 
 Every domain gets a risk score 0–10 with the CVSS severity scale (None / Low / Medium / High / Critical, plus
@@ -55,10 +57,10 @@ head -30 data/samples/ee100.txt                                                 
 python -m json.tool data/collected/<domain>.json | less                                              # one raw record
 firefox --headless --window-size=1100,2400 --screenshot zone.png file://$PWD/data/out/ee/report.html
 
-uv run python -c "                                       # scoring and a what-if override, no network
-import json; from hijackscan.score import score
-r = json.load(open('data/collected/rnids.rs.json'))
-print(score(r).exposure, score(r, {'signed': True, 'has_caa': True, 'pinned': True}).exposure)"
+uv run python -c "                                       # risk score and a what-if fix, no network
+import json; from hijackscan.score import score; from hijackscan.risk import assess
+r = json.load(open('data/collected/rnids.rs.json')); s = score(r)
+print(assess(r, s).summary()['severity'], assess(r, s, ov={'signed': True, 'pinned': True}).score)"
 ```
 
 Global flags go before the subcommand: `--resolver host[:port]` (853 = DoT, 53 = plain), `--rpki-date YYYY-MM-DD`
@@ -70,8 +72,8 @@ Global flags go before the subcommand: `--resolver host[:port]` (853 = DoT, 53 =
 |---|---|---|
 | sample | `hijackscan/collect/zonefile.py` | reads a TLD zone (dig axfr text, split parts in order), draws `random.Random(seed).sample(sorted(delegations), n)`, writes a domain list whose `#` header carries the population facts. |
 | collect | `hijackscan/collect/` | observes only: DNS answers with AD flag and rcode, prefixes, ROAs, AS names. No judgement, no derived field. |
-| score | `hijackscan/score.py` | pure functions over one collected record; every boolean and the exposure class are derived here. `score(record, overrides)` is the what-if mechanism. |
-| risk | `hijackscan/risk.py` | pure: the 0–10 risk score and CVSS severity from a scored record (design/formula.md); paths, findings, re-scored fixes, summary / details JSON. |
+| score | `hijackscan/score.py` | pure functions over one collected record; every fact the risk model needs (DNSSEC state, CAA, forgeable addresses, operators) is derived here. |
+| risk | `hijackscan/risk.py` | pure: the 0–10 risk score and CVSS severity from a scored record (design/formula.md); paths, findings, re-scored fixes, summary / details JSON. `assess(record, scored, ov=...)` is the what-if mechanism. |
 | report | `hijackscan/report/` | renders: terminal + HTML per domain, aggregate JSON + HTML per zone. Self-contained HTML, inline CSS, no CDN. |
 
 ## Zone file and sample (`data/samples/ee100.txt`)
@@ -106,43 +108,54 @@ against the zone's is the representativeness check.
 - Per-domain failures land in `errors[]`; the batch never aborts. Records younger than `--max-age` (7 days) are
   reused. 8 domains in parallel, DNS capped at 50 qps.
 
-## Scoring (`score.py`)
+## Facts (`score.py`)
 
 Per address: `limit = 24 (v4) | 48 (v6)`; no covering ROA → `forgeable_more_specific = true`,
 `rpki_derived = not-found`; else `announced_len < min(max(maxLength), limit)`. `roa_too_permissive` =
 any ROA maxLength > announced length (RFC 9319 hygiene). Exact-prefix contest is always possible absent ASPA.
 
 Per domain: `dnssec` = unsigned (no DS) | secure (DS and A/AAAA with AD) | bogus (DS but SERVFAIL or no AD);
-`web_forgeable` (any web address), `ns_forgeable` (**every** nameserver address — a CA's resolver and each MPIC
-perspective may ask any of them; `ns_forgeable_hosts`/`ns_hosts` records partial capture); CAA parsed from the first label with records (`issue`, `issuewild`,
-`accounturi`, `validationmethods`); `ns_operators` (registered domain of each NS host) and `hosting_asns`.
+`web_forgeable`, `ns_forgeable_hosts` / `ns_hosts`; CAA parsed from the first label with records (`issue`,
+`issuewild`, `accounturi`, `validationmethods`); `ns_operators` (registered domain of each NS host) and `hosting_asns`.
 
-Exposure class, first match wins:
+## Risk (`risk.py`, [design/formula.md](design/formula.md))
 
-| class | condition |
-|---|---|
-| `closed` | pinned (`accounturi`) and signed |
-| `caa-only` | CAA and signed, no account pin |
-| `caa-erasable` | CAA, unsigned, every nameserver prefix forgeable → forge "no CAA" |
-| `open` | no CAA and the web prefix or every nameserver prefix forgeable (the 28 Aug 2026 pattern) |
-| `contested-only` | no win-everywhere hijack: exact-prefix contest or partial nameserver capture only, and no DNS-side defence |
+Three attack paths per domain, each scored 0–10; the domain's score is the highest open path:
 
-Remediations are listed per owner (domain-owner, dns-host, hosting-provider, registrar), DNS-side fixes first.
+| path | how | blocked by |
+|---|---|---|
+| `web` | forged RPKI-valid more-specific of the web prefix, pass HTTP-01 | CAA `accounturi`, CAA `issue ";"`, `validationmethods` without http-01 |
+| `ns` | capture nameserver prefixes (all or some), forge DNS-01 / "no CAA" | DNSSEC |
+| `contest` | exact-prefix origin contest | both of the above |
 
-## Results, 100 `.rs` domains (collected 2026-10-31, ROAs of 2026-10-31)
+`Score = 10 × I × max(open × K × L)`, with `L = 1 − (1 − P)^N` (N = 5 attempts), `P` = the chance that the CA's
+primary and at least r − f of its r remote perspectives (CA/B Forum BR 3.2.2.9) reach the attacker, and
+`K = 0.87^h` per high-complexity step (the CVSS 3.1 AC:H / AC:L ratio). Severity is the CVSS rating scale:
+None 0.0, Low 0.1–3.9, Medium 4.0–6.9, High 7.0–8.9, Critical 9.0–10.0, Unknown when the record is incomplete.
+Partial nameserver capture counts: 2 of 3 nameserver addresses captured scores 8.0 High.
 
-See `data/out/report.html`. Headline: no domain is `closed` or `caa-only`; nobody uses `accounturi`; CAA on 8,
-DNSSEC validating on 4. Roughly a quarter are `open` — hosted behind loose-maxLength ROAs (Hetzner `/16 → 24`,
-CloudFront `/16 → 24`, Yettel, Vultr) or in space with no ROA at all. What-if rows: signing alone and CAA alone
-each move almost nothing (the attack erases unsigned CAA; DNSSEC without CAA restricts nobody); only both together
-close, and that row is `closed` by definition.
+Labels name what drives the score: `open-web`, `caa-bypassable`, `open-dns`, `caa-erasable`, `ns-partial`,
+`contested`, `closed`, `unknown`. Every domain also lists its findings with evidence, the single fix that lowers its
+score most and the fewest actions that bring it to 0.0.
+
+## Results (collected 2026-10-31, ROAs of 2026-10-31)
+
+| sample | Critical | High | Medium | Low | None | Unknown |
+|---|---|---|---|---|---|---|
+| 100 `.rs` (`data/out/rs/`) | 16 | 5 | 0 | 60 | 0 | 19 |
+| 100 `.ee` (`data/out/ee/`) | 36 | 1 | 0 | 52 | 0 | 11 |
+
+Nobody uses `accounturi`, so no domain is None. Critical and High are hosted behind loose-maxLength ROAs (Hetzner
+`/16 → 24`, CloudFront `/16 → 24`, Yettel, Vultr) or in space with no ROA at all. What-if rows: DNSSEC alone and CAA
+alone move almost nothing; CAA + accounturi closes the web path but unsigned zones stay open through their
+nameservers; only both together reach None. Most Unknown `.rs` records are a fixed Windows cache bug: re-collect
+with `--force`.
 
 What was checked after the first numbers looked too good: (1) re-scoring against a different archive day moves
-only domains whose exposure hinged on one nameserver — so (2) `ns_forgeable` now requires **every** nameserver,
-partial capture is reported as k of n and stays `contested-only`; (3) RIPEstat `routing-status` confirms no
-more-specific is already announced inside each forgeable prefix (e.g. Amazon announces /24s elsewhere in
-`18.172.0.0/16`, not inside the /21 in question); (4) "no ROA" is reported as *unknown origin, effectively
-forgeable* rather than *valid*.
+only domains whose result hinged on one nameserver — so (2) partial nameserver capture is scored by its MPIC
+success chance instead of counting as full capture; (3) RIPEstat `routing-status` confirms no more-specific is
+already announced inside each forgeable prefix (e.g. Amazon announces /24s elsewhere in `18.172.0.0/16`, not inside
+the /21 in question); (4) "no ROA" is reported as *unknown origin, effectively forgeable* rather than *valid*.
 
 
 ## Data

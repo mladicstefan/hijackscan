@@ -1,9 +1,8 @@
-"""Derivation and scoring: pure functions over one raw collected record. No network, no I/O.
+"""Derivation: pure functions over one raw collected record. No network, no I/O.
 
-Everything a report says about a domain is computed here from data/collected/<domain>.json, so a
-verdict can always be traced back to observed answers. `score(record, overrides)` is also the
-what-if mechanism: overriding `signed`, `has_caa`, `pinned`, `web_forgeable` or `ns_forgeable`
-re-classifies the domain as if that fix were applied.
+Every fact the risk model (risk.py) needs is derived here from data/collected/<domain>.json, so a
+score can always be traced back to observed answers. `score(record, overrides)` overrides
+`signed`, `has_caa`, `pinned`, `web_forgeable` or `ns_forgeable` for quick experiments.
 """
 
 from __future__ import annotations
@@ -12,9 +11,6 @@ import ipaddress
 from dataclasses import asdict, dataclass, field
 
 from publicsuffix2 import get_sld
-
-CLASSES = ("closed", "caa-only", "caa-erasable", "open", "contested-only")
-
 
 # --------------------------------------------------------------------------- per address
 
@@ -105,13 +101,6 @@ def parse_caa(records: list[str]) -> Caa:
 
 
 @dataclass
-class Remediation:
-    fix: str
-    owner: str  # domain-owner | dns-host | hosting-provider | registrar | registry
-    closes: str
-
-
-@dataclass
 class Scored:
     domain: str
     dnssec: str  # unsigned | secure | bogus
@@ -128,10 +117,6 @@ class Scored:
     ns_addresses: dict[str, list[AddressDerived]]
     ns_operators: list[str]
     hosting_asns: dict[str, str | None]  # asn -> name
-    exposure: str
-    reason: str
-    attack_path: str
-    remediations: list[Remediation]
     overrides: dict
     errors: list[str]
 
@@ -184,7 +169,6 @@ def score(rec: dict, overrides: dict | None = None) -> Scored:
         bool(ns_with_addr) and all(a.forgeable_more_specific for v in ns_with_addr.values() for a in v),
     )
 
-    exposure, reason, attack = classify(signed, has_caa, pinned, web_forgeable, ns_forgeable)
     hosting = {str(asn): (rec.get("asns", {}).get(str(asn)) or {}).get("name") for a in web for asn in a.origin_asns}
 
     return Scored(
@@ -203,105 +187,6 @@ def score(rec: dict, overrides: dict | None = None) -> Scored:
         ns_addresses=ns,
         ns_operators=_ns_operators(rec),
         hosting_asns=hosting,
-        exposure=exposure,
-        reason=reason,
-        attack_path=attack,
-        remediations=remediations(signed, has_caa, pinned, web_forgeable, ns_forgeable, caa),
         overrides=ov,
         errors=rec.get("errors", []),
     )
-
-
-def classify(
-    signed: bool, has_caa: bool, pinned: bool, web_forgeable: bool, ns_forgeable: bool
-) -> tuple[str, str, str]:
-    """Exposure class, one-line reason, attack path. First match wins."""
-    if pinned and signed:
-        return (
-            "closed",
-            "CAA pins issuance to one ACME account and the zone validates, so a CA validating DNSSEC cannot be fooled",
-            "none: a hijack of the web or nameserver prefixes cannot satisfy the pinned account",
-        )
-    if has_caa and signed:
-        return (
-            "caa-only",
-            "CAA restricts the CA but not the account; the zone validates",
-            "hijack the web prefix, request a certificate from the allowed CA with any account",
-        )
-    if has_caa and not signed and ns_forgeable:
-        return (
-            "caa-erasable",
-            "CAA exists but the zone is unsigned and every nameserver prefix is forgeable",
-            "hijack all nameserver prefixes with RPKI-valid more-specifics, answer 'no CAA', then pass validation",
-        )
-    if not has_caa and (web_forgeable or ns_forgeable):
-        return (
-            "open",
-            "no CAA, and a more-specific hijack can capture the web prefix or every nameserver prefix",
-            "announce the forged more-specific(s), win route selection everywhere, pass HTTP-01 or DNS-01",
-        )
-    if not web_forgeable and not ns_forgeable:
-        return (
-            "contested-only",
-            "no more-specific hijack captures the web prefix or all nameservers; an exact-prefix contest remains, "
-            "with no DNS-side defence",
-            "announce the same prefix with the victim's origin AS (or capture a subset of nameservers); "
-            "win only where the attacker's path is preferred",
-        )
-    return (
-        "open",
-        "CAA without DNSSEC and a forgeable web prefix",
-        "hijack the web prefix, pass HTTP-01 at the CA named in CAA with any account",
-    )
-
-
-def remediations(
-    signed: bool, has_caa: bool, pinned: bool, web_forgeable: bool, ns_forgeable: bool, caa: Caa
-) -> list[Remediation]:
-    out: list[Remediation] = []
-    if not has_caa:
-        out.append(
-            Remediation(
-                "publish CAA with issue=<your CA>; accounturi=<ACME account>",
-                "domain-owner",
-                "mis-issuance by every other CA and account",
-            )
-        )
-    elif not pinned:
-        out.append(
-            Remediation(
-                "add accounturi (RFC 8657) to the CAA issue record",
-                "domain-owner",
-                "issuance through any account at the allowed CA",
-            )
-        )
-    if not signed:
-        out.append(
-            Remediation(
-                "sign the zone and publish the DS at the registrar",
-                "dns-host",
-                "forged 'no CAA' answers after a nameserver hijack",
-            )
-        )
-        out.append(
-            Remediation(
-                "enable DNSSEC for the domain (DS publication)", "registrar", "the same, from the registrar side"
-            )
-        )
-    if ns_forgeable:
-        out.append(
-            Remediation(
-                "set ROA maxLength equal to the announced prefix length (RFC 9319) for nameserver prefixes",
-                "dns-host",
-                "RPKI-valid more-specific hijacks of the nameservers",
-            )
-        )
-    if web_forgeable:
-        out.append(
-            Remediation(
-                "set ROA maxLength equal to the announced prefix length (RFC 9319) for web prefixes",
-                "hosting-provider",
-                "RPKI-valid more-specific hijacks of the web servers",
-            )
-        )
-    return out
