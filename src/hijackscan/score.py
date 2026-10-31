@@ -52,7 +52,15 @@ def derive_address(ip: str, raw: dict) -> AddressDerived:
     }
     if not roas:
         return AddressDerived(
-            ip, prefix, raw.get("origin_asns", []), raw.get("rpki_state"), "not-found", True, False, roas=[], **extra
+            ip=ip,
+            prefix=prefix,
+            origin_asns=raw.get("origin_asns", []),
+            rpki_state=raw.get("rpki_state"),
+            rpki_derived="not-found",
+            forgeable_more_specific=announced_len < limit,
+            roa_too_permissive=False,
+            roas=[],
+            **extra,
         )
     longest_allowed = max(r["max_length"] for r in roas)
     return AddressDerived(
