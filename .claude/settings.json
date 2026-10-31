@@ -1,0 +1,46 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
+  "permissions": {
+    "deny": [
+      "Bash(git push)",
+      "Bash(git push *)",
+      "Bash(gh pr merge *)",
+      "Bash(gh repo sync *)",
+      "mcp__github__push_files",
+      "mcp__github__create_or_update_file",
+      "mcp__github__delete_file",
+      "mcp__github__merge_pull_request",
+      "mcp__github__create_branch",
+      "Edit(.git/hooks/**)",
+      "Write(.git/hooks/**)",
+      "Edit(.claude/settings.json)",
+      "Write(.claude/settings.json)",
+      "Edit(.claude/hooks/**)",
+      "Write(.claude/hooks/**)"
+    ],
+    "ask": [
+      "Bash(git commit)",
+      "Bash(git commit *)",
+      "Bash(git rebase *)",
+      "Bash(git reset --hard *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/git-guard.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

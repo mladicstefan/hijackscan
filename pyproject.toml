@@ -1,0 +1,44 @@
+[project]
+name = "hijackscan"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "mladicstefan", email = "stefan@mladicstefan.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "bgpy-pkg==13.0.13",
+    "httpx>=0.28.1",
+    "psycopg[binary]>=3.3.6",
+    "publicsuffix2>=2.20191221",
+    "pyyaml>=6.0.3",
+    "tenacity>=9.2.1",
+    "tqdm>=4.67.1",
+    "tranco>=0.8.1",
+]
+
+[project.scripts]
+hijackscan = "hijackscan:main"
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.17.3",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not integration'"
+markers = ["integration: needs network; run with -m integration"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

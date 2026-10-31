@@ -1,0 +1,54 @@
+# hijackscan fetch configuration. Every value can be overridden by a CLI flag.
+# Dates are ISO (YYYY-MM-DD); the literal string "today" means the run date (UTC).
+
+contact_email: stefan@mladicstefan.com
+data_dir: data
+user_agent: "hijackscan/0.1 (DNS SEC Hackathon 2026; {email})"
+max_concurrency_per_host: 4
+retry_attempts: 5
+timeout_seconds: 60
+
+caida:
+  base_url: https://publicdata.caida.org/datasets/as-relationships/serial-2/
+  date: 2026-08-01          # monthly file; always the 1st of the month
+
+rpki:
+  base_url: https://ftp.ripe.net/rpki/
+  fallback_base_url: https://ftp.ripe.net/ripe/rpki/
+  tas: [afrinic, apnic, arin, lacnic, ripencc]
+  dates: [2026-08-27, 2026-08-28, 2026-08-29, today]
+  files: [roas.csv.xz, output.json.xz, routinator.log]
+
+ris:
+  base_url: https://data.ris.ripe.net/
+  # Collectors with data for 2026-08 (probed 2026-10-31; rrc02/08/09/17 return 404).
+  rrcs: ["00", "01", "03", "04", "05", "06", "07", "10", "11", "12", "13", "14", "15", "16",
+         "18", "19", "20", "21", "22", "23", "24", "25", "26"]
+  window_start: 2026-08-27T20:00Z
+  window_end: 2026-08-30T12:00Z
+  confirm_above_bytes: 2000000000
+
+tranco:
+  fallback_url: https://tranco-list.eu/top-1m.csv.zip
+  id_url: https://tranco-list.eu/top-1m-id
+
+bgpy_smoke:
+  dl_time: 2026-08-01       # CAIDA month BGPy builds its graph from (same as caida.date)
+  num_trials: 20
+  percent_adoptions: [0.5]
+  parse_cpus: null          # null = all cores
+
+crtsh:
+  host: crt.sh
+  port: 5432
+  user: guest
+  dbname: certwatch
+  tlds: [rs, xn--90a3ac]
+  # Decision 2026-10-31: sample the last TWO months (Sep + Oct 2026), not two years.
+  # crt.sh is shared and often at max_client_conn; two months is enough for a current sample.
+  start: 2026-09-01
+  end: today
+  statement_timeout: 30min
+  split_threshold_seconds: 600   # a chunk slower than this makes later chunks half as long
+  min_chunk_days: 7
+  retries: 3
