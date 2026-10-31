@@ -1,5 +1,4 @@
 .venv/
-data/
 bgpy_runs/
 __pycache__/
 *.pyc
