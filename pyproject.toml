@@ -1,21 +1,15 @@
 [project]
 name = "hijackscan"
 version = "0.1.0"
-description = "Add your description here"
+description = "Exposure of a namespace to certificate theft through BGP hijacks below DNS"
 readme = "README.md"
 authors = [
     { name = "mladicstefan", email = "stefan@mladicstefan.com" }
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "bgpy-pkg==13.0.13",
+    "dnspython>=2.9.1",
     "httpx>=0.28.1",
-    "psycopg[binary]>=3.3.6",
-    "publicsuffix2>=2.20191221",
-    "pyyaml>=6.0.3",
-    "tenacity>=9.2.1",
-    "tqdm>=4.67.1",
-    "tranco>=0.8.1",
 ]
 
 [project.scripts]
@@ -27,14 +21,8 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
-    "pytest>=9.0.2",
     "ruff>=0.17.3",
 ]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-m 'not integration'"
-markers = ["integration: needs network; run with -m integration"]
 
 [tool.ruff]
 line-length = 120
