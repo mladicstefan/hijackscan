@@ -4,7 +4,7 @@ Status: implemented in `src/hijackscan/risk.py` (see §11). Date: 2026-10-31.
 
 ## 1. Problem
 
-`score.py` currently puts every domain into one of five classes (`closed`, `caa-only`, `caa-erasable`, `open`,
+`score.py` used to put every domain into one of five classes (`closed`, `caa-only`, `caa-erasable`, `open`,
 `contested-only`) with first-match-wins rules. On the 100-domain sample this has four weaknesses:
 
 - **Missing data reads as safe.** All 13 domains with collection errors land in `contested-only`; 10 domains have
@@ -209,8 +209,29 @@ Findings (`kind`): exposure — `WEB_MORE_SPECIFIC`, `NS_CAPTURABLE`, `EXACT_PRE
 missing-defence — `NO_CAA`, `CAA_NO_ACCOUNTURI`, `UNSIGNED`, `DNSSEC_BOGUS`; hygiene — `ROA_TOO_PERMISSIVE`;
 data — `DATA_INCOMPLETE`. An exposure finding carries the severity of the path it opens.
 
-`report.json` gains a `risk` block: counts per severity, label and finding, the mean score, the most common
-first fix and closing fix, and the parameter values used.
+`report.json` (aggregate, no domain names, schema 2):
+
+```json
+{
+  "schema_version": 2,
+  "scope":    { "domains": 100, "tld": "ee", "resolver": "...", "rpki_date": "2026-10-31", "population": { "...": "zone file facts" } },
+  "model":    { "formula": "design/formula.md", "score": "...", "scale": { "High": "7.0-8.9", "...": "..." }, "params": { "...": "..." } },
+  "severity": { "Critical": { "band": "9.0-10.0", "domains": 36, "share": 0.36 }, "...": "..." },
+  "summary":  { "severity": { "...": "..." }, "scored": 89, "mean_score": 4.6, "median_score": 1.1, "high_or_critical": 37 },
+  "labels":   { "open-web": { "domains": 35, "meaning": "..." }, "...": "..." },
+  "findings": { "UNSIGNED": 62, "...": "..." },
+  "defences": { "dnssec_secure": 25, "dnssec_bogus": 0, "dnssec_unsigned": 75, "caa": 3, "caa_accounturi": 0 },
+  "fixes":    { "first_fix": { "<action>": 30 }, "to_close": { "<actions>": 70 } },
+  "by_ns_operator": [ { "operator": "zone.ee", "domains": 34, "severity": { "...": "..." }, "mean_score": 7.1,
+                        "high_or_critical": 25, "signed": 22, "zone_delegations": 78223, "zone_ds": 50446 } ],
+  "by_hosting_as":  [ { "asn": "24940", "name": "HETZNER-AS", "domains": 12, "severity": { "...": "..." },
+                        "mean_score": 9.2, "high_or_critical": 11, "web_forgeable": 11 } ],
+  "what_if":  [ { "scenario": "sign all zones", "overrides": { "signed": true }, "reads_as": "...",
+                  "severity": { "...": "..." }, "mean_score": 4.1, "high_or_critical": 35 } ]
+}
+```
+
+The numbers above are illustrative; see the generated file.
 
 ## 9. Results on the 100-domain sample (2026-10-31 data, computed by `risk.py`)
 
@@ -241,7 +262,12 @@ The 13 collection errors were a Windows file-name bug (IPv6 colons in RIPEstat c
 - **Global propagation of a forgeable more-specific is assumed (p = 1).** Filtering reduced propagation slightly in
   the 2026 incident [9].
 - **Impact is constant.** Domain sensitivity is not modelled yet (`I` hook).
-- **ASPA is ignored.** An ASPA record (as Hetzner added after the incident [9]) would reduce `p` for some paths.
+- **ASPA is out of scope, deliberately.** ASPA lets routers reject forged AS paths, but on 2026-10-31 only 3,928
+  ASPA records existed across all five RPKI trust anchors, router-side verification deployment is unmeasured, and
+  protection needs every network on the forwarding path to verify (a verifying network whose upstream accepted a
+  forged more-specific still forwards to the attacker). Records are also bypassable: Hetzner's ASPA (published after
+  the incident [9]) lists nine providers, three of which (AS2914, AS3356, AS6453) publish no ASPA, so a path forged
+  through them passes verification. Modelling it would not change any score today.
 - **"No ROA" counts as forgeable at any prefix length** (inherited from `score.py`). For a /24 (IPv4) or /48 (IPv6)
   without a ROA, no routable more-specific exists; the attacker gets an exact-prefix contest that ROV never drops,
   not a guaranteed global win. Those domains may be over-scored; to be decided.
@@ -253,6 +279,7 @@ The 13 collection errors were a Windows file-name bug (IPv6 colons in RIPEstat c
 | `src/hijackscan/risk.py` | The formula: CVSS 3.1 base-score equations (so 0.87 is computed, not typed in), MPIC quorum, paths, findings, fix re-scoring, summary/details JSON. Every constant cites its reference number. |
 | `src/hijackscan/report/risk_view.py` | Summary and details rendering for terminal and HTML. |
 | `src/hijackscan/report/listing.py` | `hijackscan list`: filter and sort collected records, no network. |
+| `src/hijackscan/report/browse.py` | `hijackscan browse <domains.jsonl>`: `domains.html`, one row per domain (summary), click for details; filters by severity, label, finding and name. `zone` writes it too. |
 | `src/hijackscan/report/zone.py` | Adds the `risk` block to `report.json`, writes `domains.jsonl`, adds the severity section to `report.html`. |
 | `src/hijackscan/report/domain.py` | Summary by default, `--details` for the rest; the HTML page folds the details. |
 
@@ -267,8 +294,10 @@ hijackscan zone data/samples/dev100.txt --out data/out/   # report.json + report
 
 Exit code of `hijackscan <domain>`: 0 None, 1 Low or Medium, 2 High or Critical, 3 Unknown.
 
-The legacy exposure classes (`closed`, `caa-only`, `caa-erasable`, `open`, `contested-only`) are still computed by
-`score.py` and still appear in `report.json` and the raw-facts section, for comparison.
+The previous exposure classes (§1) are removed: `score.py` only derives facts, and `report.json`, `report.html` and
+the per-domain output are built entirely from the risk model. `report.json` (schema 2) has `scope`, `model`
+(formula, scale, parameters), `severity`, `summary`, `labels`, `findings`, `defences`, `fixes`, `by_ns_operator`,
+`by_hosting_as` and `what_if`; every group carries severity counts and the mean score.
 
 ## References
 

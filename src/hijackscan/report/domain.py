@@ -20,20 +20,6 @@ from . import html, risk_view
 
 EXIT = {"None": 0, "Low": 1, "Medium": 1, "High": 2, "Critical": 2, "Unknown": 3}
 
-CLASS_MEANING = {
-    "closed": "CAA pins issuance to one ACME account and the zone validates: a CA that validates DNSSEC "
-    "cannot be steered to issue, whatever happens in routing.",
-    "caa-only": "CAA restricts the CA and the zone validates, but any account at that CA may still issue "
-    "after a web hijack.",
-    "caa-erasable": "CAA exists, but the zone is unsigned and every nameserver can be captured: the attacker "
-    "answers 'no CAA' and validation proceeds.",
-    "open": "No CAA, and a more-specific hijack captures the web prefix or every nameserver: the 28 August "
-    "2026 pattern applies as is.",
-    "contested-only": "No more-specific hijack is possible (ROAs are tight or nothing longer is routable). "
-    "What remains is an exact-prefix origin contest that wins only part of the Internet, or a "
-    "partial nameserver capture, and there is no DNS-side defence either.",
-}
-
 DNSSEC_MEANING = {
     "unsigned": "no DS at the registry: validators cannot verify anything for this zone",
     "secure": "DS present and the resolver set AD on the answers: a validating CA rejects forged answers",
@@ -249,8 +235,8 @@ def render_text(s: Scored, rec: dict) -> str:
     ns_head = (
         f"all {s.ns_hosts} nameservers FORGEABLE: DNS-01 and 'no CAA' answers can be forged"
         if s.ns_forgeable
-        else f"{s.ns_forgeable_hosts} of {s.ns_hosts} nameservers forgeable: partial capture only, "
-        "a CA's resolver may ask another one"
+        else f"{s.ns_forgeable_hosts} of {s.ns_hosts} nameservers forgeable: partial capture, "
+        "succeeds when enough CA perspectives ask a captured one (see the risk calculation)"
         if s.ns_forgeable_hosts
         else "none forgeable"
     )
@@ -261,11 +247,6 @@ def render_text(s: Scored, rec: dict) -> str:
             L += ["    " + x for x in _story_lines(address_story(a, asns, day, caps))]
         if not addrs:
             L.append("    (no address)")
-    L += ["", "REMEDIATIONS  (DNS-side fixes first: they hold regardless of routing)"]
-    for r in s.remediations:
-        L += [f"  {r.owner:<17} {r.fix}", f"  {'':<17} closes: {r.closes}"]
-    if not s.remediations:
-        L.append("  none needed")
     if s.errors:
         L.append("ERRORS  " + "; ".join(s.errors))
     return "\n".join(L)
@@ -300,15 +281,7 @@ def render_html(s: Scored, rec: dict, r: Risk | None = None) -> str:
     asns, day, caps = rec.get("asns", {}), rec["rpki_date"], routable_caps(rec)
     n_ds, n_key = len(rec["ds"]["records"]), len(rec["dnskey"]["records"])
     head = risk_view.summary_html(r) + risk_view.details_html(r)
-    body = f"<p>{html.badge(s.exposure)} <b>{e(CLASS_MEANING[s.exposure])}</b></p>"
-    body += f"<p><b>Why here:</b> {e(s.reason)}<br><b>Attack path:</b> {e(s.attack_path)}</p>"
-    body += html.explain(
-        "Exposure classes, in the order they are tested",
-        "".join(f"<li>{html.badge(c)} {e(m)}</li>" for c, m in CLASS_MEANING.items()),
-        as_list=True,
-    )
-
-    body += "<h2>DNS</h2>" + html.explain(
+    body = "<h2>DNS</h2>" + html.explain(
         "What matters",
         "DNSSEC decides whether a CA validating DNSSEC can be fed forged answers; CAA decides which CA "
         "and which ACME account may issue. Both must hold: CAA in an unsigned zone can be erased by a nameserver hijack.",
@@ -359,34 +332,25 @@ def render_html(s: Scored, rec: dict, r: Risk | None = None) -> str:
     ns_note = (
         f"all {s.ns_hosts} nameservers forgeable: DNS-01 and 'no CAA' answers can be forged"
         if s.ns_forgeable
-        else f"{s.ns_forgeable_hosts} of {s.ns_hosts} nameservers forgeable: partial capture only, a CA's resolver may ask another one"
+        else f"{s.ns_forgeable_hosts} of {s.ns_hosts} nameservers forgeable: partial capture, succeeds when enough CA perspectives ask a captured one"
         if s.ns_forgeable_hosts
         else "none forgeable"
     )
     body += f"<h2>Nameserver addresses <span class={'bad' if s.ns_forgeable else 'ok'}>— {e(ns_note)}</span></h2>"
     body += html.explain(
         "Why every nameserver counts",
-        "A CA's resolver, and each of its remote MPIC perspectives, may ask any of the "
-        "nameservers over IPv4 or IPv6. Forging 'no CAA' or passing DNS-01 reliably needs every nameserver address captured.",
+        "A CA's resolver, and each of its remote MPIC perspectives, may ask any of the nameservers over IPv4 or IPv6. "
+        "The share of captured nameserver addresses sets the chance that enough perspectives see forged answers; "
+        "all captured means near certain, some captured means a partial chance (see the risk calculation above).",
     )
     for host, addrs in s.ns_addresses.items():
         body += f"<h3><code>{e(host)}</code></h3>" + (
             "".join(_story_html(address_story(a, asns, day, caps)) for a in addrs) or "<p>(no address)</p>"
         )
 
-    body += "<h2>Remediations</h2>" + html.explain(
-        "Order",
-        "DNS-side fixes first: they hold regardless of what routing does. ROA fixes close the "
-        "more-specific hijack but leave the exact-prefix contest.",
-    )
-    body += (
-        html.table(["owner", "fix", "closes"], [[e(r.owner), e(r.fix), e(r.closes)] for r in s.remediations])
-        if s.remediations
-        else "<p>none needed</p>"
-    )
     if s.errors:
         body += "<p class=bad>Errors: " + e("; ".join(s.errors)) + "</p>"
-    body = head + "<details><summary>Raw facts: DNS, addresses, ROAs, legacy class</summary>" + body + "</details>"
+    body = head + "<details><summary>Raw facts: DNS, addresses, ROAs</summary>" + body + "</details>"
     return html.page(
         f"hijackscan: {s.domain}",
         body,

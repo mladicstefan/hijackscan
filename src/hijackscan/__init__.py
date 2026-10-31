@@ -5,6 +5,7 @@ hijackscan collect <domain|domains.txt> [--force]       raw facts -> data/collec
 hijackscan zone <domains.txt> --out dir/                 zone report (report.json + report.html)
 hijackscan <domain> [--details] [--html file]            one domain: risk summary; --details for everything
 hijackscan list [domains.txt|domain] [filters]           filter and sort collected domains by risk (no network)
+hijackscan browse <domains.jsonl> [--out file]           one HTML page of every domain, details on click
 """
 
 from __future__ import annotations
@@ -53,6 +54,9 @@ def parser() -> argparse.ArgumentParser:
     d.add_argument("--html", type=Path)
     d.add_argument("--force", action="store_true")
     d.add_argument("--details", action="store_true", help="calculation, findings, vectors, references, raw facts")
+    b = sub.add_parser("browse", help="HTML page of every domain in a domains.jsonl, worst first, details on click")
+    b.add_argument("jsonl", type=Path, help="a domains.jsonl written by `hijackscan zone`")
+    b.add_argument("--out", type=Path, help="default: domains.html next to the jsonl")
     li = sub.add_parser("list", help="filter and sort collected domains by risk (reads data/collected, no network)")
     li.add_argument("target", nargs="?", help="a domain or a file of domains (default: every collected record)")
     li.add_argument(
@@ -69,7 +73,11 @@ def parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     argv = sys.argv[1:]
-    if argv and not argv[0].startswith("-") and argv[0] not in ("sample", "collect", "zone", "domain", "list"):
+    if (
+        argv
+        and not argv[0].startswith("-")
+        and argv[0] not in ("sample", "collect", "zone", "domain", "list", "browse")
+    ):
         argv = ["domain", *argv]  # `hijackscan blic.rs`
     a = parser().parse_args(argv)
     logging.basicConfig(
@@ -114,6 +122,13 @@ def main() -> None:
         from .report.domain import domain_report
 
         sys.exit(domain_report(cfg, a.name.lower().rstrip("."), html_path=a.html, force=a.force, details=a.details))
+    if a.cmd == "browse":
+        from .report.browse import browse
+
+        if not a.jsonl.is_file():
+            raise SystemExit(f"no such file: {a.jsonl}")
+        print(f"wrote {browse(a.jsonl, a.out)}")
+        return
     if a.cmd == "list":
         from .report.listing import listing
 
