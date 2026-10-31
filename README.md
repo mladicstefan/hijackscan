@@ -3,20 +3,25 @@
 How exposed are the domains of a TLD (`.ee` from its zone file, `.rs` from a list) to certificate theft through
 BGP hijacks below DNS, and how much of it does DNSSEC + CAA close? (team dogma, DNS SEC Hackathon 2026)
 
-## Usage
+Two parts, each documented end to end:
 
-Four commands, in this order, plus `list` to filter the results. Every step is cached, so re-running is cheap.
+- **[docs/scanner.md](docs/scanner.md)**: the scanner. Sample a zone, collect DNS and routing facts, derive
+  an exposure class and a 0–10 risk score, report per domain and per zone.
+- **[docs/lab.md](docs/lab.md)**: the validation lab. A sealed containerlab fabric where the unmodified scanner
+  scans one domain and a minimal CA then tries to issue to an attacker; every verdict is proven by the CA's
+  decision and flipped by negative controls.
+
+Design and results: [design/formula.md](design/formula.md) (the risk formula), [design/lab.md](design/lab.md)
+(lab decisions), [lab/demo.md](lab/demo.md) (the last lab run, generated from its logs).
+
+## Quick start
 
 ```bash
 uv sync                                                  # once
 
-# 0. make sure the resolver validates DNSSEC (the collector refuses to start otherwise)
-uv run scripts/check_resolver.py                         # exit 0 = Quad9 over DoT validates
-
-# 1. draw a reproducible sample from the zone file (2 s; same seed = same 100 names)
+# scanner
+uv run scripts/check_resolver.py                         # the resolver must validate DNSSEC
 uv run hijackscan sample data/samples/zone.ee.part-* --n 100 --seed 1 --out data/samples/ee100.txt
-
-# 2. collect raw facts, one JSON per domain (about 2 min cold for 100, 0 s when cached)
 uv run hijackscan collect data/samples/ee100.txt
 
 # 3. aggregate report: report.json + report.html (no domain names),
@@ -159,14 +164,13 @@ already announced inside each forgeable prefix (e.g. Amazon announces /24s elsew
 the /21 in question); (4) "no ROA" is reported as *unknown origin, effectively forgeable* rather than *valid*.
 
 
-## Data
+## Layout
 
 | path | what |
 |---|---|
-| `data/samples/zone.ee.part-*` | the `.ee` zone, dig axfr text, 2026-10-31 |
-| `data/samples/ee100.txt` | 100 `.ee` delegations, seed 1, with the population header |
-| `data/samples/dev100.txt` | the 100 `.rs` domains (top `.rs` names of Tranco list 746VX, 2026-10-30) |
-| `data/collected/` | raw record per domain |
-| `data/cache/ripestat/` | RIPEstat responses |
-| `data/rpki/<date>/` | RPKI archive CSVs (~15 MB per day) |
-| `data/out/` | zone report |
+| `src/hijackscan/collect/` | observes: zone file sampler, DNS, RIPEstat, the ROA archive |
+| `src/hijackscan/score.py`, `risk.py` | pure: exposure class, risk score, fixes |
+| `src/hijackscan/report/` | terminal, HTML and zone reports, the `list` view |
+| `lab/` | the containerlab lab: `labctl.py`, scenario files, renderers, the CA, the feed, the matrix and controls |
+| `design/` | formula and lab decisions |
+| `data/samples/` | the `.ee` zone file and the two 100-domain samples (everything else under `data/` is generated) |

@@ -1,0 +1,5 @@
+# RFC 9319: ROA maxLength equals the announced length; the forged /28 becomes RPKI-invalid.
+extends: baseline.yml
+name: tight-maxlength
+roas:
+  - {prefix: 203.0.113.0/24, asn: 65000, max_length: 24}
