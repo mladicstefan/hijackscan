@@ -181,7 +181,7 @@ next hop; the management network reports `enable_ip_masquerade: false`; and an e
 
     lab/scenarios/{baseline,tight-maxlength,caa-unsigned,caa-signed}.yml
     lab/labctl.py            render | apply | deploy | destroy | check | attack | scan | ca | matrix
-    lab/matrix.py            the validation matrix with its expected results (logs in lab/logs/)
+    lab/matrix.py            the validation matrix with its expected results (logs in lab/logs/<timestamp>-matrix/)
     lab/check.py             containment (§2.9)
     lab/render/              generator: topology.py (constants), frr.py, rpki.py, dns.py, hosts.py, clab.py
     lab/image/               Dockerfile (Alpine + unbound, nsd, python3, stayrtr), web.py, entry scripts

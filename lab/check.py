@@ -6,6 +6,8 @@ import ipaddress
 import json
 import subprocess
 
+import console
+from console import log
 from render.topology import LAB, NODES
 
 PRIVATE_ASN = range(64512, 65535)
@@ -76,9 +78,13 @@ def main() -> int:
         "management network without masquerade",
         "egress probes fail",
     )
+    console.stage("containment check")
     for c in checks:
-        print(f"  check: {c}")
+        log.info(f"  check: {c}")
     for b in bad:
-        print(f"  VIOLATION: {b}")
-    print("containment: " + ("OK" if not bad else f"FAILED ({len(bad)} violations)"))
+        console.fail("VIOLATION", b)
+    if bad:
+        console.fail(f"containment FAILED ({len(bad)} violations)")
+    else:
+        console.ok("containment OK")
     return 1 if bad else 0

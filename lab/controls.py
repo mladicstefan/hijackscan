@@ -6,7 +6,8 @@ C. baseline / web        ISSUED only while the attacker serves the hijacked addr
 D. baseline              the scanner's verdict follows the ROA day it is given.
 
 Each control: expected state, remove the mechanism, expected flip, restore, expected state again. Every step is
-logged to lab/logs/controls.log with the CA transcript it rests on. Exit 1 if any expected flip is missing.
+logged to lab/logs/<timestamp>-controls/controls.log (latest-controls links to the newest) with the CA transcript it
+rests on. Exit 1 if any expected flip is missing.
 """
 
 from __future__ import annotations
@@ -20,7 +21,9 @@ import time
 import urllib.request
 from pathlib import Path
 
+import console
 import labctl
+from console import log
 from render import SCENARIOS
 from render.topology import EXTRA_ADDRESSES, FEED_PORT, LINKS, NODES
 
@@ -53,13 +56,19 @@ class Controls:
         log.parent.mkdir(exist_ok=True)
         log.write_text("")
 
-    def say(self, line: str) -> None:
-        print(line, flush=True)
+    def say(self, line: str, show: bool = True) -> None:
+        if show:
+            log.info(line)
         with self.log.open("a") as f:
             f.write(line + "\n")
 
+    def stage(self, title: str) -> None:
+        console.stage(title)
+        self.say(f"######## {title}", show=False)
+
     def expect(self, what: str, ok: bool, detail: str) -> None:
-        self.say(f"  [{'ok  ' if ok else 'MISS'}] {what}: {detail}")
+        (console.ok if ok else console.fail)(what, detail)
+        self.say(f"  [{'ok  ' if ok else 'MISS'}] {what}: {detail}", show=False)
         if not ok:
             self.misses.append(what)
 
@@ -87,7 +96,7 @@ class Controls:
     # --------------------------------------------------------------------- the controls
 
     def control_a(self) -> None:
-        self.say("######## A. caa-signed / web+ns: the REFUSED rests on the resolver validating")
+        self.stage("A. caa-signed / web+ns: the REFUSED rests on the resolver validating")
         sc = self.apply("caa-signed")
         labctl.attack("web+ns", sc)
         d, _ = self.decision()
@@ -114,7 +123,7 @@ class Controls:
         time.sleep(3)
 
     def control_b(self) -> None:
-        self.say("######## B. tight-maxlength / web: the REFUSED rests on ROV at the transits")
+        self.stage("B. tight-maxlength / web: the REFUSED rests on ROV at the transits")
         sc = self.apply("tight-maxlength")
         labctl.attack("web", sc)
         ms = sc["attacker"]["more_specifics"]["web"]
@@ -149,7 +158,7 @@ class Controls:
         time.sleep(8)
 
     def control_c(self) -> None:
-        self.say("######## C. baseline / web: the ISSUED rests on the attacker serving; the feed reads the live table")
+        self.stage("C. baseline / web: the ISSUED rests on the attacker serving; the feed reads the live table")
         sc = self.apply("baseline")
         web, ms = sc["victim"]["web"], sc["attacker"]["more_specifics"]["web"]
         before = feed("network-info", web)["data"]
@@ -172,7 +181,7 @@ class Controls:
         labctl.attack("off", sc)
 
     def control_d(self) -> None:
-        self.say("######## D. baseline: the scanner's verdict follows the ROA day it is given")
+        self.stage("D. baseline: the scanner's verdict follows the ROA day it is given")
         self.apply("baseline")
         label = self.scan_label()
         self.expect("D1 ROA day as rendered: open-web", label.startswith("open-web"), label)
@@ -197,9 +206,16 @@ def tightened(roas_csv_xz: bytes) -> bytes:
 
 
 def run_controls(build: Path) -> int:
-    c = Controls(build, build.parent / "logs" / "controls.log")
+    c = Controls(build, labctl.run_dir("controls") / "controls.log")
     c.say(f"negative controls, {time.strftime('%Y-%m-%dT%H:%M:%S%z')}")
     for control in (c.control_a, c.control_b, c.control_c, c.control_d):
         control()
-    c.say("controls: " + ("all expected flips observed" if not c.misses else f"MISSING {len(c.misses)}: {c.misses}"))
+    if c.misses:
+        console.fail(f"controls: MISSING {len(c.misses)} expected flips", ", ".join(c.misses))
+    else:
+        console.ok("controls: all expected flips observed")
+    c.say(
+        "controls: " + ("all expected flips observed" if not c.misses else f"MISSING {len(c.misses)}: {c.misses}"),
+        show=False,
+    )
     return 1 if c.misses else 0

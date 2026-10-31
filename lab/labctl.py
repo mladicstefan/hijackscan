@@ -24,6 +24,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import console  # noqa: E402
+from console import log  # noqa: E402
 from render import SCENARIOS, load_scenario, render_all  # noqa: E402
 from render.dns import TTL  # noqa: E402
 from render.topology import FEED_PORT, LAB, NODES  # noqa: E402
@@ -35,7 +37,7 @@ BUILD = LAB_DIR / "build"
 
 def sh(*cmd: str, check: bool = True, quiet: bool = False) -> subprocess.CompletedProcess:
     if not quiet:
-        print("$ " + " ".join(cmd), flush=True)
+        console.cmd(" ".join(cmd))
     return subprocess.run(cmd, check=check, capture_output=quiet, text=True)
 
 
@@ -55,12 +57,14 @@ def vtysh(node: str, *cmds: str) -> str:
 def render(scenario: Path, build: Path) -> dict:
     sc = load_scenario(scenario)
     render_all(sc, build)
-    print(f"rendered scenario {sc['name']} -> {build}")
+    log.info(f"rendered scenario {sc['name']} -> {build}")
     return sc
 
 
 def deploy(build: Path) -> None:
+    console.stage("deploy: containerlab up")
     sh("containerlab", "deploy", "-t", str(build / "lab.clab.yml"), "--reconfigure")
+    console.stage("deploy: waiting for BGP sessions and RTR caches")
     wait_bgp(rov_routers(current_scenario(build)))
 
 
@@ -84,11 +88,12 @@ def wait_bgp(rov_routers: list[str] = (), timeout: float = 90) -> None:
             if not peers:
                 pending.append(f"{r}: no peers yet")
         if not pending:
-            print(f"all BGP sessions established and RTR caches connected after {time.time() - t0:.0f}s")
+            console.ok(f"all BGP sessions established and RTR caches connected after {time.time() - t0:.0f}s")
             time.sleep(3)  # let the last UPDATEs propagate
             return
         time.sleep(2)
-    raise SystemExit(f"BGP sessions not established within {timeout}s: {pending}")
+    console.fail(f"BGP sessions not established within {timeout}s", ", ".join(pending))
+    raise SystemExit(1)
 
 
 def rov_routers(sc: dict) -> list[str]:
@@ -104,13 +109,18 @@ def attack(mode: str, sc: dict) -> dict:
     lines: list[str] = []
 
     def say(msg: str) -> None:
-        print(msg, flush=True)
+        (console.note if "UNEXPECTED" in msg else log.info)(msg)
         lines.append(msg)
 
     ms = sc["attacker"]["more_specifics"]
     on = {"off": [], "web": ["web"], "web+ns": ["web", "ns"]}[mode]
     cmds = ["conf t", f"router bgp {sc['attacker']['asn']}", "address-family ipv4 unicast"]
     cmds += [f"{'' if k in on else 'no '}network {ms[k]}" for k in ("web", "ns")]
+    console.stage(
+        f"attack {mode}: origin2 (AS{sc['attacker']['asn']}) "
+        + ("withdraws" if not on else "announces")
+        + " the forged more-specific(s)"
+    )
     vtysh("origin2", *cmds)
     time.sleep(2)
     paths: dict[str, list[str]] = {}
@@ -144,6 +154,19 @@ def attack(mode: str, sc: dict) -> dict:
         say(f"attack off: resolver validates {sc['domain']} again after {time.time() - t0:.0f}s")
     time.sleep(TTL + 1)  # the resolver's cache (zone TTL) must not carry the previous state into the next check
     return {"want": want, "got": got, "paths": paths, "text": "".join(f"{ln}\n" for ln in lines)}
+
+
+def run_dir(kind: str, logs: Path = LAB_DIR / "logs") -> Path:
+    """A fresh lab/logs/<UTC timestamp>-<kind>/ for this run and the lab/logs/latest-<kind> link onto it, so an
+    older run is never overwritten."""
+    d = logs / f"{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}-{kind}"
+    d.mkdir(parents=True)
+    latest = logs / f"latest-{kind}"
+    if latest.is_symlink() or latest.exists():
+        latest.unlink()
+    latest.symlink_to(d.name)
+    log.info(f"logs: {d} ({latest.name} -> {d.name})")
+    return d
 
 
 def rpki_valid(sc: dict, prefix: str) -> bool:
@@ -185,8 +208,8 @@ def scan(build: Path, sc: dict, details: bool, capture: bool = False) -> subproc
     for d in ("cache", "collected"):
         shutil.rmtree(build / "data" / d, ignore_errors=True)
     cmd = scan_cmd(build, sc, details)
-    if not capture:
-        print("$ " + " ".join(cmd), flush=True)
+    console.stage(f"scan: the real scanner against the lab ({sc['domain']})")
+    console.cmd(" ".join(cmd))
     return subprocess.run(cmd, cwd=ROOT, check=False, capture_output=capture, text=True)
 
 
@@ -240,6 +263,7 @@ def current_scenario(build: Path) -> dict:
 
 def main() -> int:
     a = parser().parse_args()
+    console.setup()
     if a.cmd == "render":
         render(a.scenario, a.build)
     elif a.cmd == "apply":

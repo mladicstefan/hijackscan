@@ -1,9 +1,0 @@
-attack web+ns: 203.0.113.0/28 (web) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010 65000 via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17
-attack web+ns: 203.0.113.96/28 (ns) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010 65000 via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17
-attack web+ns: 203.0.113.10 (web) is answered by host 'attacker'
-attack web+ns: 203.0.113.100 (ns) is answered by host 'attacker'
-attack off: 203.0.113.0/28 (web) withdrawn
-attack off: 203.0.113.96/28 (ns) withdrawn
-attack off: 203.0.113.10 (web) is answered by host 'victim'
-attack off: 203.0.113.100 (ns) is answered by host 'victim'
-attack off: resolver validates victim.rs again after 59s

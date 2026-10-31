@@ -84,7 +84,7 @@ uv run lab/labctl.py check                               # containment, exit 1 o
 uv run lab/labctl.py scan [--details]                    # the scanner, pre-attack state
 uv run lab/labctl.py attack web|web+ns|off               # origin2 announces or withdraws the forged routes
 uv run lab/labctl.py ca attacker|legit                   # the CA tries to issue for that account
-uv run lab/labctl.py matrix [--rows ROW ...]             # every row (about 4 min), evidence in lab/logs/
+uv run lab/labctl.py matrix [--rows ROW ...]             # every row (about 4 min), evidence in lab/logs/<timestamp>-matrix/ (latest-matrix links to the newest run)
 uv run lab/labctl.py controls                            # the negative controls (about 5 min)
 uv run lab/labctl.py destroy
 ```
@@ -123,7 +123,8 @@ alone; for a dry render use `--build <other dir>`.
 6. **Attack off**, wait until the resolver validates the domain again, then **CA for the owner's account**:
    must be ISSUED and every perspective must have reached the victim.
 
-Each row writes `lab/logs/<scenario>-<mode>-{scan,attack,attacker,legit}.log`, each scenario
+Every run gets its own `lab/logs/<UTC timestamp>-matrix/`, with `lab/logs/latest-matrix` linked to the newest, so no
+earlier run is overwritten. Each row writes `<scenario>-<mode>-{scan,attack,attacker,legit}.log` there, each scenario
 `<scenario>-check.log`; the run writes `matrix.md` (the table) and `manifest.json` (git head and dirtiness,
 sha256 of every scenario file, image IDs, containerlab and ldns versions, start and end time). A full,
 passing run regenerates `lab/demo.md` from `lab/demo_template.md` and those logs; the demo is never edited by
@@ -136,7 +137,7 @@ closed), but only the first is the `caa-signed` row's claim, and the matrix requ
 ## 6. The negative controls
 
 `labctl controls` (`lab/controls.py`) removes, one at a time, the mechanism each verdict rests on and
-checks the flip and the restore. All transcripts go to `lab/logs/controls.log`; exit 1 if any flip is
+checks the flip and the restore. All transcripts go to `lab/logs/<UTC timestamp>-controls/controls.log` (`latest-controls` links to the newest); exit 1 if any flip is
 missing.
 
 | control | mechanism removed | expected flip |
@@ -155,7 +156,7 @@ missing.
   differ only in freshly generated key material.
 - The quorum is not a lab constant: it comes from `src/hijackscan/risk.py`. From 2026-12-15 five remotes are
   required and `render` refuses to run until an `r5` perspective is added to the topology.
-- `lab/logs/manifest.json` records what every run was made with.
+- `manifest.json` in each run directory records what every run was made with.
 
 ## 8. Troubleshooting
 
