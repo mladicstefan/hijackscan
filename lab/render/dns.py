@@ -8,8 +8,8 @@ second (collect/resolver_check.py).
 
 from __future__ import annotations
 
+import hashlib
 import subprocess
-from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import dns.dnssec
@@ -18,15 +18,25 @@ import dns.rdata
 import dns.rdataclass
 import dns.rdatatype
 
+from hijackscan.collect.resolver_check import BOGUS_ZONE, SIGNED_ZONE
+
 from .topology import RESOLVER_IP
 
 TTL = 5  # seconds: scenario rows change zone content, the resolver must not serve the previous row
 NS_NAME = "ns.lab."  # the in-root name of the resolver's own authoritative side
 SOA = f"@ {TTL} IN SOA {NS_NAME} hostmaster.lab. {{serial}} 300 60 86400 {TTL}"
+# Signature validity is a fixed window, not "now + 30 days": two renders of one scenario must differ only in
+# key material, so that a build can be diffed against a reference build.
+INCEPTION = "20260101000000"
+EXPIRATION = "20271231235959"
 
 
-def _zone(origin: str, records: list[str]) -> str:
-    serial = datetime.now(UTC).strftime("%Y%m%d%H")[:10]
+def zone_serial(scenario_name: str) -> int:
+    """SOA serial from the scenario name: deterministic, 28 bits (within the 32-bit serial space)."""
+    return int(hashlib.sha256(scenario_name.encode()).hexdigest()[:7], 16)
+
+
+def _zone(origin: str, records: list[str], serial: int) -> str:
     return "\n".join([f"$ORIGIN {origin}", f"$TTL {TTL}", SOA.format(serial=serial), *records]) + "\n"
 
 
@@ -62,24 +72,24 @@ def _ds(keybase: Path, name: str, *, corrupt: bool = False) -> str:
 
 
 def _sign(unsigned: Path, origin: str, keybase: Path, signed: Path) -> None:
-    exp = (datetime.now(UTC) + timedelta(days=30)).strftime("%Y%m%d%H%M%S")
+    window = ["-i", INCEPTION, "-e", EXPIRATION]
     subprocess.run(
-        ["ldns-signzone", "-o", origin, "-e", exp, "-f", str(signed), str(unsigned), str(keybase)],
+        ["ldns-signzone", "-o", origin, *window, "-f", str(signed), str(unsigned), str(keybase)],
         check=True,
         capture_output=True,
         text=True,
     )
 
 
-def _write_zone(d: Path, origin: str, records: list[str], keybase: Path | None) -> Path:
+def _write_zone(d: Path, origin: str, records: list[str], keybase: Path | None, serial: int) -> Path:
     """Write <d>/<file>.zone; signed with `keybase` when given (the unsigned text stays beside it)."""
     stem = "root" if origin == "." else origin.rstrip(".")
     out = d / f"{stem}.zone"
     if keybase is None:
-        out.write_text(_zone(origin, records))
+        out.write_text(_zone(origin, records, serial))
     else:
         unsigned = d / f"{stem}.unsigned"
-        unsigned.write_text(_zone(origin, records))
+        unsigned.write_text(_zone(origin, records, serial))
         _sign(unsigned, origin, keybase, out)
     return out
 
@@ -94,15 +104,17 @@ def render_dns(sc: dict, build: Path) -> None:
     victim.mkdir(exist_ok=True)
     attacker.mkdir(exist_ok=True)
 
-    k_root, k_rs, k_org, k_failed = (_keygen(keys, n) for n in (".", "rs", "org", "dnssec-failed.org"))
+    serial = zone_serial(sc["name"])
+
+    k_root, k_rs, k_org, k_failed = (_keygen(keys, n) for n in (".", "rs", "org", BOGUS_ZONE))
     k_victim = _keygen(keys, domain) if sc["dns"]["signed"] else None
 
     # --- the victim zone (NSD on the victim host) and the attacker's forgery (NSD on the attacker host)
     web, ns_ip = sc["victim"]["web"], sc["victim"]["ns"]
     base = [f"@ NS ns1.{domain}.", f"ns1 A {ns_ip}", f"@ A {web}", f"www A {web}"]
     caa = [f"@ CAA {c}" for c in sc["dns"]["caa"]]
-    _write_zone(victim, f"{domain}.", base + caa, k_victim)
-    _write_zone(attacker, f"{domain}.", base, None)  # no CAA, no signatures: the "no CAA here" answer
+    _write_zone(victim, f"{domain}.", base + caa, k_victim, serial)
+    _write_zone(attacker, f"{domain}.", base, None, serial)  # no CAA, no signatures: the "no CAA here" answer
     for host in (victim, attacker):
         # Bound to the nameserver address: a wildcard socket answers from the interface's primary address, which
         # is the web address here, and the resolver drops such replies. ip-freebind because containerlab adds
@@ -121,19 +133,21 @@ def render_dns(sc: dict, build: Path) -> None:
         "rs.",
         [
             f"@ NS {NS_NAME}",
-            f"rnids A {RESOLVER_IP}",
+            f"{SIGNED_ZONE}. A {RESOLVER_IP}",
             f"{domain}. NS ns1.{domain}.",
             f"ns1.{domain}. A {ns_ip}",
             *ds_victim,
         ],
         k_rs,
+        serial,
     )
-    _write_zone(zones, "dnssec-failed.org.", [f"@ NS {NS_NAME}", f"@ A {RESOLVER_IP}"], k_failed)
+    _write_zone(zones, f"{BOGUS_ZONE}.", [f"@ NS {NS_NAME}", f"@ A {RESOLVER_IP}"], k_failed, serial)
     _write_zone(
         zones,
         "org.",
-        [f"@ NS {NS_NAME}", f"dnssec-failed.org. NS {NS_NAME}", _ds(k_failed, "dnssec-failed.org.", corrupt=True)],
+        [f"@ NS {NS_NAME}", f"{BOGUS_ZONE}. NS {NS_NAME}", _ds(k_failed, f"{BOGUS_ZONE}.", corrupt=True)],
         k_org,
+        serial,
     )
     _write_zone(
         zones,
@@ -147,12 +161,13 @@ def render_dns(sc: dict, build: Path) -> None:
             _ds(k_org, "org."),
         ],
         k_root,
+        serial,
     )
     (build / "resolver" / "root.key").write_text(_dnskey_line(k_root) + "\n")
     (build / "resolver" / "unbound.conf").write_text(UNBOUND)
 
 
-UNBOUND = """\
+UNBOUND = f"""\
 # generated by lab/render/dns.py
 server:
   verbosity: 1
@@ -193,8 +208,8 @@ auth-zone:
   for-upstream: yes
   for-downstream: no
 auth-zone:
-  name: "dnssec-failed.org"
-  zonefile: "/lab/zones/dnssec-failed.org.zone"
+  name: "{BOGUS_ZONE}"
+  zonefile: "/lab/zones/{BOGUS_ZONE}.zone"
   for-upstream: yes
   for-downstream: no
 """

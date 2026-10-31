@@ -1,0 +1,5 @@
+[request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+[dns      ] victim.rs CAA: SERVFAIL ad=0
+[dns      ] victim.rs CAA with CD: NOERROR []
+[caa      ] victim.rs: SERVFAIL without CD, NOERROR with CD -> reachable but DNSSEC-bogus
+[decision ] REFUSED: DNSSEC validation failed (reachable but bogus)

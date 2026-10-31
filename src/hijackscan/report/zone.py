@@ -16,6 +16,7 @@ from ..config import Config
 from ..risk import COMPLEXITY_STEP, SEVERITIES, Risk, assess
 from ..score import CLASSES, Scored, score
 from . import html
+from .domain import routing_source, rpki_source
 
 BAD = ("open", "caa-erasable")
 
@@ -131,6 +132,8 @@ def build(scored: list[Scored], records: list[dict], cfg: Config, meta: dict | N
         "tld": _tld(records),
         "population": population,
         "resolver": records[0]["resolver"] if records else None,
+        "routing_source": records[0].get("routing_source") if records else None,
+        "rpki_source": records[0].get("rpki_source") if records else None,
         "rpki_date": records[0]["rpki_date"] if records else cfg.rpki_date,
         "classes": {c: classes.get(c, 0) for c in CLASSES},
         "facts": {
@@ -380,7 +383,8 @@ def render_html(r: dict) -> str:
         rows.append([e(label), *[cnt[c] for c in CLASSES], pct(cnt["open"] + cnt["caa-erasable"]), e(meaning)])
     body += html.table(["scenario", *CLASSES, "open + erasable", "reads as"], rows, set(range(1, 7)))
     body += (
-        f"<p class=muted>Resolver {e(r['resolver'])}; ROAs from the RIPE NCC RPKI archive, {e(r['rpki_date'])}; "
+        f"<p class=muted>Resolver {e(r['resolver'])}; routing from {e(routing_source(r))}; "
+        f"ROAs from {e(rpki_source(r))}, {e(r['rpki_date'])}; "
         f"generated {e(r['generated_at'])}. No domain names are listed.</p>"
     )
     return html.page(

@@ -1,5 +1,6 @@
 # Single source of truth for the lab: ASes, prefixes, ROAs, zone signing state and CAA policy.
-# Everything else (link addressing, perspectives, management IPs) is fixed in lab/render/topology.py.
+# Everything else (link addressing, perspectives, management IPs) is fixed in lab/render/topology.py; the ASes
+# and the victim/attacker addresses below must agree with it: `labctl render` refuses a mismatch (check_topology).
 name: baseline
 domain: victim.rs
 victim:

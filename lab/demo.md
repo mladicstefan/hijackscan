@@ -67,21 +67,24 @@ answers at the web and nameserver addresses, seen from the resolver's position).
 
 ## 4. The matrix
 
-`uv run lab/labctl.py matrix` runs every row below and exits 1 if any cell differs from the expected one.
-The scanner column is the risk label and score of `hijackscan victim.rs`; the CA columns are the decision of
-`ca.py` for the attacker's account during the attack and for the owner's account after it.
+`uv run lab/labctl.py matrix` runs every row below and exits 1 if any cell is not proven. A cell is proven by
+four things, all read from captured output: the scanner's label plus a check of the facts it collected (prefix,
+RPKI state, ROA maxLength, resolver AD), the data-plane state (who answers the web and nameserver
+addresses), the CA's decision line matched against the expected reason, and the host each HTTP-01 perspective
+reached. Per-row transcripts live in `lab/logs/`, the environment in `lab/logs/manifest.json`.
 
-| scenario | attack | scanner | CA → attacker | CA → legit (attack off) | expected | ok |
-|---|---|---|---|---|---|---|
-| baseline | web | open-web (CRITICAL 10.0) | ISSUED | ISSUED | open-web / ISSUED | yes |
-| tight-maxlength | web | contested (LOW 1.1) | REFUSED | ISSUED | contested / REFUSED | yes |
-| caa-unsigned | web | caa-erasable (HIGH 8.7) | REFUSED | ISSUED | caa-erasable / REFUSED | yes |
-| caa-unsigned | web+ns | caa-erasable (HIGH 8.7) | ISSUED | ISSUED | caa-erasable / ISSUED | yes |
-| caa-signed | web+ns | closed (NONE 0.0) | REFUSED | ISSUED | closed / REFUSED | yes |
+| scenario | attack | data plane | scanner | evidence | CA → attacker | HTTP-01 hosts | CA → legit (attack off) | expected | ok |
+|---|---|---|---|---|---|---|---|---|---|
+| baseline | web | web=attacker ns=victim | open-web (CRITICAL 10.0) | complete | ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker | primary=attacker r1=attacker r2=attacker r3=victim r4=attacker | ISSUED | open-web / ISSUED | yes |
+| tight-maxlength | web | web=victim ns=victim | contested (LOW 1.1) | complete | REFUSED: domain control not demonstrated | primary=victim r1=victim r2=attacker r3=victim r4=victim | ISSUED | contested / REFUSED | yes |
+| caa-unsigned | web | web=attacker ns=victim | caa-erasable (HIGH 8.7) | complete | REFUSED: CAA forbids this issuance (accounturi pins https://ca.lab/acct/legit) | - | ISSUED | caa-erasable / REFUSED | yes |
+| caa-unsigned | web+ns | web=attacker ns=attacker | caa-erasable (HIGH 8.7) | complete | ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker | primary=attacker r1=attacker r2=attacker r3=victim r4=attacker | ISSUED | caa-erasable / ISSUED | yes |
+| caa-signed | web+ns | web=attacker ns=attacker | closed (NONE 0.0) | complete | REFUSED: DNSSEC validation failed (reachable but bogus) | - | ISSUED | closed / REFUSED | yes |
 
 ## 5. Reading the CA log
 
-Every check the CA makes prints one line. The baseline, attacker's request, during the web hijack:
+Every check the CA makes prints one line. The baseline, attacker's request, during the web hijack
+(`lab/logs/baseline-web-attacker.log`):
 
 ```
 [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
@@ -107,12 +110,19 @@ Every check the CA makes prints one line. The baseline, attacker's request, duri
   expected key authorization. The perspective behind AS65000 is never captured: the forged path carries
   AS65000 itself, so the victim's own router rejects it by AS-path loop detection.
 - `quorum` applies CA/B SC-067: the primary must corroborate and at most one of the four remotes may not.
-  Four of five positions were captured, so the quorum is met and the certificate is issued.
+  Four of five positions were captured, so the quorum is met and the certificate is issued. The baseline's
+  "yes" therefore rests on exactly one tolerated dissent (design/lab.md §2.4).
 
-### Row 2: tight maxLength
+### Row 2: tight maxLength (`lab/logs/tight-maxlength-web-attacker.log`)
 
 ```
 [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+[dns      ] victim.rs CAA: NOERROR ad=0
+[dns      ] rs CAA: NOERROR ad=1
+[dns      ] . CAA: NOERROR ad=1
+[caa      ] no CAA anywhere up to the root
+[caa      ] allowed: no issue tag: any CA may issue
+[dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']
 [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
 [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
 [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
@@ -129,9 +139,10 @@ the real host, which does not know the attacker's token: refused.
 ### Row 3 and 4: CAA with accounturi, zone unsigned
 
 With only the web address hijacked, the real nameserver still serves the CAA record and the account pin
-refuses the attacker:
+refuses the attacker (`lab/logs/caa-unsigned-web-attacker.log`):
 
 ```
+[request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
 [dns      ] victim.rs CAA: NOERROR ad=0 ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']
 [caa      ] found at victim.rs (ad=0): ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']
 [caa      ] REFUSED: accounturi pins https://ca.lab/acct/legit
@@ -139,48 +150,60 @@ refuses the attacker:
 ```
 
 With the nameserver hijacked as well, the forged zone answers "no CAA" and nothing stops issuance. This is
-the scanner's `caa-erasable` class:
+the scanner's `caa-erasable` class (`lab/logs/caa-unsigned-web+ns-attacker.log`):
 
 ```
+[request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
 [dns      ] victim.rs CAA: NOERROR ad=0
 [dns      ] rs CAA: NOERROR ad=1
 [dns      ] . CAA: NOERROR ad=1
 [caa      ] no CAA anywhere up to the root
 [caa      ] allowed: no issue tag: any CA may issue
+[dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']
+[http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+[http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+[http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+[http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+[http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
 [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met
 [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker
 ```
 
-### Row 5: CAA with accounturi, zone signed
+### Row 5: CAA with accounturi, zone signed (`lab/logs/caa-signed-web+ns-attacker.log`)
 
 ```
 [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
 [dns      ] victim.rs CAA: SERVFAIL ad=0
-[caa      ] victim.rs: SERVFAIL -> cannot evaluate CAA, fail closed
-[decision ] REFUSED: DNSSEC validation failed during the CAA lookup (fail closed)
+[dns      ] victim.rs CAA with CD: NOERROR []
+[caa      ] victim.rs: SERVFAIL without CD, NOERROR with CD -> reachable but DNSSEC-bogus
+[decision ] REFUSED: DNSSEC validation failed (reachable but bogus)
 ```
 
 The forged zone cannot produce signatures; the resolver, holding the DS from the signed `rs` zone, returns
-SERVFAIL and the CA fails closed. This is the project's central claim: CAA account pinning in a signed zone
-closes the exposure, and the scanner's `closed` verdict predicted it.
+SERVFAIL. The CA asks once more with the CD bit: an answer now means the zone is reachable but DNSSEC-bogus
+(an unreachable or lame zone fails both ways), and it fails closed either way. This is the project's central
+claim: CAA account pinning in a signed zone closes the exposure, and the scanner's `closed` verdict predicted it.
 
 Collateral worth knowing: a validating resolver keeps the bogus verdict for its `val-bogus-ttl` (60 s by
 default), so the legitimate owner is also refused for that long after the hijack ends. `attack off` waits it
 out before the control run.
 
-## 6. Containment
+## 6. Containment (`lab/logs/baseline-check.log`)
 
 ```
-$ uv run lab/labctl.py check
-  check: no default route off the fabric
-  check: all ASNs private
-  check: all BGP neighbours in RFC 5737 space
-  check: management network without masquerade
-  check: egress probes fail
 containment: OK
 ```
 
-## 7. Tear down
+## 7. Negative controls (`lab/logs/controls.log`)
+
+`uv run lab/labctl.py controls` removes, one at a time, the mechanism each matrix verdict rests on and checks
+that the verdict flips, then restores it and checks that it flips back. Exit 1 if any expected flip is missing.
+
+```
+(controls.log not found: run labctl controls / matrix)
+```
+
+## 8. Tear down
 
 ```bash
 uv run lab/labctl.py destroy

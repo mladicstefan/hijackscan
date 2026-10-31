@@ -82,8 +82,9 @@ def answer(call: str, q: dict[str, str], cfg: dict, local_as: int) -> dict | Non
             "visibility": {"v4": {"ris_peers_seeing": seeing, "total_ris_peers": total_peers()}},
         }
     if call == "as-overview":
-        asn = q["resource"].upper().removeprefix("AS")
-        return {"holder": cfg["as_names"].get(asn), "announced": True}
+        asn = int(q["resource"].upper().removeprefix("AS"))
+        announced = any(p["origin"] == asn for paths in tbl.values() for p in paths)
+        return {"holder": cfg["as_names"].get(str(asn)), "announced": announced}
     return None
 
 

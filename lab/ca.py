@@ -22,6 +22,7 @@ import dns.flags
 import dns.message
 import dns.query
 import dns.rcode
+import dns.rdatatype
 
 PREFIX = "/.well-known/acme-challenge/"
 
@@ -33,10 +34,14 @@ def log(step: str, msg: str) -> None:
 # --------------------------------------------------------------------------- DNS
 
 
-def resolve(resolver: str, name: str, rtype: str) -> tuple[str, bool, list[str]]:
-    """(rcode, AD flag, rdata texts of the answer RRset of `rtype`)."""
+class FailClosed(Exception):
+    """A lookup the CA cannot trust; str(e) is the reason for the REFUSED decision."""
+
+
+def resolve(resolver: str, name: str, rtype: str, cd: bool = False) -> tuple[str, bool, list[str]]:
+    """(rcode, AD flag, rdata texts of the answer RRset of `rtype`); `cd` asks the resolver not to validate."""
     q = dns.message.make_query(name, rtype, want_dnssec=True)
-    q.flags |= dns.flags.AD
+    q.flags |= dns.flags.CD if cd else dns.flags.AD
     try:
         r = dns.query.udp(q, resolver, timeout=5)
     except Exception as e:  # noqa: BLE001
@@ -44,8 +49,25 @@ def resolve(resolver: str, name: str, rtype: str) -> tuple[str, bool, list[str]]
     rcode = dns.rcode.to_text(r.rcode())
     ad = bool(r.flags & dns.flags.AD)
     records = [rd.to_text() for rr in r.answer if rr.rdtype == dns.rdatatype.from_text(rtype) for rd in rr]
-    log("dns", f"{name} {rtype}: {rcode} ad={int(ad)} {records if records else ''}".rstrip())
+    if cd:
+        log("dns", f"{name} {rtype} with CD: {rcode} {records}")
+    else:
+        log("dns", f"{name} {rtype}: {rcode} ad={int(ad)} {records if records else ''}".rstrip())
     return rcode, ad, records
+
+
+def diagnose(step: str, resolver: str, name: str, rtype: str, rcode: str) -> FailClosed:
+    """Why did the lookup fail? Retry once with CD: an answer means the zone is reachable but DNSSEC-bogus."""
+    cd_rcode, _, _ = resolve(resolver, name, rtype, cd=True)
+    bogus = cd_rcode == "NOERROR"
+    log(
+        step,
+        f"{name}: {rcode} without CD, {cd_rcode} with CD -> "
+        f"{'reachable but DNSSEC-bogus' if bogus else 'unreachable or lame'}",
+    )
+    return FailClosed(
+        "DNSSEC validation failed (reachable but bogus)" if bogus else "DNS failure (unreachable or lame)"
+    )
 
 
 # --------------------------------------------------------------------------- CAA
@@ -60,33 +82,48 @@ def parse_caa(records: list[str]) -> list[tuple[int, str, str]]:
     return out
 
 
+KNOWN_TAGS = ("issue", "issuewild", "iodef")
+
+
 def caa_allows(records: list[str], ca_id: str, account: str, method: str = "http-01") -> tuple[bool, str]:
-    """Does this CAA RRset let `ca_id` issue for `account` by `method`? (RFC 8659 §4, RFC 8657 §3-4)"""
-    issue = [v for _, tag, v in parse_caa(records) if tag == "issue"]
+    """Does this CAA RRset let `ca_id` issue for `account` by `method`? (RFC 8659 §4, RFC 8657 §3-4)
+
+    Each `issue` record naming `ca_id` is a separate permission: issuance is allowed iff any one of
+    them admits this account and method, so one unpinned record beside a pinned one still allows.
+    """
+    parsed = parse_caa(records)
+    for flags, tag, v in parsed:
+        if flags & 128 and tag not in KNOWN_TAGS:
+            return False, f'critical record "{flags} {tag} {v}" has an unknown tag (RFC 8659 §4.1)'
+    issue = [v for _, tag, v in parsed if tag == "issue"]
     if not issue:
         return True, "no issue tag: any CA may issue"
+    refusals = []
     for v in issue:
         domain, _, params = v.partition(";")
         if domain.strip() != ca_id:
             continue
         kv = dict(p.strip().split("=", 1) for p in params.split(";") if "=" in p)
         if "accounturi" in kv and kv["accounturi"] != account:
-            return False, f"accounturi pins {kv['accounturi']}"
-        if "validationmethods" in kv and method not in kv["validationmethods"].split(","):
-            return False, f"validationmethods permits only {kv['validationmethods']}"
-        return True, f"issue permits {ca_id}" + (f" for {kv['accounturi']}" if "accounturi" in kv else "")
+            refusals.append(f"accounturi pins {kv['accounturi']}")
+            continue
+        if "validationmethods" in kv and method not in [m.strip() for m in kv["validationmethods"].split(",")]:
+            refusals.append(f"validationmethods permits only {kv['validationmethods']}")
+            continue
+        return True, f'issue "{v}" permits {ca_id}' + (f" for {kv['accounturi']}" if "accounturi" in kv else "")
+    if refusals:
+        return False, "; ".join(refusals)
     return False, f"issue permits only {', '.join(d.partition(';')[0].strip() or '<nobody>' for d in issue)}"
 
 
-def caa_walk(resolver: str, domain: str) -> tuple[str | None, list[str]] | None:
-    """Climb from `domain` to the root until a CAA RRset exists; None on fail-closed."""
+def caa_walk(resolver: str, domain: str) -> tuple[str | None, list[str]]:
+    """Climb from `domain` to the root until a CAA RRset exists; raises FailClosed when a lookup fails."""
     labels = domain.rstrip(".").split(".")
     for i in range(len(labels) + 1):
         name = ".".join(labels[i:]) or "."
         rcode, ad, records = resolve(resolver, name, "CAA")
         if rcode not in ("NOERROR", "NXDOMAIN"):
-            log("caa", f"{name}: {rcode} -> cannot evaluate CAA, fail closed")
-            return None
+            raise diagnose("caa", resolver, name, "CAA", rcode)
         if records:
             log("caa", f"found at {name} (ad={int(ad)}): {records}")
             return name, records
@@ -122,11 +159,11 @@ def validate(cfg: dict, account_name: str) -> bool:
     account, token = cfg["accounts"][account_name], cfg["tokens"][account_name]
     log("request", f"{domain} for account {account} ({account_name}) via http-01, CA {ca_id}")
 
-    found = caa_walk(resolver, domain)
-    if found is None:
-        log("decision", "REFUSED: DNSSEC validation failed during the CAA lookup (fail closed)")
+    try:
+        _, records = caa_walk(resolver, domain)
+    except FailClosed as e:
+        log("decision", f"REFUSED: {e}")
         return False
-    _, records = found
     ok, why = caa_allows(records, ca_id, account)
     log("caa", f"{'allowed' if ok else 'REFUSED'}: {why}")
     if not ok:
@@ -134,6 +171,9 @@ def validate(cfg: dict, account_name: str) -> bool:
         return False
 
     rcode, ad, addrs = resolve(resolver, domain, "A")
+    if rcode not in ("NOERROR", "NXDOMAIN"):
+        log("decision", f"REFUSED: {diagnose('dns', resolver, domain, 'A', rcode)}")
+        return False
     if rcode != "NOERROR" or not addrs:
         log("decision", f"REFUSED: {domain} A lookup {rcode} (fail closed)")
         return False

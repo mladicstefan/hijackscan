@@ -43,6 +43,7 @@ matches the scanner's verdict. Walk-through and results: [lab/demo.md](lab/demo.
 ```bash
 uv run lab/labctl.py matrix        # every row: render, deploy, scan, attack, CA (about 4 min)
 uv run lab/labctl.py check         # containment: no route off the box, private ASNs, RFC 5737 only
+uv run lab/labctl.py controls      # negative controls: every verdict flips when its mechanism is removed
 uv run lab/labctl.py destroy
 ```
 

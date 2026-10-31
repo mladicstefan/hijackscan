@@ -66,21 +66,39 @@ in the prompt is the scanner's `contested-only` class (nothing more specific can
 exact-prefix contest remains, which the scanner always reports absent ASPA). ASPA is out of scope
 (prompt §"ASPA is deliberately out of scope").
 
+The baseline's "yes" relies on exactly one tolerated dissent: `r3` (behind the victim's own AS, §2.5) never
+sees the forgery, and the quorum in force today (4 remotes, at most 1 non-corroborating) absorbs exactly that
+one. A second immune remote, or `max_fail: 0`, would flip the row to "no" without any defence being deployed.
+
 ### 2.5 Five perspectives from one CA container, on four links
 
 A single CA container with one interface would give five perspectives the same route, and the SC-067
 quorum would never be exercised. Separate perspective containers would add five nodes. Middle ground:
 the `ca` container has four data-plane links, one behind each of AS65002 (primary + remote `r4` as a
 secondary address), AS65003 (`r1`), AS65100 (`r2`) and AS65000 (`r3`). Each remote binds its source
-address and a per-source policy-routing table sends it out of its own link, so every perspective sees
-the fabric from a different AS. In the four rows above every perspective agrees (the hijack is either
-valid everywhere or dropped everywhere, as on 28 Aug), which the log shows explicitly; a partial row
-(ROV on one transit only) would split them and can be added later as a scenario.
+address and a per-source policy-routing table sends it out of its own link. The five positions are not
+equivalent, and the matrix depends on that:
 
-The perspective behind AS65000 is deliberate and is the one that is never captured: the forged path
-`… 65010 65000` contains the victim's own AS, so AS65000 rejects it by AS-path loop detection and keeps
-routing to its own host. That is one dissenting remote out of four, which SC-067 tolerates, so the CA still
-issues in the baseline: the demo shows MPIC working as specified and still not helping.
+- `primary` and `r4` share the transit1 link: same AS (65002), same route. `r4` is a second vote from the
+  primary's position, not a second vantage point; it exists to reach the four remotes the quorum needs.
+- `r1` sits behind transit2 (AS65003), the other validating transit.
+- `r2` sits behind the collector (AS65100), which never filters (like RIS): it is captured whenever origin2
+  announces, RPKI-valid or not.
+- `r3` sits behind the victim's own AS65000 and is never captured: the forged path `… 65010 65000` contains
+  that AS, so AS65000 rejects it by AS-path loop detection and keeps routing to its own host, whatever the
+  ROA says.
+
+So ROV decides only two positions, primary/`r4` and `r1`. In the baseline row (/28 RPKI-valid) they are
+captured along with `r2`, `r3` dissents, and one dissent is what SC-067 tolerates, so the CA still issues:
+the demo shows MPIC working as specified and still not helping. In the tight-maxLength row (/28 invalid)
+they keep the victim, so the primary itself is not fooled and nothing is issued, with `r2` captured
+regardless. The log shows each perspective's verdict. A partial row (ROV on one transit only) would split
+primary/`r4` from `r1` and can be added later as a scenario.
+
+The quorum (`min_remote`, `max_fail` in `ca.json`) is not a lab constant: `render/hosts.py` takes it from
+`RiskParams.for_date(today)` in `src/hijackscan/risk.py`, so the lab CA and the scanner apply the same
+BR 3.2.2.9 numbers (4 remotes / 1 dissent since 2026-06-15). From 2026-12-15 five remotes are required and
+`render` refuses to run until an `r5` perspective is added to `topology.py`, rather than silently passing.
 
 ### 2.6 Nodes (ten, not nine)
 
@@ -126,6 +144,11 @@ Service links (192.0.2.0/24), each announced by its router:
 
 Victim LAN: origin 203.0.113.1/24, victim 203.0.113.10 and .100. Attacker link: origin2
 203.0.113.1/28 + .97/28, attacker 203.0.113.10/28 + .100/28.
+
+The scenario file repeats the ASes and these host addresses (`victim.asn/prefix/web/ns`, `attacker.asn`,
+`attacker.more_specifics`, `transits`, `collector`) because the scanner reads them from its output; `render`
+checks them against the tables above and refuses a scenario that disagrees, listing every mismatch
+(`render/__init__.py: check_topology`).
 
 Management network `172.31.40.0/24`, masquerade off, fixed addresses per node; the RTR session and the
 scanner's access to the resolver (port 53) and feed (port 8080) use it. Every node's management default

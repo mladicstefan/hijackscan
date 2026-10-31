@@ -10,6 +10,7 @@ from render.topology import LAB, NODES
 
 PRIVATE_ASN = range(64512, 65535)
 DOC_NETS = [ipaddress.ip_network(n) for n in ("192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24")]
+WGET_NETWORK_FAILURE = {1, 4}  # BusyBox wget: 1 for any failure; GNU wget: 4 = network failure. Only these = blocked.
 
 
 def _exec(node: str, *cmd: str) -> str:
@@ -44,10 +45,13 @@ def run() -> list[str]:
             if int(info.get("remoteAs", 0)) not in PRIVATE_ASN:
                 bad.append(f"{name}: neighbour {peer} AS {info.get('remoteAs')} is not private")
     net = subprocess.run(["docker", "network", "inspect", f"{LAB}-mgmt"], capture_output=True, text=True).stdout
-    opts = (json.loads(net or "[{}]")[0].get("Options") or {}) if net else {}
-    masq = opts.get("com.docker.network.bridge.enable_ip_masquerade")
-    if masq != "false":
-        bad.append(f"management network: enable_ip_masquerade is {masq!r}, not 'false'")
+    found = json.loads(net or "[]")  # `[]` when the network does not exist
+    if not found:
+        bad.append(f"management network {LAB}-mgmt not found, masquerade not checked")
+    else:
+        masq = (found[0].get("Options") or {}).get("com.docker.network.bridge.enable_ip_masquerade")
+        if masq != "false":
+            bad.append(f"management network: enable_ip_masquerade is {masq!r}, not 'false'")
     for node in ("transit1", "victim"):
         r = subprocess.run(
             ["docker", "exec", f"clab-{LAB}-{node}", "sh", "-c", "wget -q -T 3 -O /dev/null http://1.1.1.1/ 2>&1"],
@@ -56,6 +60,10 @@ def run() -> list[str]:
         )
         if r.returncode == 0:
             bad.append(f"{node}: egress probe to 1.1.1.1 SUCCEEDED")
+        elif r.returncode == 127:
+            bad.append(f"{node}: probe binary missing (wget exit 127), egress not checked")
+        elif r.returncode not in WGET_NETWORK_FAILURE:
+            bad.append(f"{node}: egress probe exited {r.returncode}, not a network failure: {r.stdout.strip()}")
     return bad
 
 

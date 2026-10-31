@@ -30,6 +30,7 @@ class AddressDerived:
     roa_too_permissive: bool  # some ROA maxLength exceeds the announced length (RFC 9319 hygiene)
     exact_prefix_contestable: bool = True  # same-prefix forged origin always competes, absent ASPA
     roas: list[dict] = field(default_factory=list)  # covering ROAs: prefix, origin_asn, max_length, ta
+    roas_within: list[dict] = field(default_factory=list)  # ROAs for strict subnets of the prefix, same shape
     announced_more_specifics: list[str] = field(default_factory=list)  # "prefix ASn" announced inside this prefix
     ris_visibility: str | None = None  # "323/323" RIS peers seeing the announced prefix
 
@@ -43,6 +44,7 @@ def derive_address(ip: str, raw: dict, caps: tuple[int, int] = (24, 48)) -> Addr
     """`caps` = (v4, v6) longest routable prefix lengths (Config.routable_caps)."""
     prefix = raw.get("prefix")
     roas = raw.get("roas") or []
+    roas_within = raw.get("roas_within") or []  # absent in records collected before it was recorded
     if not prefix:
         return AddressDerived(ip, None, [], raw.get("rpki_state"), "no-prefix", True, False)
     net = ipaddress.ip_network(prefix, strict=False)
@@ -50,6 +52,7 @@ def derive_address(ip: str, raw: dict, caps: tuple[int, int] = (24, 48)) -> Addr
     announced_len = net.prefixlen
     routing = raw.get("routing") or {}
     extra = {
+        "roas_within": roas_within,
         "announced_more_specifics": routing.get("more_specifics", []),
         "ris_visibility": (
             f"{routing['ris_peers_seeing']}/{routing['ris_peers_total']}" if routing.get("ris_peers_total") else None
@@ -60,13 +63,19 @@ def derive_address(ip: str, raw: dict, caps: tuple[int, int] = (24, 48)) -> Addr
             ip, prefix, raw.get("origin_asns", []), raw.get("rpki_state"), "not-found", True, False, roas=[], **extra
         )
     longest_allowed = max(r["max_length"] for r in roas)
+    # A ROA for a routable subnet that holds this address makes that more-specific RPKI-valid even if
+    # the covering ROA is tight (a child ROA for a sibling subnet captures the sibling, not this address).
+    child_routable = any(
+        ipaddress.ip_address(ip) in child and child.prefixlen <= limit
+        for child in (ipaddress.ip_network(r["prefix"]) for r in roas_within)
+    )
     return AddressDerived(
         ip=ip,
         prefix=prefix,
         origin_asns=raw.get("origin_asns", []),
         rpki_state=raw.get("rpki_state"),
         rpki_derived="found",
-        forgeable_more_specific=announced_len < min(longest_allowed, limit),
+        forgeable_more_specific=announced_len < min(longest_allowed, limit) or child_routable,
         roa_too_permissive=any(r["max_length"] > announced_len for r in roas),
         roas=roas,
         **extra,
@@ -82,6 +91,7 @@ class Caa:
     issuewild: list[str] = field(default_factory=list)
     accounturi: list[str] = field(default_factory=list)  # from issue/issuewild parameters
     validationmethods: list[str] = field(default_factory=list)
+    issue_pins: list[bool] = field(default_factory=list)  # per `issue` value: carries accounturi=
 
 
 def parse_caa(records: list[str]) -> Caa:
@@ -96,12 +106,16 @@ def parse_caa(records: list[str]) -> Caa:
             continue
         ca, _, params = value.partition(";")
         getattr(caa, tag).append(ca.strip())
+        pinned = False
         for p in params.split(";"):
             k, _, v = p.strip().partition("=")
             if k.lower() == "accounturi" and v:
                 caa.accounturi.append(v.strip())
+                pinned = True
             elif k.lower() == "validationmethods" and v:
                 caa.validationmethods.extend(m.strip() for m in v.split(",") if m.strip())
+        if tag == "issue":
+            caa.issue_pins.append(pinned)
     return caa
 
 
@@ -173,7 +187,9 @@ def score(rec: dict, overrides: dict | None = None, caps: tuple[int, int] = (24,
     dnssec = _dnssec(rec)
     signed = ov.get("signed", dnssec == "secure")
     has_caa = ov.get("has_caa", caa_from is not None)
-    pinned = ov.get("pinned", has_caa and bool(caa.accounturi))
+    # Pinned only if every permitted CA is account-pinned: one unpinned `issue` record lets any
+    # account at that CA issue. `issuewild` governs wildcard names only (RFC 8659 §4.3), not apex/www.
+    pinned = ov.get("pinned", has_caa and bool(caa.issue) and all(caa.issue_pins))
     web_forgeable = ov.get("web_forgeable", any(a.forgeable_more_specific for a in web))
     # A CA's resolver (and each MPIC perspective) may ask any nameserver over v4 or v6, so the
     # "forge no CAA / DNS-01" path needs every nameserver address captured, not just one.

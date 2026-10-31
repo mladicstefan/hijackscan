@@ -51,6 +51,9 @@ class Collector:
             "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
             "resolver": self.dns.address,
             "resolver_check": self.resolver_check,
+            "routing_source": self.cfg.ripestat_url,
+            "rpki_source": str(self.cfg.rpki_dir),
+            "routable_caps": list(self.cfg.routable_caps),
             "rpki_date": self.cfg.rpki_date,
             "names": {},
             "ds": None,
@@ -102,6 +105,7 @@ class Collector:
             "routing": self.ripe.routing_status(prefix) if prefix else None,
             "rpki_state": self.ripe.rpki_state(asns[0], prefix) if prefix and asns else None,
             "roas": self.roas.covering(prefix) if prefix else [],
+            "roas_within": self.roas.contained(prefix) if prefix else [],
         }
 
     # -- a batch -----------------------------------------------------------

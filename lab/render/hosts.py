@@ -4,11 +4,27 @@ from __future__ import annotations
 
 import json
 import shutil
+from datetime import date
 from pathlib import Path
+
+from hijackscan.risk import RiskParams
 
 from .topology import PERSPECTIVES, RESOLVER_IP
 
 LAB_DIR = Path(__file__).resolve().parents[1]
+
+
+def quorum(today: date | None = None) -> dict[str, int]:
+    """The MPIC quorum in force today (BR 3.2.2.9), from the scanner's own table so lab CA and scanner agree."""
+    today = today or date.today()
+    p = RiskParams.for_date(today)
+    remotes = len(PERSPECTIVES) - 1
+    if remotes < p.remote_perspectives:
+        raise SystemExit(
+            f"the CA has {remotes} remote perspectives but BR 3.2.2.9 requires {p.remote_perspectives} on {today}: "
+            f"add a perspective r{remotes + 1} to lab/render/topology.py"
+        )
+    return {"min_remote": p.remote_perspectives, "max_fail": p.allowed_non_corroborations}
 
 
 def render_hosts(sc: dict, build: Path) -> None:
@@ -27,7 +43,7 @@ def render_hosts(sc: dict, build: Path) -> None:
                 "accounts": acct,
                 "tokens": tok,
                 "perspectives": [p.__dict__ for p in PERSPECTIVES],
-                "quorum": {"min_remote": 4, "max_fail": 1},  # CA/B SC-067: at most one non-corroborating remote
+                "quorum": quorum(),  # CA/B SC-067: the primary plus at most max_fail non-corroborating remotes
             },
             indent=1,
         )

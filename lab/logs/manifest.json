@@ -1,0 +1,20 @@
+{
+ "started": "2026-10-31T22:40:04+00:00",
+ "finished": "2026-10-31T22:43:59+00:00",
+ "git_head": "4f4bb88efe2f1147c68795beb7e20f432f6a3743",
+ "git_dirty": true,
+ "scenarios": {
+  "baseline.yml": "295d496012910c3aeb548d70c64823de0dec6439c74c768cf080200a012542d2",
+  "caa-signed.yml": "80f6bd9d4e78fb3fe30d4edbd1d0b44fb29301eb1bcdae869a2fed41c40189a6",
+  "caa-unsigned.yml": "4c096d96b1acf76182b6572405dab3e0813ebd861c5f3134eb81729ef6ae5d16",
+  "tight-maxlength.yml": "e101d79b29b02cb124fa70bc60c46d99df225e9bf8d07eb4c44c6ccd339e8edd"
+ },
+ "images": {
+  "quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2": "sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2",
+  "hijackscan-lab:latest": "sha256:1f990d01ca67d9d4b461f487367e0532d1c371d47dfb4fe35fbac0c5d44b40ce",
+  "rpki/stayrtr@sha256:b2d5a73be582fffcebbb3154ffaaea0329a1c3f93d079d5a34c6d374b66b9d18": "sha256:b2d5a73be582fffcebbb3154ffaaea0329a1c3f93d079d5a34c6d374b66b9d18",
+  "alpine:3.22@sha256:2e0b81d60597f449baa56dc25d355367869d2dca4cd57e866f1e2b52af3eb55f": "sha256:2e0b81d60597f449baa56dc25d355367869d2dca4cd57e866f1e2b52af3eb55f"
+ },
+ "containerlab": "version: 0.82.0 commit: 4272331ab",
+ "ldns_signzone": "zone signer version 1.9.2 (ldns version 1.9.2)"
+}

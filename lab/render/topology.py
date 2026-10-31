@@ -9,7 +9,8 @@ from dataclasses import dataclass
 
 LAB = "hijackscan"  # containerlab name → containers are clab-hijackscan-<node>
 MGMT_NET = "172.31.40.0/24"
-FRR_IMAGE = "quay.io/frrouting/frr:10.7.1"
+# Pinned by digest (docker image inspect, 2026-10-31) so a rebuilt lab runs the same FRR; the tag is for humans.
+FRR_IMAGE = "quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2"
 LAB_IMAGE = "hijackscan-lab:latest"
 RTR_PORT = 8282
 FEED_PORT = 8080

@@ -69,6 +69,8 @@ def render_router(node: str, sc: dict) -> str:
             lines += [
                 "rpki",
                 f" rpki cache tcp {NODES['rpki'].mgmt} {RTR_PORT} preference 1",
+                " rpki retry_interval 5",
+                " rpki polling_period 30",
                 "exit",
                 "!",
                 "route-map ROV deny 10",

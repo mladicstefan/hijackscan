@@ -1,0 +1,96 @@
+victim.rs  LOW  1.1  contested
+  No forged more-specific route exists; only an exact-prefix contest remains, and no DNS-side defence stops it (12% success, assumed contest share 30%).
+  to close    domain-owner + dns-host: publish CAA issue=<your CA>; accounturi=<your ACME account> + sign the zone and publish the DS at the registrar (DNSSEC) → 0.0 None
+
+RISK CALCULATION   (design/formula.md)
+  driving path   contest → web + nameservers
+  p              0.30   exact-prefix origin contest, always possible without ASPA (assumed share)
+  P per attempt  0.025   = p × P(≥ 3 of 4 remote perspectives fooled)   [BR 3.2.2.9]
+  likelihood L   0.119   = 1 − (1 − P)^5
+  complexity K   0.870   = 0.87^1   (wins only where the attacker's route is preferred)
+  score          1.1   = Roundup(10 × 1 × K × L)   → Low (CVSS scale)
+
+ALL PATHS
+  contest   1.1 Low      p=0.30 h=1  web + nameservers: exact-prefix origin contest, always possible without ASPA (assumed share)
+
+FINDINGS
+  EXACT_PREFIX_CONTEST  [Low] exact-prefix origin contest, always possible without ASPA (assumed share)
+  NO_CAA                no CAA record at any label up to the TLD: every CA may issue
+  UNSIGNED              no DS at the parent: DNS answers can be forged
+
+WHAT EACH FIX DOES (re-scored)
+   0.0 None     domain-owner + dns-host: publish CAA issue=<your CA>; accounturi=<your ACME account> + sign the zone and publish the DS at the registrar (DNSSEC)
+   1.1 Low      domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account>
+   1.1 Low      dns-host: sign the zone and publish the DS at the registrar (DNSSEC)
+   1.1 Low      hosting-provider: set ROA maxLength = announced length for the web prefixes
+   1.1 Low      dns-host: set ROA maxLength = announced length for the nameserver prefixes
+
+VECTORS
+  CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:H/A:N   base 8.7  (CVSS alone: same for every domain on this path)
+  CVSS:4.0/AV:N/AC:H/AT:P/PR:N/UI:N/VC:N/VI:N/VA:N/SC:H/SI:H/SA:N
+
+MITRE ATT&CK
+  T1590.005  Gather Victim Network Information: IP Addresses
+  T1596      Search Open Technical Databases (BGP, RPKI)
+  T1584.008  Compromise Infrastructure: Network Devices (a BGP-speaking network)
+  T1557      Adversary-in-the-Middle (closest fit: ATT&CK has no BGP hijack technique)
+  T1588.004  Obtain Capabilities: Digital Certificates
+  T1608.003  Stage Capabilities: Install Digital Certificate
+
+REFERENCES
+  [1] FIRST, CVSS v3.1 Specification  https://www.first.org/cvss/v3.1/specification-document
+  [2] FIRST, CVSS v4.0 Specification  https://www.first.org/cvss/v4.0/specification-document
+  [6] CA/B Forum TLS Baseline Requirements 3.2.2.9 (MPIC)  https://github.com/cabforum/servercert/blob/main/docs/BR.md
+  [8] Birge-Lee et al., Bamboozling Certificate Authorities with BGP, USENIX Security 2018  https://www.usenix.org/conference/usenixsecurity18/presentation/birge-lee
+  [12] RFC 9319, The Use of maxLength in the RPKI  https://www.rfc-editor.org/rfc/rfc9319
+  [18] RFC 8659, DNS Certification Authority Authorization (CAA)  https://www.rfc-editor.org/rfc/rfc8659
+  [19] RFC 8657, CAA accounturi and validationmethods  https://www.rfc-editor.org/rfc/rfc8657
+
+RAW FACTS
+
+victim.rs
+  exposure      CONTESTED-ONLY
+  meaning       No more-specific hijack is possible (ROAs are tight or nothing longer is routable). What remains is an exact-prefix origin contest that wins only part of the Internet, or a partial nameserver capture, and there is no DNS-side defence either.
+  why here      no more-specific hijack captures the web prefix or all nameservers; an exact-prefix contest remains, with no DNS-side defence
+  attack path   announce the same prefix with the victim's origin AS (or capture a subset of nameservers); win only where the attacker's path is preferred
+  collected     2026-10-31T22:41:05+00:00  resolver 172.31.40.20:53  routing http://172.31.40.15:8080/...  ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab, lab
+
+DNS
+  DNSSEC        unsigned   DS records at parent: 0   DNSKEY records at apex: 0
+                no DS at the registry: validators cannot verify anything for this zone
+  CAA           none at any label up to the TLD: every CA may issue
+  nameservers   ns1.victim.rs
+  NS operators  victim.rs
+
+WEB ADDRESSES   — none forgeable
+  203.0.113.10
+      announced as   203.0.113.0/24  (length /24)  by AS65000 (LAB-VICTIM-HOSTING)
+      RIPEstat RPKI  valid  (live verdict for that origin + prefix)
+      no more-specific of 203.0.113.0/24 is announced by anyone  (seen by 4/4 RIS peers)
+      ROAs           1 covering on lab
+        203.0.113.0/24       maxLength 24  origin AS65000   TA lab      exact length only
+      → not forgeable: ROA maxLength /24 equals the announced length; only an exact-prefix origin contest remains
+
+NAMESERVER ADDRESSES   — none forgeable
+  ns1.victim.rs
+    203.0.113.100
+        announced as   203.0.113.0/24  (length /24)  by AS65000 (LAB-VICTIM-HOSTING)
+        RIPEstat RPKI  valid  (live verdict for that origin + prefix)
+        no more-specific of 203.0.113.0/24 is announced by anyone  (seen by 4/4 RIS peers)
+        ROAs           1 covering on lab
+          203.0.113.0/24       maxLength 24  origin AS65000   TA lab      exact length only
+        → not forgeable: ROA maxLength /24 equals the announced length; only an exact-prefix origin contest remains
+
+REMEDIATIONS  (DNS-side fixes first: they hold regardless of routing)
+  domain-owner      publish CAA with issue=<your CA>; accounturi=<ACME account>
+                    closes: mis-issuance by every other CA and account
+  dns-host          sign the zone and publish the DS at the registrar
+                    closes: forged 'no CAA' answers after a nameserver hijack
+  registrar         enable DNSSEC for the domain (DS publication)
+                    closes: the same, from the registrar side
+
+--- stderr ---
+23:41:05 INFO rpki: 1 ROAs from /home/djamla/code/git/hijackscan/lab/build/data/rpki/lab
+23:41:05 INFO 1 domains, 1 to collect (resolver 172.31.40.20:53, rpki lab, 8 workers)
+23:41:05 INFO victim.rs: 2 names, 1 ns, 2 addrs, caa labels with records=0, errors=0
+23:41:05 INFO collected 1 in 0s

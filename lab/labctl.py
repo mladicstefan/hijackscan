@@ -7,7 +7,8 @@ uv run lab/labctl.py check                     containment: ASNs, neighbours, ro
 uv run lab/labctl.py attack off|web|web+ns     origin2 (AS65010) announces the forged more-specific(s)
 uv run lab/labctl.py scan [--details]          the real scanner against the lab (pre-attack state)
 uv run lab/labctl.py ca legit|attacker         the CA tries to issue for that account
-uv run lab/labctl.py matrix                    every row of the validation matrix, with expected results
+uv run lab/labctl.py matrix [--rows ROW ...]   every row of the validation matrix, with expected results
+uv run lab/labctl.py controls                  negative controls: each verdict flips when its mechanism is removed
 """
 
 from __future__ import annotations
@@ -24,6 +25,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from render import SCENARIOS, load_scenario, render_all  # noqa: E402
+from render.dns import TTL  # noqa: E402
 from render.topology import FEED_PORT, LAB, NODES  # noqa: E402
 
 LAB_DIR = Path(__file__).resolve().parent
@@ -59,45 +61,66 @@ def render(scenario: Path, build: Path) -> dict:
 
 def deploy(build: Path) -> None:
     sh("containerlab", "deploy", "-t", str(build / "lab.clab.yml"), "--reconfigure")
-    wait_bgp()
+    wait_bgp(rov_routers(current_scenario(build)))
 
 
 def destroy(build: Path) -> None:
     sh("containerlab", "destroy", "-t", str(build / "lab.clab.yml"), "--cleanup", check=False)
 
 
-def wait_bgp(timeout: float = 90) -> None:
+def wait_bgp(rov_routers: list[str] = (), timeout: float = 90) -> None:
+    """Every BGP session Established and, on the ROV transits, the RTR cache connected (ROV without a cache lets
+    every route through as `notfound`, which would pass the forged more-specific unchecked)."""
     routers = [n for n, v in NODES.items() if v.role == "router"]
     t0 = time.time()
     while time.time() - t0 < timeout:
         pending = []
+        for r in rov_routers:
+            if "connected" not in vtysh(r, "show rpki cache-connection").lower():
+                pending.append(f"{r}: RTR cache not connected")
         for r in routers:
             peers = json.loads(vtysh(r, "show bgp summary json") or "{}").get("ipv4Unicast", {}).get("peers", {})
             pending += [f"{r}->{p}" for p, i in peers.items() if i.get("state") != "Established"]
             if not peers:
                 pending.append(f"{r}: no peers yet")
         if not pending:
-            print(f"all BGP sessions established after {time.time() - t0:.0f}s")
+            print(f"all BGP sessions established and RTR caches connected after {time.time() - t0:.0f}s")
             time.sleep(3)  # let the last UPDATEs propagate
             return
         time.sleep(2)
     raise SystemExit(f"BGP sessions not established within {timeout}s: {pending}")
 
 
-def attack(mode: str, sc: dict) -> None:
-    """origin2 announces (or withdraws) the forged more-specifics; then show control plane and data plane."""
+def rov_routers(sc: dict) -> list[str]:
+    return [n for n, v in NODES.items() if v.role == "router" and sc["rov"] and v.asn in sc["transits"]]
+
+
+def attack(mode: str, sc: dict) -> dict:
+    """origin2 announces (or withdraws) the forged more-specifics; then show control plane and data plane.
+
+    Returns what was observed: {"want": {web, ns}, "got": {web, ns}, "paths": {web: [...], ns: [...]}, "text"}
+    where want/got name the host ('victim'|'attacker'|'?') answering at the victim's web and nameserver addresses.
+    """
+    lines: list[str] = []
+
+    def say(msg: str) -> None:
+        print(msg, flush=True)
+        lines.append(msg)
+
     ms = sc["attacker"]["more_specifics"]
     on = {"off": [], "web": ["web"], "web+ns": ["web", "ns"]}[mode]
     cmds = ["conf t", f"router bgp {sc['attacker']['asn']}", "address-family ipv4 unicast"]
     cmds += [f"{'' if k in on else 'no '}network {ms[k]}" for k in ("web", "ns")]
     vtysh("origin2", *cmds)
     time.sleep(2)
+    paths: dict[str, list[str]] = {}
     for k in ("web", "ns"):
         seen = json.loads(vtysh("collector", f"show bgp ipv4 unicast {ms[k]} json") or "{}")
-        paths = seen.get("paths", [])
-        via = [f"{p.get('aspath', {}).get('string', '?')} via {p.get('peer', {}).get('peerId', '?')}" for p in paths]
-        state = f"{len(paths)} path(s) at the collector: " + "; ".join(via) if paths else "withdrawn"
-        print(f"attack {mode}: {ms[k]} ({k}) {state}")
+        found = seen.get("paths", [])
+        via = [f"{p.get('aspath', {}).get('string', '?')} via {p.get('peer', {}).get('peerId', '?')}" for p in found]
+        paths[k] = via
+        state = f"{len(found)} path(s) at the collector: " + "; ".join(via) if found else "withdrawn"
+        say(f"attack {mode}: {ms[k]} ({k}) {state}")
     # data plane, seen from the resolver's position: who answers at the web and nameserver addresses now?
     # The resolver sits behind a validating transit: the attacker wins only where its route is RPKI-valid.
     wins = {k: k in on and (not sc["rov"] or rpki_valid(sc, ms[k])) for k in ("web", "ns")}
@@ -110,7 +133,7 @@ def attack(mode: str, sc: dict) -> None:
         time.sleep(1)
     for k in ("web", "ns"):
         flag = "" if got[k] == want[k] else " (UNEXPECTED)"
-        print(f"attack {mode}: {sc['victim'][k]} ({k}) is answered by host '{got[k]}'{flag}")
+        say(f"attack {mode}: {sc['victim'][k]} ({k}) is answered by host '{got[k]}'{flag}")
     if mode == "off":
         # A validating resolver keeps a bogus verdict for a while after the hijack ends (val-bogus-ttl, 60 s by
         # default; 5 s here, but Unbound's key cache held the bogus key up to 60 s): the legitimate owner stays
@@ -118,8 +141,9 @@ def attack(mode: str, sc: dict) -> None:
         t0 = time.time()
         while time.time() - t0 < 90 and not resolver_ok(sc["domain"]):
             time.sleep(1)
-        print(f"attack off: resolver validates {sc['domain']} again after {time.time() - t0:.0f}s")
-    time.sleep(6)  # the resolver's cache (5 s TTL) must not carry the previous state into the next check
+        say(f"attack off: resolver validates {sc['domain']} again after {time.time() - t0:.0f}s")
+    time.sleep(TTL + 1)  # the resolver's cache (zone TTL) must not carry the previous state into the next check
+    return {"want": want, "got": got, "paths": paths, "text": "".join(f"{ln}\n" for ln in lines)}
 
 
 def rpki_valid(sc: dict, prefix: str) -> bool:
@@ -204,7 +228,9 @@ def parser() -> argparse.ArgumentParser:
     s = sub.add_parser("scan")
     s.add_argument("--details", action="store_true")
     sub.add_parser("ca").add_argument("account", choices=("legit", "attacker"))
-    sub.add_parser("matrix")
+    m = sub.add_parser("matrix")
+    m.add_argument("--rows", nargs="+", metavar="ROW", help="only these rows: scenario, scenario/mode or scenario-mode")
+    sub.add_parser("controls")
     return p
 
 
@@ -235,7 +261,11 @@ def main() -> int:
     elif a.cmd == "matrix":
         from matrix import run_matrix
 
-        return run_matrix(a.build)
+        return run_matrix(a.build, a.rows)
+    elif a.cmd == "controls":
+        from controls import run_controls
+
+        return run_controls(a.build)
     return 0
 
 

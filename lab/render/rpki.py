@@ -6,19 +6,22 @@ import csv
 import io
 import json
 import lzma
-import time
 from pathlib import Path
+
+# Fixed timestamps (the same window as the DNSSEC signatures in dns.py), so a build is reproducible; StayRTR
+# runs with -checktime=false (clab.py) and does not enforce `valid` anyway.
+GENERATED = 1767225600  # 2026-01-01T00:00:00Z
+VALID = 1830297599  # 2027-12-31T23:59:59Z
 
 
 def render_rpki(sc: dict, build: Path) -> None:
     roas = sc["roas"]
     rpki_dir = build / "rpki"
     rpki_dir.mkdir(parents=True, exist_ok=True)
-    now = int(time.time())
     (rpki_dir / "rpki.json").write_text(
         json.dumps(
             {
-                "metadata": {"counts": len(roas), "generated": now, "valid": now},
+                "metadata": {"counts": len(roas), "generated": GENERATED, "valid": VALID},
                 "roas": [
                     {"prefix": r["prefix"], "maxLength": r["max_length"], "asn": f"AS{r['asn']}", "ta": "lab"}
                     for r in roas
