@@ -1,0 +1,287 @@
+{
+ "domain": "euronews.rs",
+ "fetched_at": "2026-10-31T13:10:50+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "euronews.rs": {
+   "A": [
+    "88.99.254.102"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.euronews.rs": {
+   "A": [
+    "88.99.254.102"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "euronews.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns1.bdm.microsoftonline.com": {
+   "A": [
+    "13.107.236.208"
+   ],
+   "AAAA": [
+    "2603:1061:0:700::d0"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.bdm.microsoftonline.com": {
+   "A": [
+    "150.171.21.208"
+   ],
+   "AAAA": [
+    "2620:1ec:8ec:700::d0"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.bdm.microsoftonline.com": {
+   "A": [
+    "204.14.183.208"
+   ],
+   "AAAA": [
+    "2a01:111:4000:700::d0"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns4.bdm.microsoftonline.com": {
+   "A": [
+    "208.84.5.208"
+   ],
+   "AAAA": [
+    "2620:1ec:bda:700::d0"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "13.107.236.208": {
+   "prefix": "13.104.0.0/14",
+   "origin_asns": [
+    8075
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "13.104.0.0/14",
+     "origin_asn": 8075,
+     "max_length": 14,
+     "ta": "arin"
+    }
+   ]
+  },
+  "150.171.21.208": {
+   "prefix": "150.171.0.0/16",
+   "origin_asns": [
+    8075
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "150.171.0.0/16",
+     "origin_asn": 8075,
+     "max_length": 16,
+     "ta": "arin"
+    }
+   ]
+  },
+  "204.14.183.208": {
+   "prefix": "204.14.180.0/22",
+   "origin_asns": [
+    8075
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "204.14.180.0/22",
+     "origin_asn": 8075,
+     "max_length": 22,
+     "ta": "arin"
+    }
+   ]
+  },
+  "208.84.5.208": {
+   "prefix": "208.84.0.0/21",
+   "origin_asns": [
+    8075
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "208.84.0.0/21",
+     "origin_asn": 8075,
+     "max_length": 21,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2603:1061:0:700::d0": {
+   "prefix": "2603:1000::/25",
+   "origin_asns": [
+    8075
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2603:1000::/25",
+     "origin_asn": 8075,
+     "max_length": 25,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2620:1ec:8ec:700::d0": {
+   "prefix": "2620:1ec::/36",
+   "origin_asns": [
+    8075
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2620:1ec::/36",
+     "origin_asn": 8075,
+     "max_length": 36,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2620:1ec:bda:700::d0": {
+   "prefix": "2620:1ec::/36",
+   "origin_asns": [
+    8075
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2620:1ec::/36",
+     "origin_asn": 8075,
+     "max_length": 36,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2a01:111:4000:700::d0": {
+   "prefix": "2a01:111:4000::/36",
+   "origin_asns": [
+    8075
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a01:111:4000::/36",
+     "origin_asn": 8075,
+     "max_length": 36,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a01:111::/32",
+     "origin_asn": 8075,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "88.99.254.102": {
+   "prefix": "88.99.0.0/16",
+   "origin_asns": [
+    24940
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "88.99.0.0/16",
+     "origin_asn": 24940,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "8075": {
+   "name": "MICROSOFT-CORP-MSN-AS-BLOCK - Microsoft Corporation",
+   "announced": true
+  },
+  "24940": {
+   "name": "HETZNER-AS Hetzner Online GmbH",
+   "announced": true
+  }
+ },
+ "errors": []
+}

@@ -1,0 +1,167 @@
+{
+ "domain": "companywall.rs",
+ "fetched_at": "2026-10-31T13:10:54+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "companywall.rs": {
+   "A": [
+    "91.185.208.180"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.companywall.rs": {
+   "A": [
+    "91.185.208.180"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "companywall.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns4.companywall.info": {
+   "A": [
+    "84.255.193.42"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.companywall.info": {
+   "A": [
+    "91.185.208.181"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "84.255.193.42": {
+   "prefix": "84.255.192.0/18",
+   "origin_asns": [
+    34779
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "84.255.192.0/18",
+     "origin_asn": 34779,
+     "max_length": 18,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "91.185.208.180": {
+   "prefix": "91.185.192.0/19",
+   "origin_asns": [
+    41828
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "91.185.192.0/19",
+     "origin_asn": 3212,
+     "max_length": 19,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "91.185.192.0/19",
+     "origin_asn": 41828,
+     "max_length": 19,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "91.185.208.181": {
+   "prefix": "91.185.192.0/19",
+   "origin_asns": [
+    41828
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "91.185.192.0/19",
+     "origin_asn": 3212,
+     "max_length": 19,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "91.185.192.0/19",
+     "origin_asn": 41828,
+     "max_length": 19,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "34779": {
+   "name": "T-2-AS T-2, d.o.o.",
+   "announced": true
+  },
+  "41828": {
+   "name": "TELEMACH-HOSTING Telemach Slovenija d.o.o.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

@@ -1,0 +1,216 @@
+{
+ "domain": "alo.rs",
+ "fetched_at": "2026-10-31T13:10:42+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "alo.rs": {
+   "A": [
+    "79.101.48.71",
+    "79.101.48.72"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.alo.rs": {
+   "A": [
+    "79.101.48.72",
+    "79.101.48.71"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [
+   "12412 8 2 abb9ad6149379910bb74e5c479daa6011f69ceccc0fec2e1e83ecf983bf9182e"
+  ],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [
+   "257 3 8 AwEAAclIpBWZzC2Q9emw7p5YJZs7PcdW C2apU59ndPue84ZlPk1k/y2O1khqMlOs JXrCsWJuZ3BCQ77rCu0oEURDgKQi15mN Ib0KI4d9BJVojL47a+FuGw6ZIKjBm4EY r84BvOHvmju9tPkSV/lYM8oA5wndi/tj SXazETP/4lFI5jFT5KOF8EwRRtN9oh7J trv1OhS22UEkwk3Ozc8o2guYkJH3Ei9g 0zXyluUC7QA5W5XaItxDXuLfSvF5aW5m zxSPWucbxLddJXd5EdQaPOEpl1M+6dab +VRdW4ywxb8BDztEPDeV2vs6iLrz4PmG DtC3mHlfXcMdjgl2O5dPHTKib6k=",
+   "256 3 8 AwEAAcF1c0LEhMaPlW1GI5YYBhaiZ3tt 8CP+0qQnyoWWIDFEeiNEMAl60EsuIQdD IwqjqsGfkTe1hQBEffL6qaKHPbKRtgmg lkmAH1oMmVMlOeJ/VXreQ1cDPLsy+9tr FA1rE2tF6mG1qFlR7Fo8n0Ka0KCDDNgU bpqsWhTY7GscDsQg6G3krUsx6yFWuP0D Sp4Z1VbDzWXb1qu4lG7GUf1Om47aTrZC XYBH5nwygQu3E5pCi/L8uv5zkkCd8oTd 3XiEtfp6DMnJh7M66GJbpgLI2LZHflqO BaSHOuIJBgXL7aUn0mJOm0UCSymic/iN ij5zhTsaY7UtEWY4//CQ5aEZn18=",
+   "256 3 8 AwEAAcZUV/6k73tmMwVhcD5J0WU0qL+I fBZEB7gfBYJXNyu3TYt3Zxg7B63+8b1A URngCa5cJG6zaEh1JLNs9anVThx4mZoH BWKtMelKN2wJAju/qpE184FQXikHVxon 1Ws8nP46cVHYB4Bc+apfb8UEmQenUUZc kqN4WbfdcE+yfu2aBTZE8MTcFRKPs8ln hBUkXDYkySEc/mzNes+GvSYzHZ8AmOjK Ae2wpsiVk1n5dz24KqZYGaDbtpQPjs2i ZAdjr4W64/VcWJJ3/MDPRvL/mCRG6nAi qrVUoDP0IemlkpSZO9Erje9bsrkZIY+X +eVVGUEZ6I7fKjn/SQBMx0+VKWU="
+  ],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "alo.rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns1.loopia.se": {
+   "A": [
+    "93.188.0.20"
+   ],
+   "AAAA": [
+    "2a02:250:ffff::20"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.loopia.se": {
+   "A": [
+    "185.71.156.20"
+   ],
+   "AAAA": [
+    "2a02:250:fffe::20"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "185.71.156.20": {
+   "prefix": "185.71.156.0/24",
+   "origin_asns": [
+    215836
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.71.156.0/24",
+     "origin_asn": 215836,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a02:250:fffe::20": {
+   "prefix": "2a02:250:fffe::/48",
+   "origin_asns": [
+    215836
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:250:fffe::/48",
+     "origin_asn": 215836,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a02:250:ffff::20": {
+   "prefix": "2a02:250:ffff::/48",
+   "origin_asns": [
+    39570
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:250:ffff::/48",
+     "origin_asn": 39570,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "79.101.48.71": {
+   "prefix": "79.101.0.0/16",
+   "origin_asns": [
+    8400
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "79.101.0.0/16",
+     "origin_asn": 8400,
+     "max_length": 16,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "79.101.48.72": {
+   "prefix": "79.101.0.0/16",
+   "origin_asns": [
+    8400
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "79.101.0.0/16",
+     "origin_asn": 8400,
+     "max_length": 16,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "93.188.0.20": {
+   "prefix": "93.188.0.0/24",
+   "origin_asns": [
+    39570
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "93.188.0.0/24",
+     "origin_asn": 39570,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "8400": {
+   "name": "TELEKOM-AS TELEKOM SRBIJA a.d.",
+   "announced": true
+  },
+  "39570": {
+   "name": "LOOPIA Loopia AB",
+   "announced": true
+  },
+  "215836": {
+   "name": "LOOPIA2 Loopia AB",
+   "announced": true
+  }
+ },
+ "errors": []
+}

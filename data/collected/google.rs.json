@@ -1,0 +1,370 @@
+{
+ "domain": "google.rs",
+ "fetched_at": "2026-10-31T13:10:08+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "google.rs": {
+   "A": [
+    "142.251.142.99"
+   ],
+   "AAAA": [
+    "2a00:1450:4002:406::2003"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.google.rs": {
+   "A": [
+    "142.251.208.99"
+   ],
+   "AAAA": [
+    "2a00:1450:4017:815::2003"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "google.rs",
+   "records": [
+    "0 issue \"pki.goog\""
+   ],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.google.com": {
+   "A": [
+    "216.239.34.10"
+   ],
+   "AAAA": [
+    "2001:4860:4802:34::a"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.google.com": {
+   "A": [
+    "216.239.36.10"
+   ],
+   "AAAA": [
+    "2001:4860:4802:36::a"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.google.com": {
+   "A": [
+    "216.239.32.10"
+   ],
+   "AAAA": [
+    "2001:4860:4802:32::a"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns4.google.com": {
+   "A": [
+    "216.239.38.10"
+   ],
+   "AAAA": [
+    "2001:4860:4802:38::a"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "142.251.142.99": {
+   "prefix": "142.250.0.0/15",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "142.250.0.0/15",
+     "origin_asn": 15169,
+     "max_length": 15,
+     "ta": "arin"
+    }
+   ]
+  },
+  "142.251.208.99": {
+   "prefix": "142.251.208.0/24",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "142.250.0.0/15",
+     "origin_asn": 15169,
+     "max_length": 15,
+     "ta": "arin"
+    },
+    {
+     "prefix": "142.251.208.0/24",
+     "origin_asn": 15169,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2001:4860:4802:32::a": {
+   "prefix": "2001:4860::/32",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:4860::/32",
+     "origin_asn": 15169,
+     "max_length": 32,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2001:4860:4802:34::a": {
+   "prefix": "2001:4860::/32",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:4860::/32",
+     "origin_asn": 15169,
+     "max_length": 32,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2001:4860:4802:36::a": {
+   "prefix": "2001:4860::/32",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:4860::/32",
+     "origin_asn": 15169,
+     "max_length": 32,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2001:4860:4802:38::a": {
+   "prefix": "2001:4860::/32",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:4860::/32",
+     "origin_asn": 15169,
+     "max_length": 32,
+     "ta": "arin"
+    }
+   ]
+  },
+  "216.239.32.10": {
+   "prefix": "216.239.32.0/24",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "216.239.32.0/19",
+     "origin_asn": 15169,
+     "max_length": 19,
+     "ta": "arin"
+    },
+    {
+     "prefix": "216.239.32.0/24",
+     "origin_asn": 15169,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "216.239.34.10": {
+   "prefix": "216.239.34.0/24",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "216.239.32.0/19",
+     "origin_asn": 15169,
+     "max_length": 19,
+     "ta": "arin"
+    },
+    {
+     "prefix": "216.239.34.0/24",
+     "origin_asn": 15169,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "216.239.36.10": {
+   "prefix": "216.239.36.0/24",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "216.239.32.0/19",
+     "origin_asn": 15169,
+     "max_length": 19,
+     "ta": "arin"
+    },
+    {
+     "prefix": "216.239.36.0/24",
+     "origin_asn": 15169,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "216.239.38.10": {
+   "prefix": "216.239.38.0/24",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "216.239.32.0/19",
+     "origin_asn": 15169,
+     "max_length": 19,
+     "ta": "arin"
+    },
+    {
+     "prefix": "216.239.38.0/24",
+     "origin_asn": 15169,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2a00:1450:4002:406::2003": {
+   "prefix": "2a00:1450:4002::/48",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a00:1450:4002::/48",
+     "origin_asn": 15169,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a00:1450::/32",
+     "origin_asn": 15169,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a00:1450:4017:815::2003": {
+   "prefix": "2a00:1450:4017::/48",
+   "origin_asns": [
+    15169
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a00:1450:4017::/48",
+     "origin_asn": 15169,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a00:1450::/32",
+     "origin_asn": 15169,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "15169": {
+   "name": "GOOGLE - Google LLC",
+   "announced": true
+  }
+ },
+ "errors": []
+}

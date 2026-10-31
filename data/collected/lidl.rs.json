@@ -1,0 +1,302 @@
+{
+ "domain": "lidl.rs",
+ "fetched_at": "2026-10-31T13:10:58+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "lidl.rs": {
+   "A": [
+    "104.103.88.216"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.lidl.rs": {
+   "A": [
+    "185.85.1.151"
+   ],
+   "AAAA": [
+    "2a02:cb40:200::5c"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "lidl.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns1-211.akam.net": {
+   "A": [
+    "193.108.91.211"
+   ],
+   "AAAA": [
+    "2600:1401:2::d3"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns7-66.akam.net": {
+   "A": [
+    "96.7.49.66"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns5-65.akam.net": {
+   "A": [
+    "184.85.248.65"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns4-65.akam.net": {
+   "A": [
+    "84.53.139.65"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "104.103.88.216": {
+   "prefix": "104.103.80.0/20",
+   "origin_asns": [
+    16625
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "104.103.80.0/20",
+     "origin_asn": 16625,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "104.64.0.0/10",
+     "origin_asn": 20940,
+     "max_length": 10,
+     "ta": "arin"
+    }
+   ]
+  },
+  "184.85.248.65": {
+   "prefix": "184.85.248.0/24",
+   "origin_asns": [
+    21342
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "184.84.0.0/14",
+     "origin_asn": 20940,
+     "max_length": 14,
+     "ta": "arin"
+    },
+    {
+     "prefix": "184.85.248.0/24",
+     "origin_asn": 21342,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "185.85.1.151": {
+   "prefix": "185.85.1.0/24",
+   "origin_asns": [
+    20546
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.85.1.0/24",
+     "origin_asn": 20546,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "193.108.91.211": {
+   "prefix": "193.108.91.0/24",
+   "origin_asns": [
+    21342
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.108.88.0/21",
+     "origin_asn": 20940,
+     "max_length": 21,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "193.108.91.0/24",
+     "origin_asn": 21342,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2600:1401:2::d3": {
+   "prefix": "2600:1401:2::/48",
+   "origin_asns": [
+    21342
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:1400::/24",
+     "origin_asn": 20940,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:1401:2::/48",
+     "origin_asn": 21342,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2a02:cb40:200::5c": {
+   "prefix": "2a02:cb40::/32",
+   "origin_asns": [
+    20546
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:cb40::/32",
+     "origin_asn": 20546,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "84.53.139.65": {
+   "prefix": "84.53.139.0/24",
+   "origin_asns": [
+    21342
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "84.53.128.0/18",
+     "origin_asn": 20940,
+     "max_length": 18,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "84.53.139.0/24",
+     "origin_asn": 21342,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "96.7.49.66": {
+   "prefix": "96.7.49.0/24",
+   "origin_asns": [
+    21342
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "96.6.0.0/15",
+     "origin_asn": 20940,
+     "max_length": 15,
+     "ta": "arin"
+    },
+    {
+     "prefix": "96.7.49.0/24",
+     "origin_asn": 21342,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "16625": {
+   "name": "AKAMAI-AS - Akamai Technologies, Inc.",
+   "announced": true
+  },
+  "20546": {
+   "name": "SOPRADO-ANY SOPRADO GmbH",
+   "announced": true
+  },
+  "21342": {
+   "name": "AKAMAI-ASN2 Akamai International B.V.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

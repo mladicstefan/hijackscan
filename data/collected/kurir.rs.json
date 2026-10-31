@@ -1,0 +1,216 @@
+{
+ "domain": "kurir.rs",
+ "fetched_at": "2026-10-31T13:10:08+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "kurir.rs": {
+   "A": [
+    "185.24.11.19"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.kurir.rs": {
+   "A": [
+    "185.180.12.68"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "kurir.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "kiki.bunny.net": {
+   "A": [
+    "91.200.176.1"
+   ],
+   "AAAA": [
+    "2400:52e0:fff0::1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "coco.bunny.net": {
+   "A": [
+    "109.104.147.1"
+   ],
+   "AAAA": [
+    "2400:52e0:fff2::1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "109.104.147.1": {
+   "prefix": "109.104.147.0/24",
+   "origin_asns": [
+    200325
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "109.104.146.0/23",
+     "origin_asn": 200325,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "185.180.12.68": {
+   "prefix": "185.180.12.0/24",
+   "origin_asns": [
+    60068
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.180.12.0/24",
+     "origin_asn": 60068,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "185.24.11.19": {
+   "prefix": "185.24.11.0/24",
+   "origin_asns": [
+    60068
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.24.11.0/24",
+     "origin_asn": 60068,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2400:52e0:fff0::1": {
+   "prefix": "2400:52e0:fff0::/48",
+   "origin_asns": [
+    200325
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2400:52e0::/32",
+     "origin_asn": 200325,
+     "max_length": 32,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "2400:52e0:fff0::/48",
+     "origin_asn": 200325,
+     "max_length": 48,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "2400:52e0:fff2::1": {
+   "prefix": "2400:52e0:fff2::/48",
+   "origin_asns": [
+    200325
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2400:52e0::/32",
+     "origin_asn": 200325,
+     "max_length": 32,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "2400:52e0:fff2::/48",
+     "origin_asn": 200325,
+     "max_length": 48,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "91.200.176.1": {
+   "prefix": "91.200.176.0/24",
+   "origin_asns": [
+    200325
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "91.200.176.0/24",
+     "origin_asn": 200325,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "60068": {
+   "name": "CDN77 Datacamp Limited",
+   "announced": true
+  },
+  "200325": {
+   "name": "BunnyCDN BUNNYWAY, informacijske storitve d.o.o.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

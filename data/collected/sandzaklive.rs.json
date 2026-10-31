@@ -1,0 +1,157 @@
+{
+ "domain": "sandzaklive.rs",
+ "fetched_at": "2026-10-31T13:10:59+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "sandzaklive.rs": {
+   "A": [
+    "85.25.185.35"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.sandzaklive.rs": {
+   "A": [
+    "85.25.185.35"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "sandzaklive.rs",
+   "records": [
+    "0 issue \"letsencrypt.org\""
+   ],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns02.sistem.ba": {
+   "A": [
+    "85.25.255.167"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "cloud.sistem.ba": {
+   "A": [
+    "95.216.32.50"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "85.25.185.35": {
+   "prefix": "85.25.176.0/20",
+   "origin_asns": [
+    29066
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "85.25.176.0/20",
+     "origin_asn": 29066,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "85.25.255.167": {
+   "prefix": "85.25.255.0/24",
+   "origin_asns": [
+    29066
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "85.25.248.0/21",
+     "origin_asn": 29066,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "95.216.32.50": {
+   "prefix": "95.216.0.0/16",
+   "origin_asns": [
+    24940
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "95.216.0.0/16",
+     "origin_asn": 24940,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "24940": {
+   "name": "HETZNER-AS Hetzner Online GmbH",
+   "announced": true
+  },
+  "29066": {
+   "name": "VELIANET-AS velia.net Internetdienste GmbH",
+   "announced": true
+  }
+ },
+ "errors": []
+}

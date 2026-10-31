@@ -1,0 +1,460 @@
+{
+ "domain": "gigatron.rs",
+ "fetched_at": "2026-10-31T13:10:54+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "gigatron.rs": {
+   "A": [
+    "104.26.15.144",
+    "104.26.14.144",
+    "172.67.70.10"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.gigatron.rs": {
+   "A": [
+    "18.172.242.109",
+    "18.172.242.123",
+    "18.172.242.16",
+    "18.172.242.104"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "gigatron.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "celine.ns.cloudflare.com": {
+   "A": [
+    "172.64.34.98",
+    "108.162.194.98",
+    "162.159.38.98"
+   ],
+   "AAAA": [
+    "2a06:98c1:50::ac40:2262",
+    "2803:f800:50::6ca2:c262",
+    "2606:4700:50::a29f:2662"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "brodie.ns.cloudflare.com": {
+   "A": [
+    "108.162.195.237",
+    "162.159.44.237",
+    "172.64.35.237"
+   ],
+   "AAAA": [
+    "2606:4700:58::a29f:2ced",
+    "2803:f800:50::6ca2:c3ed",
+    "2a06:98c1:50::ac40:23ed"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "104.26.14.144": {
+   "prefix": "104.26.0.0/20",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "104.26.0.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    }
+   ]
+  },
+  "104.26.15.144": {
+   "prefix": "104.26.0.0/20",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "104.26.0.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    }
+   ]
+  },
+  "108.162.194.98": {
+   "prefix": "108.162.194.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "108.162.192.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "108.162.194.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "108.162.195.237": {
+   "prefix": "108.162.195.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "108.162.192.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "108.162.195.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "162.159.38.98": {
+   "prefix": "162.159.32.0/20",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "162.159.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    }
+   ]
+  },
+  "162.159.44.237": {
+   "prefix": "162.159.32.0/20",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "162.159.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    }
+   ]
+  },
+  "172.64.34.98": {
+   "prefix": "172.64.34.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "172.64.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "172.64.34.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "172.64.35.237": {
+   "prefix": "172.64.35.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "172.64.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "172.64.35.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "172.67.70.10": {
+   "prefix": "172.67.64.0/20",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "172.67.64.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    }
+   ]
+  },
+  "18.172.242.104": {
+   "prefix": "18.172.240.0/21",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "18.172.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 15,
+     "ta": "arin"
+    },
+    {
+     "prefix": "18.172.0.0/16",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "18.172.242.109": {
+   "prefix": "18.172.240.0/21",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "18.172.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 15,
+     "ta": "arin"
+    },
+    {
+     "prefix": "18.172.0.0/16",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "18.172.242.123": {
+   "prefix": "18.172.240.0/21",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "18.172.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 15,
+     "ta": "arin"
+    },
+    {
+     "prefix": "18.172.0.0/16",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "18.172.242.16": {
+   "prefix": "18.172.240.0/21",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "18.172.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 15,
+     "ta": "arin"
+    },
+    {
+     "prefix": "18.172.0.0/16",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2606:4700:50::a29f:2662": {
+   "prefix": "2606:4700:50::/44",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2606:4700:50::/44",
+     "origin_asn": 13335,
+     "max_length": 44,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2606:4700:58::a29f:2ced": {
+   "prefix": "2606:4700:50::/44",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2606:4700:50::/44",
+     "origin_asn": 13335,
+     "max_length": 44,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2803:f800:50::6ca2:c262": {
+   "prefix": "2803:f800:50::/45",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2803:f800:50::/45",
+     "origin_asn": 13335,
+     "max_length": 45,
+     "ta": "lacnic"
+    }
+   ]
+  },
+  "2803:f800:50::6ca2:c3ed": {
+   "prefix": "2803:f800:50::/45",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2803:f800:50::/45",
+     "origin_asn": 13335,
+     "max_length": 45,
+     "ta": "lacnic"
+    }
+   ]
+  },
+  "2a06:98c1:50::ac40:2262": {
+   "prefix": "2a06:98c1:50::/45",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a06:98c1:50::/45",
+     "origin_asn": 13335,
+     "max_length": 45,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a06:98c1:50::ac40:23ed": {
+   "prefix": "2a06:98c1:50::/45",
+   "origin_asns": [
+    13335
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a06:98c1:50::/45",
+     "origin_asn": 13335,
+     "max_length": 45,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "13335": {
+   "name": "CLOUDFLARENET - Cloudflare, Inc.",
+   "announced": true
+  },
+  "16509": {
+   "name": "AMAZON-02 - Amazon.com, Inc.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

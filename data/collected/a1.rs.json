@@ -1,0 +1,180 @@
+{
+ "domain": "a1.rs",
+ "fetched_at": "2026-10-31T13:10:48+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "a1.rs": {
+   "A": [
+    "77.243.16.127"
+   ],
+   "AAAA": [
+    "2a00:61c0:1:299::a"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.a1.rs": {
+   "A": [
+    "77.243.16.127"
+   ],
+   "AAAA": [
+    "2a00:61c0:1:299::a"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "a1.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.mtel.net": {
+   "A": [
+    "213.226.7.35"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.mtel.net": {
+   "A": [
+    "213.226.7.34"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "213.226.7.34": {
+   "prefix": "213.226.0.0/18",
+   "origin_asns": [
+    8717
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "213.226.0.0/18",
+     "origin_asn": 8717,
+     "max_length": 18,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "213.226.7.35": {
+   "prefix": "213.226.0.0/18",
+   "origin_asns": [
+    8717
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "213.226.0.0/18",
+     "origin_asn": 8717,
+     "max_length": 18,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a00:61c0:1:299::a": {
+   "prefix": "2a00:61c0::/32",
+   "origin_asns": [
+    44143
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a00:61c0::/29",
+     "origin_asn": 44143,
+     "max_length": 29,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a00:61c0::/32",
+     "origin_asn": 44143,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "77.243.16.127": {
+   "prefix": "77.243.16.0/20",
+   "origin_asns": [
+    44143
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "77.243.16.0/20",
+     "origin_asn": 44143,
+     "max_length": 20,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "8717": {
+   "name": "A1BG A1 Bulgaria EAD",
+   "announced": true
+  },
+  "44143": {
+   "name": "A1SERBIA-AS A1 Srbija d.o.o. Beograd",
+   "announced": true
+  }
+ },
+ "errors": []
+}

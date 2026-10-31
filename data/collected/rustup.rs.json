@@ -1,0 +1,1654 @@
+{
+ "domain": "rustup.rs",
+ "fetched_at": "2026-10-31T13:10:48+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "rustup.rs": {
+   "A": [
+    "18.239.255.128",
+    "18.239.255.46",
+    "18.239.255.111",
+    "18.239.255.14"
+   ],
+   "AAAA": [
+    "2600:9000:26a2:6800:1:6a0b:1280:93a1",
+    "2600:9000:26a2:e400:1:6a0b:1280:93a1",
+    "2600:9000:26a2:2e00:1:6a0b:1280:93a1",
+    "2600:9000:26a2:3200:1:6a0b:1280:93a1",
+    "2600:9000:26a2:4c00:1:6a0b:1280:93a1",
+    "2600:9000:26a2:aa00:1:6a0b:1280:93a1",
+    "2600:9000:26a2:fc00:1:6a0b:1280:93a1",
+    "2600:9000:26a2:1200:1:6a0b:1280:93a1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.rustup.rs": {
+   "A": [
+    "13.32.12.128",
+    "13.32.12.41",
+    "13.32.12.108",
+    "13.32.12.89"
+   ],
+   "AAAA": [
+    "2600:9000:211a:1400:10:5db6:67c0:93a1",
+    "2600:9000:211a:3e00:10:5db6:67c0:93a1",
+    "2600:9000:211a:8e00:10:5db6:67c0:93a1",
+    "2600:9000:211a:7000:10:5db6:67c0:93a1",
+    "2600:9000:211a:d600:10:5db6:67c0:93a1",
+    "2600:9000:211a:fa00:10:5db6:67c0:93a1",
+    "2600:9000:211a:f600:10:5db6:67c0:93a1",
+    "2600:9000:211a:400:10:5db6:67c0:93a1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "rustup.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns-318.awsdns-39.com": {
+   "A": [
+    "205.251.193.62"
+   ],
+   "AAAA": [
+    "2600:9000:5301:3e00::1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns-1857.awsdns-40.co.uk": {
+   "A": [
+    "205.251.199.65"
+   ],
+   "AAAA": [
+    "2600:9000:5307:4100::1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns-981.awsdns-58.net": {
+   "A": [
+    "205.251.195.213"
+   ],
+   "AAAA": [
+    "2600:9000:5303:d500::1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns-1111.awsdns-10.org": {
+   "A": [
+    "205.251.196.87"
+   ],
+   "AAAA": [
+    "2600:9000:5304:5700::1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "13.32.12.108": {
+   "prefix": "13.32.12.0/23",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "13.32.0.0/14",
+     "origin_asn": 16509,
+     "max_length": 14,
+     "ta": "arin"
+    },
+    {
+     "prefix": "13.32.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "13.32.12.128": {
+   "prefix": "13.32.12.0/23",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "13.32.0.0/14",
+     "origin_asn": 16509,
+     "max_length": 14,
+     "ta": "arin"
+    },
+    {
+     "prefix": "13.32.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "13.32.12.41": {
+   "prefix": "13.32.12.0/23",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "13.32.0.0/14",
+     "origin_asn": 16509,
+     "max_length": 14,
+     "ta": "arin"
+    },
+    {
+     "prefix": "13.32.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "13.32.12.89": {
+   "prefix": "13.32.12.0/23",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "13.32.0.0/14",
+     "origin_asn": 16509,
+     "max_length": 14,
+     "ta": "arin"
+    },
+    {
+     "prefix": "13.32.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "18.239.255.111": {
+   "prefix": "18.239.252.0/22",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "18.238.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "18.239.255.128": {
+   "prefix": "18.239.252.0/22",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "18.238.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "18.239.255.14": {
+   "prefix": "18.239.252.0/22",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "18.238.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "18.239.255.46": {
+   "prefix": "18.239.252.0/22",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "18.238.0.0/15",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "205.251.193.62": {
+   "prefix": "205.251.193.0/24",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "205.251.192.0/18",
+     "origin_asn": 16509,
+     "max_length": 18,
+     "ta": "arin"
+    },
+    {
+     "prefix": "205.251.192.0/21",
+     "origin_asn": 16509,
+     "max_length": 21,
+     "ta": "arin"
+    },
+    {
+     "prefix": "205.251.192.0/23",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "205.251.195.213": {
+   "prefix": "205.251.195.0/24",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "205.251.192.0/18",
+     "origin_asn": 16509,
+     "max_length": 18,
+     "ta": "arin"
+    },
+    {
+     "prefix": "205.251.192.0/21",
+     "origin_asn": 16509,
+     "max_length": 21,
+     "ta": "arin"
+    },
+    {
+     "prefix": "205.251.194.0/23",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "205.251.196.87": {
+   "prefix": "205.251.196.0/24",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "205.251.192.0/18",
+     "origin_asn": 16509,
+     "max_length": 18,
+     "ta": "arin"
+    },
+    {
+     "prefix": "205.251.192.0/21",
+     "origin_asn": 16509,
+     "max_length": 21,
+     "ta": "arin"
+    },
+    {
+     "prefix": "205.251.196.0/23",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "205.251.199.65": {
+   "prefix": "205.251.199.0/24",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "205.251.192.0/18",
+     "origin_asn": 16509,
+     "max_length": 18,
+     "ta": "arin"
+    },
+    {
+     "prefix": "205.251.192.0/21",
+     "origin_asn": 16509,
+     "max_length": 21,
+     "ta": "arin"
+    },
+    {
+     "prefix": "205.251.198.0/23",
+     "origin_asn": 16509,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:211a:1400:10:5db6:67c0:93a1": {
+   "prefix": "2600:9000:211a::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/43",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:211a:3e00:10:5db6:67c0:93a1": {
+   "prefix": "2600:9000:211a::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/43",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:211a:400:10:5db6:67c0:93a1": {
+   "prefix": "2600:9000:211a::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/43",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:211a:7000:10:5db6:67c0:93a1": {
+   "prefix": "2600:9000:211a::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/43",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:211a:8e00:10:5db6:67c0:93a1": {
+   "prefix": "2600:9000:211a::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/43",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:211a:d600:10:5db6:67c0:93a1": {
+   "prefix": "2600:9000:211a::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/43",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:211a:f600:10:5db6:67c0:93a1": {
+   "prefix": "2600:9000:211a::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/43",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:211a:fa00:10:5db6:67c0:93a1": {
+   "prefix": "2600:9000:211a::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2100::/43",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:26a2:1200:1:6a0b:1280:93a1": {
+   "prefix": "2600:9000:26a2::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2400::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/43",
+     "origin_asn": 16509,
+     "max_length": 43,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/44",
+     "origin_asn": 16509,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/45",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:26a2:2e00:1:6a0b:1280:93a1": {
+   "prefix": "2600:9000:26a2::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2400::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/43",
+     "origin_asn": 16509,
+     "max_length": 43,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/44",
+     "origin_asn": 16509,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/45",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:26a2:3200:1:6a0b:1280:93a1": {
+   "prefix": "2600:9000:26a2::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2400::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/43",
+     "origin_asn": 16509,
+     "max_length": 43,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/44",
+     "origin_asn": 16509,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/45",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:26a2:4c00:1:6a0b:1280:93a1": {
+   "prefix": "2600:9000:26a2::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2400::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/43",
+     "origin_asn": 16509,
+     "max_length": 43,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/44",
+     "origin_asn": 16509,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/45",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:26a2:6800:1:6a0b:1280:93a1": {
+   "prefix": "2600:9000:26a2::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2400::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/43",
+     "origin_asn": 16509,
+     "max_length": 43,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/44",
+     "origin_asn": 16509,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/45",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:26a2:aa00:1:6a0b:1280:93a1": {
+   "prefix": "2600:9000:26a2::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2400::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/43",
+     "origin_asn": 16509,
+     "max_length": 43,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/44",
+     "origin_asn": 16509,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/45",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:26a2:e400:1:6a0b:1280:93a1": {
+   "prefix": "2600:9000:26a2::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2400::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/43",
+     "origin_asn": 16509,
+     "max_length": 43,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/44",
+     "origin_asn": 16509,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/45",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:26a2:fc00:1:6a0b:1280:93a1": {
+   "prefix": "2600:9000:26a2::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:2000::/36",
+     "origin_asn": 16509,
+     "max_length": 36,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2000::/37",
+     "origin_asn": 16509,
+     "max_length": 37,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2400::/38",
+     "origin_asn": 16509,
+     "max_length": 38,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/39",
+     "origin_asn": 16509,
+     "max_length": 39,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2600::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/41",
+     "origin_asn": 16509,
+     "max_length": 41,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:2680::/42",
+     "origin_asn": 16509,
+     "max_length": 42,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/43",
+     "origin_asn": 16509,
+     "max_length": 43,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/44",
+     "origin_asn": 16509,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:26a0::/45",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:5301:3e00::1": {
+   "prefix": "2600:9000:5301::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:5300::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:5300::/45",
+     "origin_asn": 16509,
+     "max_length": 45,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:5300::/47",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:5303:d500::1": {
+   "prefix": "2600:9000:5303::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:5300::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:5300::/45",
+     "origin_asn": 16509,
+     "max_length": 45,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:5302::/47",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:5304:5700::1": {
+   "prefix": "2600:9000:5304::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:5300::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:5300::/45",
+     "origin_asn": 16509,
+     "max_length": 45,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:5304::/47",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:9000:5307:4100::1": {
+   "prefix": "2600:9000:5307::/48",
+   "origin_asns": [
+    16509
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:9000:5300::/40",
+     "origin_asn": 16509,
+     "max_length": 40,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:5300::/45",
+     "origin_asn": 16509,
+     "max_length": 45,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000:5306::/47",
+     "origin_asn": 16509,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:9000::/28",
+     "origin_asn": 16509,
+     "max_length": 28,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "16509": {
+   "name": "AMAZON-02 - Amazon.com, Inc.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

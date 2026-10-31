@@ -1,0 +1,304 @@
+{
+ "domain": "rts.rs",
+ "fetched_at": "2026-10-31T13:10:42+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "rts.rs": {
+   "A": [
+    "77.105.21.18"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.rts.rs": {
+   "A": [
+    "77.105.21.18"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "rts.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns.rts.rs": {
+   "A": [
+    "188.120.122.203"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.bg2.ha.rs": {
+   "A": [
+    "91.222.7.7"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.rts.rs": {
+   "A": [
+    "77.105.21.33"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.rts.rs": {
+   "A": [
+    "77.105.0.150"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "us1.mns-dns.com": {
+   "A": [
+    "23.105.168.5"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "bg1.mns-dns.net": {
+   "A": [
+    "91.222.7.7"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.bg3.ha.rs": {
+   "A": [
+    "87.237.206.34"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "188.120.122.203": {
+   "prefix": "188.120.122.0/24",
+   "origin_asns": [
+    205201
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "188.120.122.0/23",
+     "origin_asn": 205201,
+     "max_length": 23,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "188.120.122.0/24",
+     "origin_asn": 205201,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "23.105.168.5": {
+   "prefix": "23.105.160.0/19",
+   "origin_asns": [
+    30633
+   ],
+   "rpki_state": "valid",
+   "roas": []
+  },
+  "77.105.0.150": {
+   "prefix": "77.105.0.0/24",
+   "origin_asns": [
+    9125
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "77.105.0.0/22",
+     "origin_asn": 9125,
+     "max_length": 22,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "77.105.0.0/24",
+     "origin_asn": 9125,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "77.105.21.18": {
+   "prefix": "77.105.21.0/24",
+   "origin_asns": [
+    9125
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "77.105.21.0/24",
+     "origin_asn": 9125,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "77.105.21.33": {
+   "prefix": "77.105.21.0/24",
+   "origin_asns": [
+    9125
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "77.105.21.0/24",
+     "origin_asn": 9125,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "87.237.206.34": {
+   "prefix": "87.237.206.0/24",
+   "origin_asns": [
+    51859
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "87.237.200.0/21",
+     "origin_asn": 51859,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "87.237.204.0/22",
+     "origin_asn": 51859,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "91.222.7.7": {
+   "prefix": "91.222.7.0/24",
+   "origin_asns": [
+    51859
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "91.222.4.0/22",
+     "origin_asn": 51859,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "9125": {
+   "name": "ORIONTELEKOM-AS Drustvo za telekomunikacije Orion telekom doo Beograd-Zemun",
+   "announced": true
+  },
+  "30633": {
+   "name": "LEASEWEB-USA-WDC - Leaseweb USA, Inc.",
+   "announced": true
+  },
+  "51859": {
+   "name": "MNSHA-AS Mainstream doo Beograd",
+   "announced": true
+  },
+  "205201": {
+   "name": "rts-as Public Service Media Radio Television of Serbia",
+   "announced": true
+  }
+ },
+ "errors": []
+}

@@ -1,0 +1,278 @@
+{
+ "domain": "tehnomedia.rs",
+ "fetched_at": "2026-10-31T13:10:53+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "tehnomedia.rs": {
+   "A": [
+    "144.76.255.199"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.tehnomedia.rs": {
+   "A": [
+    "144.76.255.199"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "tehnomedia.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "mns01.domaincontrol.com": {
+   "A": [
+    "97.74.100.31"
+   ],
+   "AAAA": [
+    "2603:5:2143::1f"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "mns02.domaincontrol.com": {
+   "A": [
+    "173.201.68.31"
+   ],
+   "AAAA": [
+    "2603:5:2243::1f"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "144.76.255.199": {
+   "prefix": "144.76.0.0/16",
+   "origin_asns": [
+    24940
+   ],
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "173.201.68.31": {
+   "prefix": "173.201.68.0/23",
+   "origin_asns": [
+    44273
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "173.201.64.0/20",
+     "origin_asn": 20773,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "173.201.64.0/20",
+     "origin_asn": 26496,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "173.201.64.0/20",
+     "origin_asn": 26496,
+     "max_length": 23,
+     "ta": "arin"
+    },
+    {
+     "prefix": "173.201.64.0/20",
+     "origin_asn": 44273,
+     "max_length": 23,
+     "ta": "arin"
+    },
+    {
+     "prefix": "173.201.64.0/20",
+     "origin_asn": 397513,
+     "max_length": 23,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2603:5:2143::1f": {
+   "prefix": "2603:5:2140::/44",
+   "origin_asns": [
+    44273
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2603:5:2100::/40",
+     "origin_asn": 20773,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2603:5:2100::/40",
+     "origin_asn": 26496,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2603:5:2100::/40",
+     "origin_asn": 26496,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2603:5:2100::/40",
+     "origin_asn": 44273,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2603:5:2100::/40",
+     "origin_asn": 397513,
+     "max_length": 44,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2603:5:2243::1f": {
+   "prefix": "2603:5:2240::/44",
+   "origin_asns": [
+    44273
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2603:5:2200::/40",
+     "origin_asn": 20773,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2603:5:2200::/40",
+     "origin_asn": 26496,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2603:5:2200::/40",
+     "origin_asn": 26496,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2603:5:2200::/40",
+     "origin_asn": 44273,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2603:5:2200::/40",
+     "origin_asn": 397513,
+     "max_length": 44,
+     "ta": "arin"
+    }
+   ]
+  },
+  "97.74.100.31": {
+   "prefix": "97.74.100.0/23",
+   "origin_asns": [
+    44273
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "97.74.96.0/20",
+     "origin_asn": 20773,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "97.74.96.0/20",
+     "origin_asn": 26496,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "97.74.96.0/20",
+     "origin_asn": 26496,
+     "max_length": 23,
+     "ta": "arin"
+    },
+    {
+     "prefix": "97.74.96.0/20",
+     "origin_asn": 44273,
+     "max_length": 23,
+     "ta": "arin"
+    },
+    {
+     "prefix": "97.74.96.0/20",
+     "origin_asn": 397513,
+     "max_length": 23,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "24940": {
+   "name": "HETZNER-AS Hetzner Online GmbH",
+   "announced": true
+  },
+  "44273": {
+   "name": "GODADDY-DNS Host Europe GmbH",
+   "announced": true
+  }
+ },
+ "errors": []
+}

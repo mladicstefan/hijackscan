@@ -1,0 +1,155 @@
+{
+ "domain": "pravda.rs",
+ "fetched_at": "2026-10-31T13:10:51+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "pravda.rs": {
+   "A": [
+    "49.13.126.38"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.pravda.rs": {
+   "A": [
+    "49.13.126.38"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "pravda.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "dns2.eunethosting.com": {
+   "A": [
+    "217.26.211.18"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "dns1.eunethosting.com": {
+   "A": [
+    "217.26.211.17"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "217.26.211.17": {
+   "prefix": "217.26.208.0/21",
+   "origin_asns": [
+    31042
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.26.208.0/21",
+     "origin_asn": 31042,
+     "max_length": 21,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "217.26.211.18": {
+   "prefix": "217.26.208.0/21",
+   "origin_asns": [
+    31042
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.26.208.0/21",
+     "origin_asn": 31042,
+     "max_length": 21,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "49.13.126.38": {
+   "prefix": "49.13.0.0/16",
+   "origin_asns": [
+    24940
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "49.13.0.0/16",
+     "origin_asn": 24940,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "24940": {
+   "name": "HETZNER-AS Hetzner Online GmbH",
+   "announced": true
+  },
+  "31042": {
+   "name": "YETTEL-AS Yettel d.o.o.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

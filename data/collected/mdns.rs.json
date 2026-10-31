@@ -1,0 +1,190 @@
+{
+ "domain": "mdns.rs",
+ "fetched_at": "2026-10-31T13:10:45+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "mdns.rs": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.mdns.rs": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NXDOMAIN",
+    "AAAA": "NXDOMAIN"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "mdns.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns4.mdns.rs": {
+   "A": [
+    "69.168.231.100"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.mdns.rs": {
+   "A": [
+    "69.168.229.108"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.mdns.rs": {
+   "A": [
+    "69.168.230.100"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.mdns.rs": {
+   "A": [
+    "69.168.228.108"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "69.168.228.108": {
+   "prefix": "69.168.228.0/24",
+   "origin_asns": [
+    36344
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "69.168.228.0/24",
+     "origin_asn": 36344,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "69.168.229.108": {
+   "prefix": "69.168.229.0/24",
+   "origin_asns": [
+    36344
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "69.168.229.0/24",
+     "origin_asn": 36344,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "69.168.230.100": {
+   "prefix": "69.168.230.0/24",
+   "origin_asns": [
+    36344
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "69.168.230.0/24",
+     "origin_asn": 36344,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "69.168.231.100": {
+   "prefix": "69.168.231.0/24",
+   "origin_asns": [
+    36344
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "69.168.231.0/24",
+     "origin_asn": 36344,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "36344": {
+   "name": "ADVAN-CAST - Virtuozzo Inc.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

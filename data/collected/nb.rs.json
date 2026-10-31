@@ -1,0 +1,162 @@
+{
+ "domain": "nb.rs",
+ "fetched_at": "2026-10-31T13:10:50+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "nb.rs": {
+   "A": [
+    "147.91.246.202"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.nb.rs": {
+   "A": [
+    "147.91.246.202"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "nb.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns.rcub.bg.ac.rs": {
+   "A": [
+    "147.91.1.5"
+   ],
+   "AAAA": [
+    "2001:4170:0:1::5"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2e.nb.rs": {
+   "A": [
+    "147.91.246.96"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1e.nb.rs": {
+   "A": [
+    "147.91.246.91"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "147.91.1.5": {
+   "prefix": "147.91.0.0/17",
+   "origin_asns": [
+    13092
+   ],
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "147.91.246.202": {
+   "prefix": "147.91.128.0/17",
+   "origin_asns": [
+    13092
+   ],
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "147.91.246.91": {
+   "prefix": "147.91.128.0/17",
+   "origin_asns": [
+    13092
+   ],
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "147.91.246.96": {
+   "prefix": "147.91.128.0/17",
+   "origin_asns": [
+    13092
+   ],
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "2001:4170:0:1::5": {
+   "prefix": "2001:4170::/32",
+   "origin_asns": [
+    13092
+   ],
+   "rpki_state": "valid",
+   "roas": []
+  }
+ },
+ "asns": {
+  "13092": {
+   "name": "UB-AS Akademska mreza Republike Srbije - AMRES",
+   "announced": true
+  }
+ },
+ "errors": []
+}

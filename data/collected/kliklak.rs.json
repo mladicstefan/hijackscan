@@ -1,0 +1,141 @@
+{
+ "domain": "kliklak.rs",
+ "fetched_at": "2026-10-31T13:10:47+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "kliklak.rs": {
+   "A": [
+    "136.243.114.232"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.kliklak.rs": {
+   "A": [
+    "136.243.114.232"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "kliklak.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.shopmania.org": {
+   "A": [
+    "5.9.248.246"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.shopmania.org": {
+   "A": [
+    "185.144.83.60"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "136.243.114.232": {
+   "prefix": "136.243.0.0/16",
+   "origin_asns": [
+    24940
+   ],
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "185.144.83.60": {
+   "prefix": "185.144.82.0/23",
+   "origin_asns": [
+    9009
+   ],
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "5.9.248.246": {
+   "prefix": "5.9.0.0/16",
+   "origin_asns": [
+    24940
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "5.9.0.0/16",
+     "origin_asn": 24940,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "9009": {
+   "name": "M247 M247 Europe SRL",
+   "announced": true
+  },
+  "24940": {
+   "name": "HETZNER-AS Hetzner Online GmbH",
+   "announced": true
+  }
+ },
+ "errors": []
+}

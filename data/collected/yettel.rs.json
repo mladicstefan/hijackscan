@@ -1,0 +1,219 @@
+{
+ "domain": "yettel.rs",
+ "fetched_at": "2026-10-31T13:10:53+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "yettel.rs": {
+   "A": [
+    "217.65.192.125"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.yettel.rs": {
+   "A": [
+    "217.65.192.125"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "yettel.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "dinosaur.cetin.rs": {
+   "A": [
+    "217.65.192.1"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.cetin.rs": {
+   "A": [
+    "217.65.200.97"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "dnssrv1.cloudhosting.rs": {
+   "A": [
+    "94.127.2.168"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "dns2.cetin.rs": {
+   "A": [
+    "217.65.192.52"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "217.65.192.1": {
+   "prefix": "217.65.192.0/20",
+   "origin_asns": [
+    15958
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.65.192.0/20",
+     "origin_asn": 15958,
+     "max_length": 20,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "217.65.192.125": {
+   "prefix": "217.65.192.0/20",
+   "origin_asns": [
+    15958
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.65.192.0/20",
+     "origin_asn": 15958,
+     "max_length": 20,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "217.65.192.52": {
+   "prefix": "217.65.192.0/20",
+   "origin_asns": [
+    15958
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.65.192.0/20",
+     "origin_asn": 15958,
+     "max_length": 20,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "217.65.200.97": {
+   "prefix": "217.65.200.0/21",
+   "origin_asns": [
+    15958
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.65.192.0/20",
+     "origin_asn": 15958,
+     "max_length": 20,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "217.65.200.0/21",
+     "origin_asn": 15958,
+     "max_length": 21,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "94.127.2.168": {
+   "prefix": "94.127.0.0/21",
+   "origin_asns": [
+    31042
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "94.127.0.0/21",
+     "origin_asn": 31042,
+     "max_length": 21,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "15958": {
+   "name": "CETIN_doo_AS CETIN Ltd. Belgrade",
+   "announced": true
+  },
+  "31042": {
+   "name": "YETTEL-AS Yettel d.o.o.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

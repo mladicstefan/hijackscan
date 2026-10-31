@@ -1,0 +1,185 @@
+{
+ "domain": "igrice123.rs",
+ "fetched_at": "2026-10-31T13:11:00+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-08-28",
+ "names": {
+  "igrice123.rs": {
+   "A": [
+    "46.19.8.140"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.igrice123.rs": {
+   "A": [
+    "46.19.8.140"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "igrice123.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "x1.si": {
+   "A": [
+    "217.61.252.153"
+   ],
+   "AAAA": [
+    "2a02:28b7:5301::53"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "x2.si": {
+   "A": [
+    "185.185.91.53"
+   ],
+   "AAAA": [
+    "2a02:28b7:5302::53"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "185.185.91.53": {
+   "prefix": "185.185.91.0/24",
+   "origin_asns": [
+    51790
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.185.88.0/22",
+     "origin_asn": 51790,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "217.61.252.153": {
+   "prefix": "217.61.252.0/24",
+   "origin_asns": [
+    51790
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.61.252.0/24",
+     "origin_asn": 51790,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a02:28b7:5301::53": {
+   "prefix": "2a02:28b7::/32",
+   "origin_asns": [
+    51790
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:28b7::/32",
+     "origin_asn": 51790,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a02:28b7:5302::53": {
+   "prefix": "2a02:28b7::/32",
+   "origin_asns": [
+    51790
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:28b7::/32",
+     "origin_asn": 51790,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "46.19.8.140": {
+   "prefix": "46.19.8.0/23",
+   "origin_asns": [
+    51790
+   ],
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "46.19.8.0/23",
+     "origin_asn": 51790,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "51790": {
+   "name": "SIEL SIEL, d.o.o.",
+   "announced": true
+  }
+ },
+ "errors": []
+}
