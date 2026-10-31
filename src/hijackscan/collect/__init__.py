@@ -145,9 +145,17 @@ class Collector:
 
 def read_domains(arg: str) -> list[str]:
     """A file of domains (one per line, # comments) or a single domain name."""
+    return read_list(arg)[0]
+
+
+def read_list(arg: str) -> tuple[list[str], dict | None]:
+    """Domains plus the population facts if the file is a `hijackscan sample` output (None for a plain list)."""
     p = Path(arg)
     if p.is_file():
-        return [d.strip().lower() for d in p.read_text().splitlines() if d.strip() and not d.startswith("#")]
+        from .zonefile import read_meta
+
+        names = [d.strip().lower() for d in p.read_text().splitlines() if d.strip() and not d.startswith("#")]
+        return names, read_meta(p)
     if "/" in arg or arg.endswith(".txt"):
         raise SystemExit(f"no such file: {arg} (cwd {Path.cwd()})")
-    return [arg.strip().lower().rstrip(".")]
+    return [arg.strip().lower().rstrip(".")], None

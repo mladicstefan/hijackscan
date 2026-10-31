@@ -1,52 +1,82 @@
 # hijackscan
 
-How exposed are `.rs` domains to certificate theft through BGP hijacks below DNS, and how much
-of it does DNSSEC + CAA close? (team dogma, DNS SEC Hackathon 2026)
+How exposed are the domains of a TLD (`.ee` from its zone file, `.rs` from a list) to certificate theft through
+BGP hijacks below DNS, and how much of it does DNSSEC + CAA close? (team dogma, DNS SEC Hackathon 2026)
+
+## Usage
+
+Four commands, in this order. Every step is cached, so re-running is cheap.
 
 ```bash
-uv sync
-uv run scripts/check_resolver.py                       # does the configured resolver validate DNSSEC?
-uv run hijackscan collect data/samples/dev100.txt      # raw facts -> data/collected/<domain>.json
-uv run hijackscan blic.rs [--html blic.html]           # one domain: facts, class, attack path, fixes
-uv run hijackscan zone data/samples/dev100.txt --out data/out/   # report.json + report.html (no domain names)
+uv sync                                                  # once
+
+# 0. make sure the resolver validates DNSSEC (the collector refuses to start otherwise)
+uv run scripts/check_resolver.py                         # exit 0 = Quad9 over DoT validates
+
+# 1. draw a reproducible sample from the zone file (2 s; same seed = same 100 names)
+uv run hijackscan sample data/samples/zone.ee.part-* --n 100 --seed 1 --out data/samples/ee100.txt
+
+# 2. collect raw facts, one JSON per domain (about 2 min cold for 100, 0 s when cached)
+uv run hijackscan collect data/samples/ee100.txt
+
+# 3. aggregate report: report.json + report.html, no domain names in it
+uv run hijackscan zone data/samples/ee100.txt --out data/out/ee/
+firefox data/out/ee/report.html
+
+# 4. drill into one domain: facts, class, attack path, who fixes what (exit 0 closed, 1 contested/caa-only, 2 open)
+uv run hijackscan rnids.rs
+uv run hijackscan <name>.ee --html out.html
 ```
 
-Exit codes of `hijackscan <domain>`: 0 closed, 1 caa-only / contested-only, 2 open / caa-erasable.
-
-## Trying it
+Step 2 is optional: `zone` and the drill-down collect what is missing. Step 1 is optional too: any plain list of
+domains (one per line, `#` comments) works, e.g. the 100 `.rs` names in `data/samples/dev100.txt`:
 
 ```bash
-uv run scripts/check_resolver.py                        # exit 0: the resolver validates (AD on rnids.rs, SERVFAIL on dnssec-failed.org)
-uv run scripts/check_resolver.py --resolver 127.0.0.53:53   # the systemd stub: must FAIL
+uv run hijackscan zone data/samples/dev100.txt --out data/out/rs/
+```
 
-uv run hijackscan collect blic.rs --force               # one raw record
-python -m json.tool data/collected/blic.rs.json | less
-uv run hijackscan collect data/samples/dev100.txt       # batch; records younger than --max-age (7 d) are reused
+Useful variants:
 
-uv run hijackscan blic.rs; echo "exit=$?"               # drill-down, exit 2 = open
-uv run hijackscan rnids.rs                              # a signed zone
-uv run hijackscan google.rs --html google.html
+```bash
+uv run hijackscan sample data/samples/zone.ee.part-* --n 500 --seed 2 --out data/samples/ee500.txt   # bigger / different draw
+uv run hijackscan --rpki-date 2026-08-28 zone data/samples/ee100.txt --out data/out/ee-aug28/        # ROAs of the Hetzner incident day
+uv run hijackscan collect data/samples/ee100.txt --force                                             # ignore cached records
+uv run hijackscan --resolver 127.0.0.1:53 zone ...                                                   # our own Unbound
+head -30 data/samples/ee100.txt                                                                      # the population header
+python -m json.tool data/collected/<domain>.json | less                                              # one raw record
+firefox --headless --window-size=1100,2400 --screenshot zone.png file://$PWD/data/out/ee/report.html
 
-uv run hijackscan zone data/samples/dev100.txt --out data/out/
-firefox data/out/report.html
-firefox --headless --window-size=1100,1900 --screenshot zone.png file://$PWD/data/out/report.html
-
-uv run python -c "                                      # scoring and a what-if override, no network
+uv run python -c "                                       # scoring and a what-if override, no network
 import json; from hijackscan.score import score
-r = json.load(open('data/collected/blic.rs.json'))
+r = json.load(open('data/collected/rnids.rs.json'))
 print(score(r).exposure, score(r, {'signed': True, 'has_caa': True, 'pinned': True}).exposure)"
 ```
 
-Flags on every command: `--resolver host[:port]` (853 = DoT, 53 = plain; e.g. `127.0.0.1:53` for our Unbound),
-`--rpki-date YYYY-MM-DD` (fetches that archive day), `--max-age HOURS`, `--workers N`, `-v`.
+Global flags go before the subcommand: `--resolver host[:port]` (853 = DoT, 53 = plain), `--rpki-date YYYY-MM-DD`
+(default: newest archive day), `--max-age HOURS` (default 168), `--workers N`, `--data-dir DIR`, `-v`.
 
 ## Layering
 
 | layer | code | rule |
 |---|---|---|
+| sample | `hijackscan/collect/zonefile.py` | reads a TLD zone (dig axfr text, split parts in order), draws `random.Random(seed).sample(sorted(delegations), n)`, writes a domain list whose `#` header carries the population facts. |
 | collect | `hijackscan/collect/` | observes only: DNS answers with AD flag and rcode, prefixes, ROAs, AS names. No judgement, no derived field. |
 | score | `hijackscan/score.py` | pure functions over one collected record; every boolean and the exposure class are derived here. `score(record, overrides)` is the what-if mechanism. |
 | report | `hijackscan/report/` | renders: terminal + HTML per domain, aggregate JSON + HTML per zone. Self-contained HTML, inline CSS, no CDN. |
+
+## Zone file and sample (`data/samples/ee100.txt`)
+
+`data/samples/zone.ee.part-aa` + `part-ab` is the full `.ee` AXFR (`dig @zone.internet.ee ee. axfr`, SOA serial
+1793464230, 2026-10-31; CC-BY 4.0, Estonian Internet Foundation), split for GitHub's file limit. 204,698
+delegations, 52,785 with a DS at the parent. The sampler only reads NS and DS records: the names, which have a DS, and
+the nameserver operator (registered domain of each NS host, same function as the scorer) per name. Everything the
+verdict depends on (addresses, CAA, DNSKEY, the AD bit) is not in a zone file and is collected live.
+
+The header (`# key=value`, top 20 `# ns_operator=... delegations=... ds=...`) is ignored by `collect` and read by
+`zone`, which adds a "whole zone" section and per-operator "share of zone" and "DS at parent" columns. **DS at
+parent is an upper bound on DNSSEC that validates**: zones signed without a DS are not counted, and a DS with a
+broken chain makes the zone bogus, not secure; only the live sample splits secure from bogus. The sample's DS share
+against the zone's is the representativeness check.
 
 ## Collector (`data/collected/<domain>.json`)
 
@@ -109,6 +139,8 @@ forgeable* rather than *valid*.
 
 | path | what |
 |---|---|
+| `data/samples/zone.ee.part-*` | the `.ee` zone, dig axfr text, 2026-10-31 |
+| `data/samples/ee100.txt` | 100 `.ee` delegations, seed 1, with the population header |
 | `data/samples/dev100.txt` | the 100 `.rs` domains (top `.rs` names of Tranco list 746VX, 2026-10-30) |
 | `data/collected/` | raw record per domain |
 | `data/cache/ripestat/` | RIPEstat responses |

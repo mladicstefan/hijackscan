@@ -160,7 +160,7 @@ def score(rec: dict, overrides: dict | None = None) -> Scored:
     def addrs_of(entry: dict) -> list[AddressDerived]:
         return [addr[ip] for ip in entry.get("A", []) + entry.get("AAAA", []) if ip in addr]
 
-    web = [a for n in rec.get("names", {}).values() for a in addrs_of(n)]
+    web = list({a.ip: a for n in rec.get("names", {}).values() for a in addrs_of(n)}.values())  # apex+www dedup
     ns = {host: addrs_of(e) for host, e in rec.get("nameservers", {}).items()}
 
     caa_from, caa = None, Caa()
