@@ -1,147 +1,116 @@
 # hijackscan
 
-Measures how exposed the `.rs` / `.срб` namespace is to certificate theft through BGP hijacks
-below DNS, and how much CAA (`accounturi`) plus DNSSEC closes. This repository currently holds
-the **fetch stage**: it gets public datasets onto disk, verified, with a manifest. No analysis yet.
+How exposed are `.rs` domains to certificate theft through BGP hijacks below DNS, and how much
+of it does DNSSEC + CAA close? (team dogma, DNS SEC Hackathon 2026)
 
 ```bash
-uv sync --all-groups
-uv run hijackscan fetch all                 # or: make fetch-all
-uv run hijackscan fetch caida tranco        # or: make fetch-caida
-uv run hijackscan fetch rpki --dates 2026-08-28
-uv run hijackscan fetch ris --rrcs 00 --window 2026-08-28T10:00Z/2026-08-28T10:30Z
-uv run hijackscan fetch crtsh --months 1    # test on the most recent month first
-uv run hijackscan fetch crtsh --finalize    # names.txt / registered_domains.txt, no network
-uv run pytest                               # unit tests (no network); -m integration for network tests
+uv sync
+uv run scripts/check_resolver.py                       # does the configured resolver validate DNSSEC?
+uv run hijackscan collect data/samples/dev100.txt      # raw facts -> data/collected/<domain>.json
+uv run hijackscan blic.rs [--html blic.html]           # one domain: facts, class, attack path, fixes
+uv run hijackscan zone data/samples/dev100.txt --out data/out/   # report.json + report.html (no domain names)
 ```
 
-Behaviour common to every target:
+Exit codes of `hijackscan <domain>`: 0 closed, 1 caa-only / contested-only, 2 open / caa-erasable.
 
-- Config lives in `config/fetch.yaml` (dates, RRC list, TLDs, contact email); CLI flags override it.
-- Downloads stream to `<path>.part` and are renamed atomically; a partial `.part` is resumed with a
-  `Range` request. Existing files are skipped when their size matches the manifest or `Content-Length`;
-  `--force` re-downloads.
-- Retries: 5 attempts, exponential backoff with jitter, on network errors and 5xx only. 4xx is final.
-- `data/MANIFEST.jsonl`: one line per local file (target, URL, path, bytes, sha256, fetched_at, params),
-  rewritten atomically and keyed by path so re-runs update rather than duplicate.
-- `User-Agent: hijackscan/0.1 (DNS SEC Hackathon 2026; <contact email>)`; at most 4 concurrent
-  downloads per host; exactly one connection to crt.sh.
-- Logs go to stderr with timestamps (`--quiet`, `--verbose`).
+## Trying it
 
-## Datasets
+```bash
+uv run scripts/check_resolver.py                        # exit 0: the resolver validates (AD on rnids.rs, SERVFAIL on dnssec-failed.org)
+uv run scripts/check_resolver.py --resolver 127.0.0.53:53   # the systemd stub: must FAIL
 
-### `caida` — CAIDA AS Relationships (serial-2)
+uv run hijackscan collect blic.rs --force               # one raw record
+python -m json.tool data/collected/blic.rs.json | less
+uv run hijackscan collect data/samples/dev100.txt       # batch; records younger than --max-age (7 d) are reused
 
-- URL: `https://publicdata.caida.org/datasets/as-relationships/serial-2/{YYYYMM}01.as-rel2.txt.bz2`
-  plus `README.txt`. Default month 2026-08 (`caida.date`, `--caida-date`).
-- Saved as `data/caida/20260801.as-rel2.txt.bz2` (~2.0 MB, not decompressed).
-- Licence: CAIDA Acceptable Use Agreement. Publications must cite
-  "The CAIDA AS Relationships Dataset, 2026-08-01, https://www.caida.org/catalog/datasets/as-relationships/"
-  and be reported to CAIDA.
-- Known gaps: inferred relationships only; IXP route servers and sibling ASes are not modelled.
+uv run hijackscan blic.rs; echo "exit=$?"               # drill-down, exit 2 = open
+uv run hijackscan rnids.rs                              # a signed zone
+uv run hijackscan google.rs --html google.html
 
-### `rpki` — RIPE NCC RPKI archive
+uv run hijackscan zone data/samples/dev100.txt --out data/out/
+firefox data/out/report.html
+firefox --headless --window-size=1100,1900 --screenshot zone.png file://$PWD/data/out/report.html
 
-- URL: `https://ftp.ripe.net/rpki/{ta}.tal/{YYYY}/{MM}/{DD}/` for `afrinic apnic arin lacnic ripencc`;
-  files `roas.csv.xz`, `output.json.xz` (validated payloads incl. ASPA), `routinator.log`, each with a
-  `.sha256` sibling that is downloaded and verified (a mismatch renames the file to `.corrupt`).
-  `repo.tar.xz` (100+ MB per TA/day) is deliberately not fetched.
-- The directory listing is fetched first; a missing TA/day is recorded in `data/rpki/STATUS.json` and
-  skipped. If the primary tree 404s, `https://ftp.ripe.net/ripe/rpki/…` is tried.
-- Default days (`rpki.dates`, `--dates`): 2026-08-27/28/29 (the Hetzner incident) and today.
-- Saved under `data/rpki/{YYYY-MM-DD}/{ta}/`. 2026-08-28 is ~24 MB across all five TAs.
-- Licence: RIPE NCC terms for public data; research results should be shared with RIPE NCC.
-- Known gaps: the archive has missing days; `routinator.log` is large for ripencc; ASPA objects only
-  appear in `output.json.xz` for days after each TA started publishing them.
-
-### `ris` — RIPE RIS BGP updates around 28 Aug 2026
-
-- URL: `https://data.ris.ripe.net/rrc{NN}/{YYYY}.{MM}/updates.{YYYYMMDD}.{HHmm}.gz` (every 5 min) and
-  `bview.{YYYYMMDD}.{HHmm}.gz` (00:00, 08:00, 16:00). **Confirmed on the 2026.08 index: the prefix is
-  `updates` (plural).**
-- Config: `ris.rrcs` (default: the 23 collectors with 2026-08 data; `rrc02/08/09/17` 404),
-  `window_start`/`window_end` (default 2026-08-27T20:00Z → 2026-08-30T12:00Z), or `--rrcs 00,01` and
-  `--window START/END`. The last bview before `window_start` is fetched for each collector.
-- The month index is parsed per collector; files missing from the index and inactive collectors are
-  recorded in `data/ris/STATUS.json`. The planned file count and an estimated size (one HEAD per
-  collector) are printed; above 2 GB the run stops unless `--yes` is given.
-- Measured: rrc00 updates ≈ 5–8 MB per 5 min, bview ≈ 427 MB. The default window over 23 collectors is
-  roughly 23 × (768 × ~6 MB + 427 MB) ≈ **115 GB** — pick collectors deliberately.
-- Saved to `data/ris/rrc{NN}/<file>`; MRT is not parsed here.
-- Licence: RIPE NCC RIS terms (free for research; cite RIPE RIS).
-
-### `ris-parquet` (stub)
-
-RIPE NCC also publishes RIS in indexed Parquet form (see the RIPE Labs articles on "RIS data in
-Parquet" / the `ris-live`/BigQuery-style exports). TODO: confirm the documented bucket/URL layout and
-implement a target that fetches only the hours and prefixes we replay. The MRT path above works
-today; Parquet would let us filter on `162.55.0.0/16` without downloading full update files.
-
-### `tranco` — Tranco top list
-
-- Via the official `tranco` package: `Tranco(cache=True, cache_dir="data/tranco").list()`; the list ID
-  and page URL (`https://tranco-list.eu/list/{ID}/`) go into the manifest.
-- Fallback: `https://tranco-list.eu/top-1m.csv.zip` (307 → `/download/daily/top-1m.csv.zip`; the final
-  URL carries **no** ID, so the ID is read from `https://tranco-list.eu/top-1m-id`).
-- Saved as `data/tranco/{ID}.csv` (package) or `{ID}.csv.zip` (fallback) with a `latest` symlink.
-  ~22 MB uncompressed; the package download takes 4–5 minutes.
-- Licence: free to use; cite the list ID (the list page gives a citation).
-
-### `bgpy-smoke` — BGPy 13.0.13 install and timing
-
-- Unpacks the fetched CAIDA file into BGPy's cache name
-  (`data/bgpy_cache/CAIDAASGraphCollector_2026.08.01.txt`) so BGPy does not download it again, then runs
-  `Simulation(percent_adoptions=(0.5,), SubprefixHijack + ROV, num_trials=20, parse_cpus=<cores>)`.
-- `scripts/bgpy_smoke.py` prints wall-clock, trials, cores; `data/bgpy_smoke/smoke.json` keeps the same.
-- API notes (checked against 13.0.13): `CAIDAASGraphConstructor(tsv_path=...)` is an **output** path
-  (the constructor writes a TSV there), not an input — the graph is read from the collector cache file
-  above. `ScenarioConfig` supports `override_victim_asns`, `override_attacker_asns`, `override_roas` and
-  `hardcoded_asn_cls_dict`; `ROV`, `PeerROV`, `ASPA` (and `*Full` variants) live in
-  `bgpy.simulation_engine`. The real runs will use those. Importing `bgpy.simulation_framework` parses
-  `sys.argv`, so the import is lazy.
-- Measured on this machine: 20 trials in 57 s wall on 14 cores (expected RAM 12.6 GB).
-
-### `crtsh` — Certificate Transparency sample of `.rs` and `.срб`
-
-- Source: crt.sh public PostgreSQL (`crt.sh:5432`, user `guest`, db `certwatch`, no password, no TLS).
-  **Shared courtesy service: run once, keep the cache, never parallelize.**
-- One calendar month per query, fresh connection per query, `statement_timeout = 30min`. A month that
-  hits the timeout is split into halves (down to 7 days); a chunk slower than 10 min makes later months
-  use half-length chunks. Failed months are retried 3× with backoff, then recorded as failed in
-  `data/crtsh/STATUS.json`; the run never aborts.
-- Query shape (uses the full-text index on `identities(CERTIFICATE)`):
-  `plainto_tsquery('certwatch', '<tld>') @@ identities(cai.CERTIFICATE) AND NAME_VALUE ILIKE '%.<tld>'
-  AND NAME_TYPE IN ('dNSName','commonName') AND x509_notBefore(...) in [month)`; second pass with
-  `xn--90a3ac`.
-- Server quirks found on 2026-10-31: pgbouncer *statement pooling* — no transactions
-  (`autocommit=True`), no `options=` startup parameter, and a `SET` only applies to the statement it is
-  sent with, so the timeout is prepended to the query in one simple-query message (psycopg
-  `ClientCursor`). The default timeout is 1 min. IPv6 to crt.sh times out from here; the A record is
-  pinned via `hostaddr`. The server often answers `no more connections allowed (max_client_conn)`.
-- Range: `crtsh.start`/`crtsh.end` (`--crtsh-start/--crtsh-end`). **Default is the last two months
-  (2026-09-01 → today)**, decided 2026-10-31 instead of the two-year range first planned.
-- Output: `data/crtsh/raw/{tld}/{YYYY-MM}.csv` (`name_value,not_before,issuer_ca_id,cert_id`),
-  written atomically; complete months are skipped on re-run. `--finalize` writes `data/crtsh/names.txt`
-  (distinct, lowercase, `*.` stripped), `registered_domains.txt` (via `publicsuffix2`) and
-  `registered_domains.counts.csv` — no network.
-- **Status 2026-10-31: deferred.** The one-month test showed `guest` statements are cancelled at ~60 s
-  whatever `statement_timeout` says, planning alone took 30 s under load, and the plan scans all 26
-  notAfter partitions, so `.rs` October timed out even at 7-day chunks (`.срб` returned 0 rows in 40 s —
-  before the `san:dNSName` fix below). The server also refused connections (`max_client_conn`) several
-  times. Options: retry off-peak with 1–3-day chunks, restrict `ISSUER_CA_ID` to the big CAs (Let's
-  Encrypt R10–R14/E5–E9 are `ca.ID` 295809–295819), or switch the sample to an openly published zone file.
-- Fixed from the task spec: SAN names are typed `san:dNSName` in `certificate_and_identities`; the spec's
-  `NAME_TYPE IN ('dNSName','commonName')` only matched commonName.
-- Known gaps: `commonName` entries can be non-DNS strings (dropped at finalize if they contain spaces);
-  pre-certificates and leaf certificates both appear (dedupe by `cert_id` is not attempted here).
-
-## Layout
-
+uv run python -c "                                      # scoring and a what-if override, no network
+import json; from hijackscan.score import score
+r = json.load(open('data/collected/blic.rs.json'))
+print(score(r).exposure, score(r, {'signed': True, 'has_caa': True, 'pinned': True}).exposure)"
 ```
-config/fetch.yaml          all dates, hosts, TLDs, contact email
-src/hijackscan/cli.py      hijackscan fetch ...
-src/hijackscan/fetch/      common.py (HTTP, manifest, atomic writes) + one module per target
-scripts/bgpy_smoke.py      standalone timing script
-tests/                     URL construction and date iteration; integration tests need -m integration
-data/                      downloads (git-ignored); data/MANIFEST.jsonl
-```
+
+Flags on every command: `--resolver host[:port]` (853 = DoT, 53 = plain; e.g. `127.0.0.1:53` for our Unbound),
+`--rpki-date YYYY-MM-DD` (fetches that archive day), `--max-age HOURS`, `--workers N`, `-v`.
+
+## Layering
+
+| layer | code | rule |
+|---|---|---|
+| collect | `hijackscan/collect/` | observes only: DNS answers with AD flag and rcode, prefixes, ROAs, AS names. No judgement, no derived field. |
+| score | `hijackscan/score.py` | pure functions over one collected record; every boolean and the exposure class are derived here. `score(record, overrides)` is the what-if mechanism. |
+| report | `hijackscan/report/` | renders: terminal + HTML per domain, aggregate JSON + HTML per zone. Self-contained HTML, inline CSS, no CDN. |
+
+## Collector (`data/collected/<domain>.json`)
+
+- Resolver: `Config.resolver`, default **Quad9 over DNS-over-TLS** (`9.9.9.9:853`). Our local Unbound would be
+  `--resolver 127.0.0.1:53`; the default is DoT because plain port 53 to public resolvers is blocked on the
+  hackathon network and the systemd stub does not validate. `scripts/check_resolver.py` asserts AD on a
+  signed zone (`rnids.rs`) and SERVFAIL on `dnssec-failed.org`; the collector refuses to start otherwise and
+  stores the result in every record (`resolver_check`).
+- Every query sets the DO bit; the AD flag and rcode are recorded per answer, never interpreted here.
+- Resolves A/AAAA for the apex, `www.`, and every NS host; DS and DNSKEY; CAA at every label up to and
+  including the TLD (`caa_chain`).
+- Per distinct address: announced prefix + origin ASNs (RIPEstat `network-info`), RIPEstat's RPKI verdict
+  (`rpki-validation`), and **every covering ROA from the local RPKI archive** (`data/rpki/<date>/<ta>/roas.csv.xz`,
+  five trust anchors, ~1M ROAs, downloaded once with sha256 check; `--rpki-date`, default `latest` = the newest
+  archive day; `2026-08-28` replays the Hetzner incident day). AS names from `as-overview`. RIPEstat ≤ 8 concurrent, `sourceapp=hijackscan`, every
+  response cached under `data/cache/ripestat/`.
+- Per-domain failures land in `errors[]`; the batch never aborts. Records younger than `--max-age` (7 days) are
+  reused. 8 domains in parallel, DNS capped at 50 qps.
+
+## Scoring (`score.py`)
+
+Per address: `limit = 24 (v4) | 48 (v6)`; no covering ROA → `forgeable_more_specific = true`,
+`rpki_derived = not-found`; else `announced_len < min(max(maxLength), limit)`. `roa_too_permissive` =
+any ROA maxLength > announced length (RFC 9319 hygiene). Exact-prefix contest is always possible absent ASPA.
+
+Per domain: `dnssec` = unsigned (no DS) | secure (DS and A/AAAA with AD) | bogus (DS but SERVFAIL or no AD);
+`web_forgeable` (any web address), `ns_forgeable` (**every** nameserver address — a CA's resolver and each MPIC
+perspective may ask any of them; `ns_forgeable_hosts`/`ns_hosts` records partial capture); CAA parsed from the first label with records (`issue`, `issuewild`,
+`accounturi`, `validationmethods`); `ns_operators` (registered domain of each NS host) and `hosting_asns`.
+
+Exposure class, first match wins:
+
+| class | condition |
+|---|---|
+| `closed` | pinned (`accounturi`) and signed |
+| `caa-only` | CAA and signed, no account pin |
+| `caa-erasable` | CAA, unsigned, every nameserver prefix forgeable → forge "no CAA" |
+| `open` | no CAA and the web prefix or every nameserver prefix forgeable (the 28 Aug 2026 pattern) |
+| `contested-only` | no win-everywhere hijack: exact-prefix contest or partial nameserver capture only, and no DNS-side defence |
+
+Remediations are listed per owner (domain-owner, dns-host, hosting-provider, registrar), DNS-side fixes first.
+
+## Results, 100 `.rs` domains (collected 2026-10-31, ROAs of 2026-10-31)
+
+See `data/out/report.html`. Headline: no domain is `closed` or `caa-only`; nobody uses `accounturi`; CAA on 8,
+DNSSEC validating on 4. Roughly a quarter are `open` — hosted behind loose-maxLength ROAs (Hetzner `/16 → 24`,
+CloudFront `/16 → 24`, Yettel, Vultr) or in space with no ROA at all. What-if rows: signing alone and CAA alone
+each move almost nothing (the attack erases unsigned CAA; DNSSEC without CAA restricts nobody); only both together
+close, and that row is `closed` by definition.
+
+What was checked after the first numbers looked too good: (1) re-scoring against a different archive day moves
+only domains whose exposure hinged on one nameserver — so (2) `ns_forgeable` now requires **every** nameserver,
+partial capture is reported as k of n and stays `contested-only`; (3) RIPEstat `routing-status` confirms no
+more-specific is already announced inside each forgeable prefix (e.g. Amazon announces /24s elsewhere in
+`18.172.0.0/16`, not inside the /21 in question); (4) "no ROA" is reported as *unknown origin, effectively
+forgeable* rather than *valid*.
+
+
+## Data
+
+| path | what |
+|---|---|
+| `data/samples/dev100.txt` | the 100 `.rs` domains (top `.rs` names of Tranco list 746VX, 2026-10-30) |
+| `data/collected/` | raw record per domain |
+| `data/cache/ripestat/` | RIPEstat responses |
+| `data/rpki/<date>/` | RPKI archive CSVs (~15 MB per day) |
+| `data/out/` | zone report |

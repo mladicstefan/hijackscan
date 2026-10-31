@@ -1,7 +1,8 @@
 .venv/
-bgpy_runs/
 __pycache__/
 *.pyc
-.pytest_cache/
 .ruff_cache/
 dist/
+
+data/*
+!data/samples/
