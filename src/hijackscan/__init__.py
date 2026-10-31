@@ -28,6 +28,13 @@ def parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--workers", type=int)
     p.add_argument("--data-dir", type=Path, help=f"default {Config.data_dir}")
+    p.add_argument("--ripestat-url", help=f"RIPEstat Data API template (default {Config.ripestat_url})")
+    p.add_argument(
+        "--routable-cap-v4", type=int, help=f"longest routable IPv4 prefix (default {Config.routable_cap_v4})"
+    )
+    p.add_argument(
+        "--routable-cap-v6", type=int, help=f"longest routable IPv6 prefix (default {Config.routable_cap_v6})"
+    )
     p.add_argument("-v", "--verbose", action="store_true")
     sub = p.add_subparsers(dest="cmd")
     s = sub.add_parser("sample", help="draw a reproducible sample of delegations from a zone file")
@@ -87,6 +94,9 @@ def main() -> None:
         ("max_age_hours", a.max_age),
         ("workers", a.workers),
         ("data_dir", a.data_dir),
+        ("ripestat_url", a.ripestat_url),
+        ("routable_cap_v4", a.routable_cap_v4),
+        ("routable_cap_v6", a.routable_cap_v6),
     ):
         if value is not None:
             cfg = replace(cfg, **{field: value})

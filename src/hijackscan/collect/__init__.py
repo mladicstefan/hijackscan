@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
@@ -34,9 +35,12 @@ class Collector:
         if cfg.rpki_date == "latest":
             cfg = replace(cfg, rpki_date=latest_archive_day())
             self.cfg = cfg
-        ensure_archive(cfg.rpki_dir, cfg.rpki_date)
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", cfg.rpki_date):
+            ensure_archive(cfg.rpki_dir, cfg.rpki_date)
+        elif not any(cfg.rpki_dir.glob("*/roas.csv.xz")):  # a synthetic day (the lab's "lab") must be on disk
+            raise SystemExit(f"no ROA archive under {cfg.rpki_dir}: use a YYYY-MM-DD day or write one there")
         self.roas = RoaIndex(cfg.rpki_dir)
-        self.ripe = RipeStat(cfg.cache_dir, cfg.ripestat_concurrency)
+        self.ripe = RipeStat(cfg.cache_dir, cfg.ripestat_concurrency, cfg.ripestat_url)
         cfg.collected_dir.mkdir(parents=True, exist_ok=True)
 
     # -- one domain --------------------------------------------------------
@@ -47,6 +51,9 @@ class Collector:
             "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
             "resolver": self.dns.address,
             "resolver_check": self.resolver_check,
+            "routing_source": self.cfg.ripestat_url,
+            "rpki_source": str(self.cfg.rpki_dir),
+            "routable_caps": list(self.cfg.routable_caps),
             "rpki_date": self.cfg.rpki_date,
             "names": {},
             "ds": None,
@@ -98,6 +105,7 @@ class Collector:
             "routing": self.ripe.routing_status(prefix) if prefix else None,
             "rpki_state": self.ripe.rpki_state(asns[0], prefix) if prefix and asns else None,
             "roas": self.roas.covering(prefix) if prefix else [],
+            "roas_within": self.roas.contained(prefix) if prefix else [],
         }
 
     # -- a batch -----------------------------------------------------------

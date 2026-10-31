@@ -18,7 +18,8 @@ URL = "https://stat.ripe.net/data/{call}/data.json"
 
 
 class RipeStat:
-    def __init__(self, cache_dir: Path, concurrency: int) -> None:
+    def __init__(self, cache_dir: Path, concurrency: int, url: str = URL) -> None:
+        self.url = url
         self.cache_dir = cache_dir / "ripestat"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.http = httpx.Client(headers={"User-Agent": USER_AGENT}, timeout=30)
@@ -35,7 +36,7 @@ class RipeStat:
         for attempt in range(4):
             try:
                 with self._sem:
-                    r = self.http.get(URL.format(call=call), params={**params, "sourceapp": SOURCEAPP})
+                    r = self.http.get(self.url.format(call=call), params={**params, "sourceapp": SOURCEAPP})
                 r.raise_for_status()
                 data = r.json()
                 tmp = path.with_name(f"{path.name}.{threading.get_ident()}.part")

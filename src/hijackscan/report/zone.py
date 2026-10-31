@@ -19,6 +19,7 @@ from ..config import Config
 from ..risk import COMPLEXITY_STEP, LABELS, SEVERITIES, SEVERITY_BANDS, Risk, assess
 from ..score import Scored, score
 from . import html
+from .domain import routing_source, rpki_source
 from .browse import browse
 
 SCHEMA_VERSION = 2
@@ -53,7 +54,7 @@ WHAT_IFS: list[tuple[str, dict, str]] = [
 def zone_report(cfg: Config, domains: list[str], out: Path, *, meta: dict | None = None, force: bool = False) -> int:
     """`meta` is the header of a `hijackscan sample` list (population facts); None for a plain domain list."""
     records = Collector(cfg).run(domains, force=force)
-    scored = [score(r) for r in records]
+    scored = [score(r, caps=cfg.routable_caps) for r in records]
     risks = [assess(r, s) for r, s in zip(records, scored, strict=True)]
     report = build(records, scored, risks, cfg, meta)
     out.mkdir(parents=True, exist_ok=True)
@@ -157,11 +158,13 @@ def build(records: list[dict], scored: list[Scored], risks: list[Risk], cfg: Con
         "schema_version": SCHEMA_VERSION,
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "scope": {
-            "domains": n,
-            "tld": _tld(records),
-            "resolver": records[0]["resolver"] if records else None,
-            "rpki_date": records[0]["rpki_date"] if records else cfg.rpki_date,
-            "population": population,
+        "domains": n,
+        "tld": _tld(records),
+        "resolver": records[0]["resolver"] if records else None,
+        "routing_source": records[0].get("routing_source") if records else None,
+        "rpki_source": records[0].get("rpki_source") if records else None,
+        "rpki_date": records[0]["rpki_date"] if records else cfg.rpki_date,
+        "population": population,
         },
         "model": {
             "formula": "design/formula.md",
@@ -390,8 +393,9 @@ def render_html(r: dict) -> str:
         )
     body += html.table(["scenario", *SEVERITIES, "mean score", "reads as"], rows, set(range(1, len(SEVERITIES) + 2)))
     body += (
-        f"<p class=muted>Resolver {e(scope['resolver'])}; ROAs from the RIPE NCC RPKI archive, "
-        f"{e(scope['rpki_date'])}; generated {e(r['generated_at'])}. No domain names are listed.</p>"
+    f"<p class=muted>Resolver {e(scope['resolver'])}; routing from {e(routing_source(scope))}; "
+    f"ROAs from {e(rpki_source(scope))}, {e(scope['rpki_date'])}; "
+    f"generated {e(r['generated_at'])}. No domain names are listed.</p>"
     )
     return html.page(
         f"hijackscan zone report - {n} {e(zone_name)} domains"

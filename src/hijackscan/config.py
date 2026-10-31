@@ -31,6 +31,12 @@ class Config:
     rpki_date: str = "latest"  # RIPE NCC RPKI archive day for ROAs: "latest" or YYYY-MM-DD (2026-08-28 = the replay)
     max_age_hours: float = 24 * 7  # re-use data/collected/<domain>.json younger than this
     data_dir: Path = DATA_DIR
+    # Longest prefix the Internet routes (RFC 7454 filtering): a forged more-specific longer than this does not
+    # propagate, so it is not counted as forgeable. The sealed lab raises v4 to 28 (RFC 5737 only has /24 blocks).
+    routable_cap_v4: int = 24
+    routable_cap_v6: int = 48
+    # RIPEstat Data API template; the lab points it at its own RIS-shaped feed.
+    ripestat_url: str = "https://stat.ripe.net/data/{call}/data.json"
 
     @property
     def collected_dir(self) -> Path:
@@ -43,6 +49,10 @@ class Config:
     @property
     def rpki_dir(self) -> Path:
         return self.data_dir / "rpki" / self.rpki_date
+
+    @property
+    def routable_caps(self) -> tuple[int, int]:
+        return (self.routable_cap_v4, self.routable_cap_v6)
 
 
 USER_AGENT = "hijackscan/0.1 (DNS SEC Hackathon 2026)"

@@ -10,6 +10,7 @@ from __future__ import annotations
 import ipaddress
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from ..collect import Collector
 from ..config import Config
@@ -30,7 +31,7 @@ def domain_report(
     cfg: Config, domain: str, *, html_path: Path | None = None, force: bool = False, details: bool = False
 ) -> int:
     rec = Collector(cfg).run([domain], force=force)[0]
-    s = score(rec)
+    s = score(rec, caps=cfg.routable_caps)
     r = assess(rec, s)
     lines = risk_view.summary_text(r)
     if details:
@@ -42,6 +43,28 @@ def domain_report(
         html_path.write_text(render_html(s, rec, r), encoding="utf-8")
         print(f"\nwrote {html_path}")
     return EXIT[r.severity]
+
+
+# --------------------------------------------------------------------------- provenance
+
+
+def routable_caps(rec: dict) -> tuple[int, int]:
+    """The (v4, v6) caps the record was collected under; records from before they were recorded used 24/48."""
+    v4, v6 = rec.get("routable_caps", (24, 48))
+    return int(v4), int(v6)
+
+
+def routing_source(rec: dict) -> str:
+    """Where the routing facts came from: the RIPEstat-shaped API's origin, or the name when not recorded."""
+    url = rec.get("routing_source")
+    if not url:
+        return "RIPEstat"
+    u = urlsplit(url)
+    return f"{u.scheme}://{u.netloc}/..."
+
+
+def rpki_source(rec: dict) -> str:
+    return rec.get("rpki_source") or "RIPE NCC RPKI archive"
 
 
 # --------------------------------------------------------------------------- one address, explained
@@ -60,7 +83,7 @@ class AddressStory:
     hygiene: str | None = None
 
 
-def address_story(a: AddressDerived, asn_names: dict, rpki_date: str) -> AddressStory:
+def address_story(a: AddressDerived, asn_names: dict, rpki_date: str, caps: tuple[int, int]) -> AddressStory:
     if not a.prefix:
         return AddressStory(
             a.ip,
@@ -73,7 +96,7 @@ def address_story(a: AddressDerived, asn_names: dict, rpki_date: str) -> Address
             False,
         )
     net = ipaddress.ip_network(a.prefix, strict=False)
-    limit = 24 if net.version == 4 else 48
+    limit = caps[0] if net.version == 4 else caps[1]
     origin = (
         ", ".join(f"AS{n} ({(asn_names.get(str(n)) or {}).get('name') or 'unknown'})" for n in a.origin_asns) or "-"
     )
@@ -102,11 +125,27 @@ def address_story(a: AddressDerived, asn_names: dict, rpki_date: str) -> Address
         )
     longest = max(r["max_length"] for r in a.roas)
     usable = min(longest, limit)
-    if a.forgeable_more_specific:
+    # ROAs for subnets of the announced prefix that hold this address: each makes that more-specific RPKI-valid
+    # even when every covering ROA is tight.
+    inside = [
+        r
+        for r in a.roas_within
+        if ipaddress.ip_address(a.ip) in ipaddress.ip_network(r["prefix"]) and int(r["prefix"].split("/")[1]) <= limit
+    ]
+    for r in inside:
+        rows.append([r["prefix"], str(r["max_length"]), f"AS{r['origin_asn']}", r["ta"], "inside: holds this address"])
+    if a.forgeable_more_specific and net.prefixlen < usable:
         verdict = (
             f"FORGEABLE: announced /{net.prefixlen}, a ROA allows up to /{longest}; a forged /{net.prefixlen + 1}–/{usable} "
             f"with the ROA's origin AS is RPKI-valid and, since nothing more specific is announced here, "
             f"becomes the longest match everywhere"
+        )
+    elif a.forgeable_more_specific:
+        child = min(inside, key=lambda r: int(r["prefix"].split("/")[1]))
+        verdict = (
+            f"FORGEABLE: the covering ROA is tight (/{longest}), but a ROA for {child['prefix']}→{child['max_length']} "
+            f"(AS{child['origin_asn']}) inside it holds this address; a forged {child['prefix']} with that origin is "
+            f"RPKI-valid and, since nothing more specific is announced here, becomes the longest match everywhere"
         )
     else:
         why = (
@@ -126,7 +165,7 @@ def address_story(a: AddressDerived, asn_names: dict, rpki_date: str) -> Address
         a.rpki_state or "-",
         neighbours,
         rows,
-        f"{len(a.roas)} covering on {rpki_date}",
+        f"{len(a.roas)} covering" + (f", {len(inside)} inside" if inside else "") + f" on {rpki_date}",
         verdict,
         a.forgeable_more_specific,
         hygiene,
@@ -154,10 +193,15 @@ def _story_lines(st: AddressStory) -> list[str]:
 
 def render_text(s: Scored, rec: dict) -> str:
     n_ds, n_key = len(rec["ds"]["records"]), len(rec["dnskey"]["records"])
-    asns, day = rec.get("asns", {}), rec["rpki_date"]
+    asns, day, caps = rec.get("asns", {}), rec["rpki_date"], routable_caps(rec)
     L = [
         s.domain,
-        f"  collected     {rec['fetched_at']}  resolver {rec['resolver']}  ROAs from RPKI archive {day}",
+        f"  exposure      {s.exposure.upper()}",
+        f"  meaning       {CLASS_MEANING[s.exposure]}",
+        f"  why here      {s.reason}",
+        f"  attack path   {s.attack_path}",
+        f"  collected     {rec['fetched_at']}  resolver {rec['resolver']}  routing {routing_source(rec)}  "
+        f"ROAs from {rpki_source(rec)}, {day}",
         "",
         "DNS",
         f"  DNSSEC        {s.dnssec}   DS records at parent: {n_ds}   DNSKEY records at apex: {n_key}",
@@ -184,7 +228,7 @@ def render_text(s: Scored, rec: dict) -> str:
         + ("at least one FORGEABLE: HTTP-01 can be captured" if s.web_forgeable else "none forgeable")
     )
     for a in s.web_addresses:
-        L += ["  " + x for x in _story_lines(address_story(a, asns, day))]
+        L += ["  " + x for x in _story_lines(address_story(a, asns, day, caps))]
     if not s.web_addresses:
         L.append("  (apex and www do not resolve)")
     L.append("")
@@ -200,7 +244,7 @@ def render_text(s: Scored, rec: dict) -> str:
     for host, addrs in s.ns_addresses.items():
         L.append(f"  {host}")
         for a in addrs:
-            L += ["    " + x for x in _story_lines(address_story(a, asns, day))]
+            L += ["    " + x for x in _story_lines(address_story(a, asns, day, caps))]
         if not addrs:
             L.append("    (no address)")
     if s.errors:
@@ -234,7 +278,7 @@ def _story_html(st: AddressStory) -> str:
 def render_html(s: Scored, rec: dict, r: Risk | None = None) -> str:
     e = html.e
     r = r or assess(rec, s)
-    asns, day = rec.get("asns", {}), rec["rpki_date"]
+    asns, day, caps = rec.get("asns", {}), rec["rpki_date"], routable_caps(rec)
     n_ds, n_key = len(rec["ds"]["records"]), len(rec["dnskey"]["records"])
     head = risk_view.summary_html(r) + risk_view.details_html(r)
     body = "<h2>DNS</h2>" + html.explain(
@@ -277,10 +321,11 @@ def render_html(s: Scored, rec: dict, r: Risk | None = None) -> str:
         f"<i>announced as</i>: the most specific prefix in BGP covering this address and who originates it. "
         f"<i>neighbours</i>: whether anyone already announces something more specific (if so, a forgery is not the longest match). "
         f"<i>ROAs</i>: every ROA covering the prefix on {e(day)} with its maxLength — a maxLength longer than the announced length is what "
-        f"lets a forged more-specific validate. Nothing longer than /24 (IPv4) or /48 (IPv6) is routable, so that is the cap.",
+        f"lets a forged more-specific validate. Nothing longer than /{caps[0]} (IPv4) or /{caps[1]} (IPv6) is routable, "
+        f"so that is the cap.",
     )
     body += (
-        "".join(_story_html(address_story(a, asns, day)) for a in s.web_addresses)
+        "".join(_story_html(address_story(a, asns, day, caps)) for a in s.web_addresses)
         or "<p>(apex and www do not resolve)</p>"
     )
 
@@ -300,7 +345,7 @@ def render_html(s: Scored, rec: dict, r: Risk | None = None) -> str:
     )
     for host, addrs in s.ns_addresses.items():
         body += f"<h3><code>{e(host)}</code></h3>" + (
-            "".join(_story_html(address_story(a, asns, day)) for a in addrs) or "<p>(no address)</p>"
+            "".join(_story_html(address_story(a, asns, day, caps)) for a in addrs) or "<p>(no address)</p>"
         )
 
     if s.errors:
@@ -309,5 +354,6 @@ def render_html(s: Scored, rec: dict, r: Risk | None = None) -> str:
     return html.page(
         f"hijackscan: {s.domain}",
         body,
-        f"collected {rec['fetched_at']} via {rec['resolver']}; ROAs from the RIPE NCC RPKI archive, {day}",
+        f"collected {rec['fetched_at']} via {rec['resolver']}; routing from {routing_source(rec)}; "
+        f"ROAs from {rpki_source(rec)}, {day}",
     )

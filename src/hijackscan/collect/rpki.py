@@ -75,11 +75,21 @@ def ensure_archive(rpki_dir: Path, date: str) -> None:
             tmp.replace(dest)
 
 
+Net = ipaddress.IPv4Network | ipaddress.IPv6Network
+BUCKET_SHIFT = {4: 24, 6: 112}  # one bucket per /8 (v4) or /16 (v6)
+
+
+def _bucket(net: Net) -> tuple[int, int]:
+    return (net.version, int(net.network_address) >> BUCKET_SHIFT[net.version])
+
+
 class RoaIndex:
-    """All ROAs keyed by prefix; covering(prefix) walks the supernets (≤ 33 / 129 lookups)."""
+    """All ROAs keyed by prefix; covering(prefix) walks the supernets (≤ 33 / 129 lookups),
+    contained(prefix) scans the /8 or /16 bucket(s) the prefix lies in for strict subnets."""
 
     def __init__(self, rpki_dir: Path) -> None:
-        self._by_prefix: dict[ipaddress.IPv4Network | ipaddress.IPv6Network, list[Roa]] = defaultdict(list)
+        self._by_prefix: dict[Net, list[Roa]] = defaultdict(list)
+        self._by_bucket: dict[tuple[int, int], list[Net]] = defaultdict(list)  # distinct ROA prefixes per bucket
         self.count = 0
         for ta_dir in sorted(rpki_dir.iterdir()):
             f = ta_dir / "roas.csv.xz"
@@ -94,13 +104,32 @@ class RoaIndex:
                         roa = Roa(str(net), asn, int(ml) if ml else net.prefixlen, ta_dir.name)
                     except (KeyError, ValueError):
                         continue
+                    if net not in self._by_prefix:
+                        self._by_bucket[_bucket(net)].append(net)
                     self._by_prefix[net].append(roa)
                     self.count += 1
         log.info("rpki: %d ROAs from %s", self.count, rpki_dir)
 
+    @staticmethod
+    def _rows(roas: list[Roa]) -> list[dict]:
+        return [asdict(r) for r in sorted(set(roas), key=lambda r: (r.prefix, r.origin_asn, r.ta))]
+
     def covering(self, prefix: str) -> list[dict]:
+        """ROAs whose prefix is `prefix` or a supernet of it."""
         net = ipaddress.ip_network(prefix, strict=False)
         out: list[Roa] = []
         for length in range(net.prefixlen, -1, -1):
             out.extend(self._by_prefix.get(net.supernet(new_prefix=length), ()))
-        return [asdict(r) for r in sorted(set(out), key=lambda r: (r.prefix, r.origin_asn, r.ta))]
+        return self._rows(out)
+
+    def contained(self, prefix: str) -> list[dict]:
+        """ROAs whose prefix is a strict subnet of `prefix` (a child ROA makes that more-specific RPKI-valid)."""
+        net = ipaddress.ip_network(prefix, strict=False)
+        shift = BUCKET_SHIFT[net.version]
+        first, last = int(net.network_address) >> shift, int(net.broadcast_address) >> shift
+        out: list[Roa] = []
+        for key in range(first, last + 1):  # one key unless the prefix is shorter than the bucket
+            for child in self._by_bucket.get((net.version, key), ()):
+                if child.prefixlen > net.prefixlen and child.subnet_of(net):
+                    out.extend(self._by_prefix[child])
+        return self._rows(out)

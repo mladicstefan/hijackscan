@@ -13,6 +13,7 @@ Implements design/formula.md. Reference numbers [n] match that document and REFE
 
 from __future__ import annotations
 
+import ipaddress
 import math
 from dataclasses import asdict, dataclass, field
 from datetime import date
@@ -294,6 +295,14 @@ def _why(a: AddressDerived) -> str:
         return f"{a.ip}: no announced prefix, anyone can announce it"
     if a.rpki_derived == "not-found":
         return f"{a.ip} in {a.prefix}: no ROA, a forged more-specific is never RPKI-invalid"
+    if a.forgeable_more_specific and not a.roa_too_permissive and a.roas_within:
+        # no covering ROA allows a longer prefix, so only a child ROA holding the address made it forgeable
+        holding = [r for r in a.roas_within if ipaddress.ip_address(a.ip) in ipaddress.ip_network(r["prefix"])]
+        child = min(holding, key=lambda r: ipaddress.ip_network(r["prefix"]).prefixlen)
+        return (
+            f"{a.ip} in {a.prefix}: ROA for {child['prefix']}→{child['max_length']} inside it "
+            "makes that more-specific RPKI-valid"
+        )
     return f"{a.ip} in {a.prefix}: ROA {a.roa_summary} allows a longer, RPKI-valid prefix"
 
 
