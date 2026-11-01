@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from .. import console
 from ..collect import Collector
 from ..config import Config
 from ..risk import Risk, assess
@@ -38,10 +39,10 @@ def domain_report(
         lines += risk_view.details_text(r) + ["", "RAW FACTS", "", render_text(s, rec)]
     else:
         lines.append("  (--details: the calculation, every finding, vectors, references and the raw facts)")
-    print("\n".join(lines))
+    console.show(lines)
     if html_path:
         html_path.write_text(render_html(s, rec, r), encoding="utf-8")
-        print(f"\nwrote {html_path}")
+        console.ok("wrote", str(html_path))
     return EXIT[r.severity]
 
 

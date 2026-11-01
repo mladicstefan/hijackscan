@@ -14,6 +14,18 @@ Two parts, each documented end to end:
 Design and results: [design/formula.md](design/formula.md) (the risk formula), [design/lab.md](design/lab.md)
 (lab decisions), [lab/demo.md](lab/demo.md) (the last lab run, generated from its logs).
 
+## Requirements
+
+| what | needed for | notes |
+|---|---|---|
+| Python ≥ 3.11 and [uv](https://docs.astral.sh/uv/) | everything | `uv sync` installs the Python dependencies (dnspython, httpx, rich, publicsuffix2) |
+| Network access to a DNSSEC-validating resolver | the scanner | default Quad9 over DoT (`9.9.9.9:853`); `scripts/check_resolver.py` proves it validates |
+| **[containerlab](https://containerlab.dev/)** + Docker | the validation lab only | system packages, not installed by `uv`; the scanner runs without them |
+
+The lab needs containerlab (installed with `curl -sL https://containerlab.dev/setup | sudo -E bash -s "install-containerlab"`),
+Docker, membership of the `docker` and `clab_admins` groups (or sudo), `ldns` on the host and the lab image
+(`docker build -t hijackscan-lab:latest lab/image`). Step by step: [docs/lab.md §4](docs/lab.md).
+
 ## Quick start
 
 ```bash

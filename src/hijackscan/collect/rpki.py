@@ -11,7 +11,6 @@ import csv
 import hashlib
 import io
 import ipaddress
-import logging
 import lzma
 from collections import defaultdict
 from dataclasses import asdict, dataclass
@@ -19,9 +18,8 @@ from pathlib import Path
 
 import httpx
 
+from .. import console
 from ..config import USER_AGENT
-
-log = logging.getLogger(__name__)
 
 TAS = ("afrinic", "apnic", "arin", "lacnic", "ripencc")
 ARCHIVE = "https://ftp.ripe.net/rpki/{ta}.tal/{y}/{m}/{d}/roas.csv.xz"
@@ -62,7 +60,7 @@ def ensure_archive(rpki_dir: Path, date: str) -> None:
             if dest.exists():
                 continue
             url = ARCHIVE.format(ta=ta, y=y, m=m, d=d)
-            log.info("rpki: fetching %s", url)
+            console.info("rpki fetch", url)
             r = http.get(url)
             r.raise_for_status()
             want = http.get(url + ".sha256").text.split()[0].lower()
@@ -108,7 +106,7 @@ class RoaIndex:
                         self._by_bucket[_bucket(net)].append(net)
                     self._by_prefix[net].append(roa)
                     self.count += 1
-        log.info("rpki: %d ROAs from %s", self.count, rpki_dir)
+        console.info("rpki", f"{self.count:,} ROAs from {rpki_dir}")
 
     @staticmethod
     def _rows(roas: list[Roa]) -> list[dict]:
