@@ -1,0 +1,264 @@
+{
+ "domain": "sbb.rs",
+ "fetched_at": "2026-10-31T14:40:39+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "sbb.rs": {
+   "A": [
+    "162.159.134.33",
+    "162.159.133.33"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.sbb.rs": {
+   "A": [
+    "162.159.133.33",
+    "162.159.134.33"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "sbb.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "dns1.sbb.rs": {
+   "A": [
+    "82.117.194.2"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "dns3.sbb.rs": {
+   "A": [
+    "82.117.194.3"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "dns4.sbb.rs": {
+   "A": [
+    "89.216.1.2"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "dns2.sbb.rs": {
+   "A": [
+    "89.216.1.1"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "162.159.133.33": {
+   "prefix": "162.159.128.0/19",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "162.159.128.0/19",
+     "origin_asn": 13335,
+     "max_length": 19,
+     "ta": "arin"
+    }
+   ]
+  },
+  "162.159.134.33": {
+   "prefix": "162.159.128.0/19",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "162.159.128.0/19",
+     "origin_asn": 13335,
+     "max_length": 19,
+     "ta": "arin"
+    }
+   ]
+  },
+  "82.117.194.2": {
+   "prefix": "82.117.192.0/19",
+   "origin_asns": [
+    31042
+   ],
+   "routing": {
+    "more_specifics": [
+     "82.117.195.0/24 AS31042"
+    ],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "82.117.192.0/19",
+     "origin_asn": 31042,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "82.117.194.3": {
+   "prefix": "82.117.192.0/19",
+   "origin_asns": [
+    31042
+   ],
+   "routing": {
+    "more_specifics": [
+     "82.117.195.0/24 AS31042"
+    ],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "82.117.192.0/19",
+     "origin_asn": 31042,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "89.216.1.1": {
+   "prefix": "89.216.0.0/17",
+   "origin_asns": [
+    31042
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "89.216.0.0/16",
+     "origin_asn": 31042,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "89.216.1.2": {
+   "prefix": "89.216.0.0/17",
+   "origin_asns": [
+    31042
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "89.216.0.0/16",
+     "origin_asn": 31042,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "13335": {
+   "name": "CLOUDFLARENET - Cloudflare, Inc.",
+   "announced": true
+  },
+  "31042": {
+   "name": "YETTEL-AS Yettel d.o.o.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

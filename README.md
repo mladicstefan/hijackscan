@@ -3,7 +3,24 @@
 How exposed are the domains of a TLD (`.ee` from its zone file, `.rs` from a list) to certificate theft through
 BGP hijacks below DNS, and how much of it does DNSSEC + CAA close? (team dogma, DNS SEC Hackathon 2026)
 
-Two parts, each documented end to end:
+## Run the demo
+
+Needs only [Docker Desktop](https://www.docker.com/products/docker-desktop/) (running). In this folder:
+
+```bash
+docker compose up
+```
+
+Then open **http://127.0.0.1:8000**. The first start builds the app (a few minutes); later starts take seconds.
+It loads 200 scanned domains (`.rs` top 100 and a 100-domain `.ee` sample, collected 2026-10-31, in
+`data/demo/`), so no scanning or internet access is needed. Stop with `Ctrl+C` or `docker compose down`;
+`docker compose down -v` also deletes the database. The API and its documentation are at `/docs`.
+
+To refresh the demo data after re-collecting (`uv run hijackscan collect data/samples/dev100.txt --force`, same
+for `ee100.txt`), copy the records of both lists from `data/collected/` to `data/demo/collected/`, then
+`docker compose down -v && docker compose up --build`.
+
+Three parts, each documented end to end (the web page: [web/README.md](web/README.md)):
 
 - **[docs/scanner.md](docs/scanner.md)**: the scanner. Sample a zone, collect DNS and routing facts, derive
   an exposure class and a 0–10 risk score, report per domain and per zone.

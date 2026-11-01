@@ -1,0 +1,370 @@
+{
+ "domain": "tektelic.ee",
+ "fetched_at": "2026-10-31T18:07:06+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "tektelic.ee": {
+   "A": [
+    "185.53.179.145"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.tektelic.ee": {
+   "A": [
+    "185.53.179.200"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "tektelic.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.eurodns.com": {
+   "A": [
+    "104.37.178.107"
+   ],
+   "AAAA": [
+    "2610:1c8:b001::107"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.eurodns.com": {
+   "A": [
+    "199.167.66.108"
+   ],
+   "AAAA": [
+    "2610:1c8:b002::108"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns4.eurodns.com": {
+   "A": [
+    "104.37.178.108"
+   ],
+   "AAAA": [
+    "2610:1c8:b001::108"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.eurodns.com": {
+   "A": [
+    "199.167.66.107"
+   ],
+   "AAAA": [
+    "2610:1c8:b002::107"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "104.37.178.107": {
+   "prefix": "104.37.178.0/24",
+   "origin_asns": [
+    23393
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "104.37.176.0/21",
+     "origin_asn": 23393,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "104.37.178.108": {
+   "prefix": "104.37.178.0/24",
+   "origin_asns": [
+    23393
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "104.37.176.0/21",
+     "origin_asn": 23393,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "185.53.179.145": {
+   "prefix": "185.53.179.0/24",
+   "origin_asns": [
+    206834
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.53.176.0/22",
+     "origin_asn": 61969,
+     "max_length": 22,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "185.53.179.0/24",
+     "origin_asn": 61969,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "185.53.179.0/24",
+     "origin_asn": 206834,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "185.53.179.200": {
+   "prefix": "185.53.179.0/24",
+   "origin_asns": [
+    206834
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.53.176.0/22",
+     "origin_asn": 61969,
+     "max_length": 22,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "185.53.179.0/24",
+     "origin_asn": 61969,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "185.53.179.0/24",
+     "origin_asn": 206834,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "199.167.66.107": {
+   "prefix": "199.167.66.0/24",
+   "origin_asns": [
+    23393
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "199.167.64.0/22",
+     "origin_asn": 23393,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "199.167.66.108": {
+   "prefix": "199.167.66.0/24",
+   "origin_asns": [
+    23393
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "199.167.64.0/22",
+     "origin_asn": 23393,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2610:1c8:b001::107": {
+   "prefix": "2610:1c8:b001::/48",
+   "origin_asns": [
+    23393
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2610:1c8:b001::/48",
+     "origin_asn": 23393,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2610:1c8:b001::108": {
+   "prefix": "2610:1c8:b001::/48",
+   "origin_asns": [
+    23393
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2610:1c8:b001::/48",
+     "origin_asn": 23393,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2610:1c8:b002::107": {
+   "prefix": "2610:1c8:b002::/48",
+   "origin_asns": [
+    23393
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2610:1c8:b002::/48",
+     "origin_asn": 23393,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2610:1c8:b002::108": {
+   "prefix": "2610:1c8:b002::/48",
+   "origin_asns": [
+    23393
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2610:1c8:b002::/48",
+     "origin_asn": 23393,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "23393": {
+   "name": "NUCDN - NuCDN LLC",
+   "announced": true
+  },
+  "206834": {
+   "name": "TEAMINTERNET-CA-AS Team Internet AG",
+   "announced": true
+  }
+ },
+ "errors": []
+}

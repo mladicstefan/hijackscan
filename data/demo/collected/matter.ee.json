@@ -1,0 +1,216 @@
+{
+ "domain": "matter.ee",
+ "fetched_at": "2026-10-31T18:07:41+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "matter.ee": {
+   "A": [
+    "193.40.5.2"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.matter.ee": {
+   "A": [
+    "193.40.5.2"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "matter.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns1.ut.ee": {
+   "A": [
+    "193.40.5.39"
+   ],
+   "AAAA": [
+    "2001:bb8:2002:500::39"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.ut.ee": {
+   "A": [
+    "193.40.5.76"
+   ],
+   "AAAA": [
+    "2001:bb8:2002:500::76"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "193.40.5.2": {
+   "prefix": "193.40.0.0/16",
+   "origin_asns": [
+    3221
+   ],
+   "routing": {
+    "more_specifics": [
+     "193.40.195.0/24 AS3332"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.40.0.0/16",
+     "origin_asn": 3221,
+     "max_length": 16,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "193.40.5.39": {
+   "prefix": "193.40.0.0/16",
+   "origin_asns": [
+    3221
+   ],
+   "routing": {
+    "more_specifics": [
+     "193.40.195.0/24 AS3332"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.40.0.0/16",
+     "origin_asn": 3221,
+     "max_length": 16,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "193.40.5.76": {
+   "prefix": "193.40.0.0/16",
+   "origin_asns": [
+    3221
+   ],
+   "routing": {
+    "more_specifics": [
+     "193.40.195.0/24 AS3332"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.40.0.0/16",
+     "origin_asn": 3221,
+     "max_length": 16,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2001:bb8:2002:500::39": {
+   "prefix": "2001:bb8::/32",
+   "origin_asns": [
+    3221
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:bb8::/32",
+     "origin_asn": 3221,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2001:bb8:2002:500::76": {
+   "prefix": "2001:bb8::/32",
+   "origin_asns": [
+    3221
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:bb8::/32",
+     "origin_asn": 3221,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "3221": {
+   "name": "EENet-AS Haridus- ja Teadusministeerium",
+   "announced": true
+  }
+ },
+ "errors": []
+}

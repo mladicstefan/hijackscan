@@ -1,0 +1,163 @@
+{
+ "domain": "sputnikportal.rs",
+ "fetched_at": "2026-10-31T14:46:09+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "sputnikportal.rs": {
+   "A": [
+    "194.190.139.29"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.sputnikportal.rs": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NXDOMAIN",
+    "AAAA": "NXDOMAIN"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "sputnikportal.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns10.sputniknews.ru": {
+   "A": [
+    "178.248.233.32"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns9.sputniknews.ru": {
+   "A": [
+    "178.248.236.20"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "178.248.233.32": {
+   "prefix": "178.248.232.0/23",
+   "origin_asns": [
+    51115
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "178.248.232.0/21",
+     "origin_asn": 51115,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "178.248.236.20": {
+   "prefix": "178.248.236.0/23",
+   "origin_asns": [
+    51115
+   ],
+   "routing": {
+    "more_specifics": [
+     "178.248.237.0/24 AS51115"
+    ],
+    "ris_peers_seeing": 320,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "178.248.232.0/21",
+     "origin_asn": 51115,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "194.190.139.29": {
+   "prefix": "194.190.139.0/24",
+   "origin_asns": [
+    57352
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  }
+ },
+ "asns": {
+  "51115": {
+   "name": "HLL-AS HLL LLC",
+   "announced": true
+  },
+  "57352": {
+   "name": "ROSSIYA-SEGODNYA Federal State Unitary Enterprise Rossiya Segodnya International Information Agency",
+   "announced": true
+  }
+ },
+ "errors": []
+}

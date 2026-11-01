@@ -1,0 +1,67 @@
+{
+ "domain": "free-lance.ee",
+ "fetched_at": "2026-10-31T18:05:31+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "free-lance.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "SERVFAIL",
+    "AAAA": "SERVFAIL"
+   }
+  },
+  "www.free-lance.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "SERVFAIL",
+    "AAAA": "SERVFAIL"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "SERVFAIL"
+ },
+ "caa_chain": [
+  {
+   "name": "free-lance.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "SERVFAIL"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {},
+ "addresses": {},
+ "asns": {},
+ "errors": []
+}

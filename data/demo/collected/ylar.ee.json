@@ -1,0 +1,166 @@
+{
+ "domain": "ylar.ee",
+ "fetched_at": "2026-10-31T18:07:36+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "ylar.ee": {
+   "A": [
+    "185.43.106.117"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.ylar.ee": {
+   "A": [
+    "185.43.106.117"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "ylar.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "cns2.estpak.ee": {
+   "A": [
+    "185.43.106.10"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "cns1.estpak.ee": {
+   "A": [
+    "185.43.106.9"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "185.43.106.10": {
+   "prefix": "185.43.104.0/22",
+   "origin_asns": [
+    3249
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.43.104.0/22",
+     "origin_asn": 3249,
+     "max_length": 22,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "185.43.106.117": {
+   "prefix": "185.43.104.0/22",
+   "origin_asns": [
+    3249
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.43.104.0/22",
+     "origin_asn": 3249,
+     "max_length": 22,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "185.43.106.9": {
+   "prefix": "185.43.104.0/22",
+   "origin_asns": [
+    3249
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.43.104.0/22",
+     "origin_asn": 3249,
+     "max_length": 22,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "3249": {
+   "name": "ESTPAK Telia Eesti AS",
+   "announced": true
+  }
+ },
+ "errors": []
+}

@@ -1,0 +1,177 @@
+{
+ "domain": "novosti.rs",
+ "fetched_at": "2026-10-31T14:40:33+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "novosti.rs": {
+   "A": [
+    "79.101.48.74",
+    "79.101.48.73"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.novosti.rs": {
+   "A": [
+    "79.101.48.73",
+    "79.101.48.74"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [
+   "257 3 13 G9AjsvzUVSBg/p8A0l3fTDL6rGNuCf5z e4YO/aAlkkY1s53VKUPE9SPXw/Hgi9LZ TnCrPvW6FeUII7kahccztQ==",
+   "256 3 13 KyTjA0etQslaqd7M2y8CkZxBHsPGYy1n 9M4HxpjGHsxtmeoVONgd6KN1ounL/YAY YfNq5JKd78ZSC8Zb/e8HZQ=="
+  ],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "novosti.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.ivapix.cloud": {
+   "A": [
+    "176.97.158.15"
+   ],
+   "AAAA": [
+    "2001:67c:10b8::15"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.ivapix.cloud": {
+   "A": [
+    "192.174.68.15"
+   ],
+   "AAAA": [
+    "2001:67c:1bc::15"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "176.97.158.15": {
+   "prefix": "176.97.158.0/24",
+   "origin_asns": [
+    1921,
+    207021
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "176.97.158.0/24",
+     "origin_asn": 1921,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "176.97.158.0/24",
+     "origin_asn": 201612,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "176.97.158.0/24",
+     "origin_asn": 207021,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "192.174.68.15": {
+   "prefix": "192.174.68.0/24",
+   "origin_asns": [
+    1921
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "192.174.68.0/24",
+     "origin_asn": 1921,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "192.174.68.0/24",
+     "origin_asn": 201612,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "192.174.68.0/24",
+     "origin_asn": 207021,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {},
+ "errors": [
+  "OSError: [Errno 22] Invalid argument: 'C:\\\\Users\\\\Lenovo\\\\Desktop\\\\DNS\\\\hijackscan\\\\data\\\\cache\\\\ripestat\\\\network-info_resource=2001:67c:10b8::15.json.17852.part'"
+ ]
+}

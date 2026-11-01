@@ -1,0 +1,523 @@
+{
+ "domain": "ntfr.ee",
+ "fetched_at": "2026-10-31T18:05:31+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "ntfr.ee": {
+   "A": [
+    "172.67.166.6",
+    "104.21.11.123"
+   ],
+   "AAAA": [
+    "2606:4700:3035::6815:b7b",
+    "2606:4700:3030::ac43:a606"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.ntfr.ee": {
+   "A": [
+    "172.67.166.6",
+    "104.21.11.123"
+   ],
+   "AAAA": [
+    "2606:4700:3030::ac43:a606",
+    "2606:4700:3035::6815:b7b"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "ntfr.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "rachel.ns.cloudflare.com": {
+   "A": [
+    "108.162.192.215",
+    "172.64.32.215",
+    "173.245.58.215"
+   ],
+   "AAAA": [
+    "2606:4700:50::adf5:3ad7",
+    "2a06:98c1:50::ac40:20d7",
+    "2803:f800:50::6ca2:c0d7"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "yahir.ns.cloudflare.com": {
+   "A": [
+    "108.162.195.34",
+    "162.159.44.34",
+    "172.64.35.34"
+   ],
+   "AAAA": [
+    "2803:f800:50::6ca2:c322",
+    "2606:4700:58::a29f:2c22",
+    "2a06:98c1:50::ac40:2322"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "104.21.11.123": {
+   "prefix": "104.21.0.0/20",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "104.21.0.0/19",
+     "origin_asn": 13335,
+     "max_length": 19,
+     "ta": "arin"
+    },
+    {
+     "prefix": "104.21.0.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    }
+   ]
+  },
+  "108.162.192.215": {
+   "prefix": "108.162.192.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "108.162.192.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "108.162.192.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "108.162.195.34": {
+   "prefix": "108.162.195.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "108.162.192.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "108.162.195.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "162.159.44.34": {
+   "prefix": "162.159.32.0/20",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [
+     "162.159.32.0/23 AS13335",
+     "162.159.34.0/23 AS13335",
+     "162.159.40.0/23 AS13335",
+     "162.159.42.0/23 AS13335",
+     "162.159.36.0/24 AS13335",
+     "162.159.46.0/24 AS13335"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "162.159.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    }
+   ]
+  },
+  "172.64.32.215": {
+   "prefix": "172.64.32.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "172.64.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "172.64.32.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "172.64.35.34": {
+   "prefix": "172.64.35.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "172.64.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "172.64.35.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "172.67.166.6": {
+   "prefix": "172.67.160.0/20",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "172.67.160.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    }
+   ]
+  },
+  "173.245.58.215": {
+   "prefix": "173.245.58.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "173.245.58.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2606:4700:3030::ac43:a606": {
+   "prefix": "2606:4700:3030::/48",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2606:4700:3030::/44",
+     "origin_asn": 13335,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2606:4700:3030::/48",
+     "origin_asn": 13335,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2606:4700:3035::6815:b7b": {
+   "prefix": "2606:4700:3035::/48",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2606:4700:3030::/44",
+     "origin_asn": 13335,
+     "max_length": 44,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2606:4700:3035::/48",
+     "origin_asn": 13335,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2606:4700:50::adf5:3ad7": {
+   "prefix": "2606:4700:50::/44",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [
+     "2606:4700:52::/48 AS13335",
+     "2606:4700:54::/48 AS13335",
+     "2606:4700:56::/48 AS13335",
+     "2606:4700:57::/48 AS13335",
+     "2606:4700:5a::/48 AS13335",
+     "2606:4700:5c::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2606:4700:50::/44",
+     "origin_asn": 13335,
+     "max_length": 44,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2606:4700:58::a29f:2c22": {
+   "prefix": "2606:4700:50::/44",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [
+     "2606:4700:52::/48 AS13335",
+     "2606:4700:54::/48 AS13335",
+     "2606:4700:56::/48 AS13335",
+     "2606:4700:57::/48 AS13335",
+     "2606:4700:5a::/48 AS13335",
+     "2606:4700:5c::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2606:4700:50::/44",
+     "origin_asn": 13335,
+     "max_length": 44,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2803:f800:50::6ca2:c0d7": {
+   "prefix": "2803:f800:50::/45",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [
+     "2803:f800:52::/48 AS13335",
+     "2803:f800:55::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2803:f800:50::/45",
+     "origin_asn": 13335,
+     "max_length": 45,
+     "ta": "lacnic"
+    }
+   ]
+  },
+  "2803:f800:50::6ca2:c322": {
+   "prefix": "2803:f800:50::/45",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [
+     "2803:f800:52::/48 AS13335",
+     "2803:f800:55::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2803:f800:50::/45",
+     "origin_asn": 13335,
+     "max_length": 45,
+     "ta": "lacnic"
+    }
+   ]
+  },
+  "2a06:98c1:50::ac40:20d7": {
+   "prefix": "2a06:98c1:50::/45",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [
+     "2a06:98c1:54::/48 AS13335",
+     "2a06:98c1:55::/48 AS13335",
+     "2a06:98c1:56::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a06:98c1:50::/45",
+     "origin_asn": 13335,
+     "max_length": 45,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a06:98c1:50::ac40:2322": {
+   "prefix": "2a06:98c1:50::/45",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [
+     "2a06:98c1:54::/48 AS13335",
+     "2a06:98c1:55::/48 AS13335",
+     "2a06:98c1:56::/48 AS13335"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a06:98c1:50::/45",
+     "origin_asn": 13335,
+     "max_length": 45,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "13335": {
+   "name": "CLOUDFLARENET - Cloudflare, Inc.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

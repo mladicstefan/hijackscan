@@ -1,0 +1,314 @@
+{
+ "domain": "vendauctions.ee",
+ "fetched_at": "2026-10-31T18:06:54+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "vendauctions.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.vendauctions.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NXDOMAIN",
+    "AAAA": "NXDOMAIN"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "vendauctions.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "b.ns14.net": {
+   "A": [
+    "217.160.81.160"
+   ],
+   "AAAA": [
+    "2001:8d8:fe:53:217:160:81:160"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "c.ns14.net": {
+   "A": [
+    "185.132.35.160"
+   ],
+   "AAAA": [
+    "2607:f1c0:fe:53:185:132:35:160"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "d.ns14.net": {
+   "A": [
+    "185.132.34.160"
+   ],
+   "AAAA": [
+    "2607:f1c0:fe:53:185:132:34:160"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "a.ns14.net": {
+   "A": [
+    "217.160.80.160"
+   ],
+   "AAAA": [
+    "2001:8d8:fe:53:217:160:80:160"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "185.132.34.160": {
+   "prefix": "185.132.32.0/22",
+   "origin_asns": [
+    15418
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.132.32.0/22",
+     "origin_asn": 15418,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "185.132.35.160": {
+   "prefix": "185.132.32.0/22",
+   "origin_asns": [
+    15418
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.132.32.0/22",
+     "origin_asn": 15418,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2001:8d8:fe:53:217:160:80:160": {
+   "prefix": "2001:8d8:fe::/47",
+   "origin_asns": [
+    8560
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:8d8::/29",
+     "origin_asn": 8560,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2001:8d8:fe:53:217:160:81:160": {
+   "prefix": "2001:8d8:fe::/47",
+   "origin_asns": [
+    8560
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:8d8::/29",
+     "origin_asn": 8560,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "217.160.80.160": {
+   "prefix": "217.160.80.0/22",
+   "origin_asns": [
+    8560
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.160.0.0/16",
+     "origin_asn": 8560,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "217.160.81.160": {
+   "prefix": "217.160.80.0/22",
+   "origin_asns": [
+    8560
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.160.0.0/16",
+     "origin_asn": 8560,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2607:f1c0:fe:53:185:132:34:160": {
+   "prefix": "2607:f1c0:fe::/47",
+   "origin_asns": [
+    15418
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2607:f1c0::/32",
+     "origin_asn": 8560,
+     "max_length": 64,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2607:f1c0:fe::/47",
+     "origin_asn": 15418,
+     "max_length": 64,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2607:f1c0:fe:53:185:132:35:160": {
+   "prefix": "2607:f1c0:fe::/47",
+   "origin_asns": [
+    15418
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2607:f1c0::/32",
+     "origin_asn": 8560,
+     "max_length": 64,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2607:f1c0:fe::/47",
+     "origin_asn": 15418,
+     "max_length": 64,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "8560": {
+   "name": "IONOS-AS IONOS SE",
+   "announced": true
+  },
+  "15418": {
+   "name": "IONOS-ANYCAST Fasthosts Internet Limited",
+   "announced": true
+  }
+ },
+ "errors": []
+}

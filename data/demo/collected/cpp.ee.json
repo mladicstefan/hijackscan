@@ -1,0 +1,514 @@
+{
+ "domain": "cpp.ee",
+ "fetched_at": "2026-10-31T18:07:31+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "cpp.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.cpp.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NXDOMAIN",
+    "AAAA": "NXDOMAIN"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "cpp.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns1.huaweicloud-dns.com": {
+   "A": [
+    "122.112.208.253",
+    "139.9.224.17",
+    "114.115.192.11",
+    "116.205.5.31",
+    "116.205.223.128"
+   ],
+   "AAAA": [
+    "2407:c080:20:ffff:ffff:fffe:0:1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.huaweicloud-dns.org": {
+   "A": [
+    "190.92.196.2",
+    "159.138.17.187",
+    "159.138.112.111",
+    "159.138.160.107",
+    "159.138.208.3"
+   ],
+   "AAAA": [
+    "2407:c080:20:ffff:ffff:fffe:0:1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.huaweicloud-dns.net": {
+   "A": [
+    "159.138.112.111",
+    "159.138.160.107",
+    "159.138.208.3",
+    "190.92.196.2",
+    "159.138.17.112"
+   ],
+   "AAAA": [
+    "2407:c080:20:ffff:ffff:fffe:0:1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.huaweicloud-dns.cn": {
+   "A": [
+    "122.112.208.254",
+    "139.9.224.17",
+    "116.205.5.32",
+    "114.115.192.11",
+    "113.45.105.30",
+    "116.205.223.129"
+   ],
+   "AAAA": [
+    "2407:c080:20:ffff:ffff:fffe:0:1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "113.45.105.30": {
+   "prefix": "113.45.104.0/21",
+   "origin_asns": [
+    55990
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "113.45.104.0/21",
+     "origin_asn": 55990,
+     "max_length": 21,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "114.115.192.11": {
+   "prefix": "114.115.192.0/19",
+   "origin_asns": [
+    4808
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 111,
+    "ris_peers_total": 111
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "114.115.192.0/19",
+     "origin_asn": 4808,
+     "max_length": 19,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "114.115.192.0/19",
+     "origin_asn": 23724,
+     "max_length": 19,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "114.115.192.0/19",
+     "origin_asn": 55990,
+     "max_length": 19,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "116.205.223.128": {
+   "prefix": "116.205.223.0/24",
+   "origin_asns": [
+    55990
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "116.205.192.0/19",
+     "origin_asn": 55990,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "116.205.223.129": {
+   "prefix": "116.205.223.0/24",
+   "origin_asns": [
+    55990
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "116.205.192.0/19",
+     "origin_asn": 55990,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "116.205.5.31": {
+   "prefix": "116.205.5.0/24",
+   "origin_asns": [
+    55990
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "116.205.0.0/18",
+     "origin_asn": 55990,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "116.205.5.32": {
+   "prefix": "116.205.5.0/24",
+   "origin_asns": [
+    55990
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "116.205.0.0/18",
+     "origin_asn": 55990,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "122.112.208.253": {
+   "prefix": "122.112.208.0/20",
+   "origin_asns": [
+    55990
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "122.112.208.0/20",
+     "origin_asn": 55990,
+     "max_length": 20,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "122.112.208.254": {
+   "prefix": "122.112.208.0/20",
+   "origin_asns": [
+    55990
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "122.112.208.0/20",
+     "origin_asn": 55990,
+     "max_length": 20,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "139.9.224.17": {
+   "prefix": "139.9.224.0/20",
+   "origin_asns": [
+    58519,
+    134542
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "139.9.224.0/20",
+     "origin_asn": 58519,
+     "max_length": 20,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "139.9.224.0/20",
+     "origin_asn": 134542,
+     "max_length": 20,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "139.9.224.0/20",
+     "origin_asn": 138407,
+     "max_length": 20,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "159.138.112.111": {
+   "prefix": "159.138.112.0/21",
+   "origin_asns": [
+    136907
+   ],
+   "routing": {
+    "more_specifics": [
+     "159.138.114.0/24 AS136907"
+    ],
+    "ris_peers_seeing": 111,
+    "ris_peers_total": 111
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "159.138.112.0/21",
+     "origin_asn": 136907,
+     "max_length": 21,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "159.138.160.107": {
+   "prefix": "159.138.160.0/20",
+   "origin_asns": [
+    136907
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 111,
+    "ris_peers_total": 111
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "159.138.160.0/20",
+     "origin_asn": 136907,
+     "max_length": 20,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "159.138.17.112": {
+   "prefix": "159.138.16.0/22",
+   "origin_asns": [
+    136907
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 111,
+    "ris_peers_total": 111
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "159.138.16.0/22",
+     "origin_asn": 136907,
+     "max_length": 22,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "159.138.17.187": {
+   "prefix": "159.138.16.0/22",
+   "origin_asns": [
+    136907
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 111,
+    "ris_peers_total": 111
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "159.138.16.0/22",
+     "origin_asn": 136907,
+     "max_length": 22,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "159.138.208.3": {
+   "prefix": "159.138.208.0/21",
+   "origin_asns": [
+    136907
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 111,
+    "ris_peers_total": 111
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "159.138.208.0/21",
+     "origin_asn": 136907,
+     "max_length": 21,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "190.92.196.2": {
+   "prefix": "190.92.192.0/19",
+   "origin_asns": [
+    136907
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 111,
+    "ris_peers_total": 111
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "190.92.192.0/19",
+     "origin_asn": 136907,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "2407:c080:20:ffff:ffff:fffe:0:1": {
+   "prefix": "2407:c080::/37",
+   "origin_asns": [
+    55990
+   ],
+   "routing": {
+    "more_specifics": [
+     "2407:c080:303::/48 AS55990",
+     "2407:c080:304::/48 AS55990"
+    ],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  }
+ },
+ "asns": {
+  "4808": {
+   "name": "CHINA169-BJ - China Unicom Beijing Province Network",
+   "announced": true
+  },
+  "55990": {
+   "name": "HWCSNET - Huawei Cloud Service data center",
+   "announced": true
+  },
+  "58519": {
+   "name": "CHINATELECOM-Ctcloud - Cloud Computing Corporation",
+   "announced": true
+  },
+  "134542": {
+   "name": "UNICOM-GUIAN - China Unicom IP network",
+   "announced": true
+  },
+  "136907": {
+   "name": "HWCLOUDS-AS-AP - HUAWEI CLOUDS",
+   "announced": true
+  }
+ },
+ "errors": []
+}

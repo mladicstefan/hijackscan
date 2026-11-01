@@ -73,6 +73,7 @@ def parser() -> argparse.ArgumentParser:
     lo = sub.add_parser("load", help="score collected records (no network) and save them to MongoDB as a new run")
     lo.add_argument("domains", help="file with one domain per line (the same list as for `zone`)")
     lo.add_argument("--name", help="a name for the run shown on the web page (default: the file name)")
+    lo.add_argument("--skip-existing", action="store_true", help="do nothing if a run with this name is loaded")
     se = sub.add_parser("serve", help="start the read-only API over MongoDB (docs at http://127.0.0.1:8000/docs)")
     se.add_argument("--host", default="127.0.0.1", help="address to listen on (default: this computer only)")
     se.add_argument("--port", type=int, default=8000)
@@ -146,8 +147,11 @@ def main() -> None:
         from .store import load
 
         domains, meta = read_list(a.domains)
-        r = load(cfg, domains, meta, source=a.domains, name=a.name)
-        print(f"run {r['run_id']}: {r['domains']} domains saved, {r['missing']} not collected ({r['db']})")
+        r = load(cfg, domains, meta, source=a.domains, name=a.name, skip_existing=a.skip_existing)
+        if r["skipped"]:
+            print(f"run '{r['name']}' is already loaded: skipped")
+        else:
+            print(f"run {r['run_id']} '{r['name']}': {r['domains']} domains saved, {r['missing']} not collected ({r['db']})")
         return
     if a.cmd == "serve":
         import uvicorn

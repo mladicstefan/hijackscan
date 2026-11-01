@@ -1,0 +1,330 @@
+{
+ "domain": "landmark3d.ee",
+ "fetched_at": "2026-10-31T18:07:23+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "landmark3d.ee": {
+   "A": [
+    "185.86.211.142"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.landmark3d.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NXDOMAIN",
+    "AAAA": "NXDOMAIN"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "landmark3d.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns4.radicenter.fi": {
+   "A": [
+    "94.237.119.73"
+   ],
+   "AAAA": [
+    "2a04:3540:1000:310:34cf:d8ff:fe6d:5bc1"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.radicenter.eu": {
+   "A": [
+    "94.237.27.189"
+   ],
+   "AAAA": [
+    "2a04:3542:1000:910:34cf:d8ff:fe6d:6dbb"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.radicenter.com": {
+   "A": [
+    "185.86.211.11"
+   ],
+   "AAAA": [
+    "2a13:c5c0:dc1::11"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.radicenter.ee": {
+   "A": [
+    "90.191.43.167"
+   ],
+   "AAAA": [
+    "2001:7d0:5341:ce00::1"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "185.86.211.11": {
+   "prefix": "185.86.211.0/24",
+   "origin_asns": [
+    216263
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.86.211.0/24",
+     "origin_asn": 216263,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "185.86.211.142": {
+   "prefix": "185.86.211.0/24",
+   "origin_asns": [
+    216263
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.86.211.0/24",
+     "origin_asn": 216263,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2001:7d0:5341:ce00::1": {
+   "prefix": "2001:7d0::/32",
+   "origin_asns": [
+    3249
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:7d0::/32",
+     "origin_asn": 3249,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a04:3540:1000:310:34cf:d8ff:fe6d:5bc1": {
+   "prefix": "2a04:3540::/32",
+   "origin_asns": [
+    202053
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 306,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a04:3540::/32",
+     "origin_asn": 202053,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a04:3542:1000:910:34cf:d8ff:fe6d:6dbb": {
+   "prefix": "2a04:3542::/32",
+   "origin_asns": [
+    202053
+   ],
+   "routing": {
+    "more_specifics": [
+     "2a04:3542:8000::/34 AS202053"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a04:3542::/32",
+     "origin_asn": 202053,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a13:c5c0:dc1::11": {
+   "prefix": "2a13:c5c0::/32",
+   "origin_asns": [
+    216263
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a13:c5c0::/32",
+     "origin_asn": 216263,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "90.191.43.167": {
+   "prefix": "90.190.0.0/15",
+   "origin_asns": [
+    3249
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "90.190.0.0/15",
+     "origin_asn": 3249,
+     "max_length": 15,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "94.237.119.73": {
+   "prefix": "94.237.112.0/21",
+   "origin_asns": [
+    202053
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "94.237.112.0/21",
+     "origin_asn": 202053,
+     "max_length": 21,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "94.237.27.189": {
+   "prefix": "94.237.24.0/21",
+   "origin_asns": [
+    202053
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "94.237.24.0/21",
+     "origin_asn": 202053,
+     "max_length": 21,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "3249": {
+   "name": "ESTPAK Telia Eesti AS",
+   "announced": true
+  },
+  "202053": {
+   "name": "UPCLOUD UpCloud Ltd",
+   "announced": true
+  },
+  "216263": {
+   "name": "RADICENTER Radicenter OU",
+   "announced": true
+  }
+ },
+ "errors": []
+}

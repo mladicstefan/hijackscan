@@ -1,0 +1,319 @@
+{
+ "domain": "nova.rs",
+ "fetched_at": "2026-10-31T14:40:39+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "nova.rs": {
+   "A": [
+    "104.18.35.135",
+    "172.64.152.121"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.nova.rs": {
+   "A": [
+    "172.64.152.121",
+    "104.18.35.135"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "nova.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "kip.ns.cloudflare.com": {
+   "A": [
+    "172.64.33.128",
+    "108.162.193.128",
+    "173.245.59.128"
+   ],
+   "AAAA": [
+    "2606:4700:58::adf5:3b80",
+    "2a06:98c1:50::ac40:2180",
+    "2803:f800:50::6ca2:c180"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "carol.ns.cloudflare.com": {
+   "A": [
+    "172.64.32.80",
+    "173.245.58.80",
+    "108.162.192.80"
+   ],
+   "AAAA": [
+    "2606:4700:50::adf5:3a50",
+    "2a06:98c1:50::ac40:2050",
+    "2803:f800:50::6ca2:c050"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "104.18.35.135": {
+   "prefix": "104.18.35.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "104.18.32.0/19",
+     "origin_asn": 13335,
+     "max_length": 19,
+     "ta": "arin"
+    },
+    {
+     "prefix": "104.18.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "104.18.35.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "108.162.192.80": {
+   "prefix": "108.162.192.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "108.162.192.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "108.162.192.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "108.162.193.128": {
+   "prefix": "108.162.193.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "108.162.192.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "108.162.193.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "172.64.152.121": {
+   "prefix": "172.64.152.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "172.64.144.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "172.64.152.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "172.64.32.80": {
+   "prefix": "172.64.32.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "172.64.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "172.64.32.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "172.64.33.128": {
+   "prefix": "172.64.33.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "172.64.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "172.64.33.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "173.245.58.80": {
+   "prefix": "173.245.58.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "173.245.58.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "173.245.59.128": {
+   "prefix": "173.245.59.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "173.245.59.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {},
+ "errors": [
+  "OSError: [Errno 22] Invalid argument: 'C:\\\\Users\\\\Lenovo\\\\Desktop\\\\DNS\\\\hijackscan\\\\data\\\\cache\\\\ripestat\\\\network-info_resource=2606:4700:50::adf5:3a50.json.1796.part'"
+ ]
+}

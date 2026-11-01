@@ -112,11 +112,24 @@ def git_commit() -> str | None:
 # --------------------------------------------------------------------------- load
 
 
-def load(cfg: Config, domains: list[str], meta: dict | None, source: str, name: str | None = None) -> dict:
-    """Score the collected records of `domains` and save them as a new run. Returns a short summary."""
+def load(
+    cfg: Config,
+    domains: list[str],
+    meta: dict | None,
+    source: str,
+    name: str | None = None,
+    *,
+    skip_existing: bool = False,
+) -> dict:
+    """Score the collected records of `domains` and save them as a new run. Returns a short summary.
+    skip_existing: do nothing if a run with this name is already loaded (the demo container restarting)."""
     from bson import ObjectId
 
     from .report.zone import build
+
+    run_name = name or Path(source).name
+    if skip_existing and connect().runs.count_documents({"name": run_name}, limit=1):
+        return {"skipped": True, "name": run_name}
 
     records, missing = [], []
     for d in domains:
@@ -142,14 +155,21 @@ def load(cfg: Config, domains: list[str], meta: dict | None, source: str, name: 
         {
             "_id": run_id,
             **report,
-            "name": name or Path(source).name,
+            "name": run_name,
             "source": source,
             "loaded_at": datetime.now(UTC),
             "git_commit": git_commit(),
             "missing": missing,
         }
     )
-    return {"run_id": str(run_id), "domains": len(records), "missing": len(missing), "db": f"{MONGO_URL}/{DB_NAME}"}
+    return {
+        "skipped": False,
+        "name": run_name,
+        "run_id": str(run_id),
+        "domains": len(records),
+        "missing": len(missing),
+        "db": f"{MONGO_URL}/{DB_NAME}",
+    }
 
 
 # --------------------------------------------------------------------------- read (used by the API)

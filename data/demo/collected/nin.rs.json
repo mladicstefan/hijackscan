@@ -1,0 +1,268 @@
+{
+ "domain": "nin.rs",
+ "fetched_at": "2026-10-31T14:45:42+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "nin.rs": {
+   "A": [
+    "128.140.125.162"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.nin.rs": {
+   "A": [
+    "128.140.125.162"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "nin.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.ivapix.cloud": {
+   "A": [
+    "176.97.158.15"
+   ],
+   "AAAA": [
+    "2001:67c:10b8::15"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.ivapix.cloud": {
+   "A": [
+    "192.174.68.15"
+   ],
+   "AAAA": [
+    "2001:67c:1bc::15"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "128.140.125.162": {
+   "prefix": "128.140.0.0/17",
+   "origin_asns": [
+    24940
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "128.140.0.0/17",
+     "origin_asn": 24940,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "176.97.158.15": {
+   "prefix": "176.97.158.0/24",
+   "origin_asns": [
+    1921,
+    207021
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "176.97.158.0/24",
+     "origin_asn": 1921,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "176.97.158.0/24",
+     "origin_asn": 201612,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "176.97.158.0/24",
+     "origin_asn": 207021,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "192.174.68.15": {
+   "prefix": "192.174.68.0/24",
+   "origin_asns": [
+    1921
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "192.174.68.0/24",
+     "origin_asn": 1921,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "192.174.68.0/24",
+     "origin_asn": 201612,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "192.174.68.0/24",
+     "origin_asn": 207021,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2001:67c:10b8::15": {
+   "prefix": "2001:67c:10b8::/48",
+   "origin_asns": [
+    1921,
+    207021
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:67c:10b8::/48",
+     "origin_asn": 1921,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2001:67c:10b8::/48",
+     "origin_asn": 201612,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2001:67c:10b8::/48",
+     "origin_asn": 207021,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2001:67c:1bc::15": {
+   "prefix": "2001:67c:1bc::/48",
+   "origin_asns": [
+    1921
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:67c:1bc::/48",
+     "origin_asn": 1921,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2001:67c:1bc::/48",
+     "origin_asn": 201612,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2001:67c:1bc::/48",
+     "origin_asn": 207021,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "1921": {
+   "name": "RCODEZERO-ANYCAST-SEC1-TLD ipcom GmbH",
+   "announced": true
+  },
+  "24940": {
+   "name": "HETZNER-AS Hetzner Online GmbH",
+   "announced": true
+  },
+  "207021": {
+   "name": "RCODEZERO-ANYCAST-SEC2 ipcom GmbH",
+   "announced": true
+  }
+ },
+ "errors": []
+}
