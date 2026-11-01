@@ -200,8 +200,7 @@ containment: OK
 that the verdict flips, then restores it and checks that it flips back. Exit 1 if any expected flip is missing.
 
 ```
-negative controls, 2026-11-01T01:51:07+0100
-######## A. caa-signed / web+ns: the REFUSED rests on the resolver validating
+(controls.log not found: run labctl controls / matrix)
 ```
 
 ## 8. Tear down
