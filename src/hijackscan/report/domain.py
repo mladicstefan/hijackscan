@@ -196,10 +196,6 @@ def render_text(s: Scored, rec: dict) -> str:
     asns, day, caps = rec.get("asns", {}), rec["rpki_date"], routable_caps(rec)
     L = [
         s.domain,
-        f"  exposure      {s.exposure.upper()}",
-        f"  meaning       {CLASS_MEANING[s.exposure]}",
-        f"  why here      {s.reason}",
-        f"  attack path   {s.attack_path}",
         f"  collected     {rec['fetched_at']}  resolver {rec['resolver']}  routing {routing_source(rec)}  "
         f"ROAs from {rpki_source(rec)}, {day}",
         "",

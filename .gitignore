@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .ruff_cache/
 dist/
+lab/logs
 
 data/*
 !data/samples/
