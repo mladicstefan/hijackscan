@@ -22,7 +22,7 @@ npm run build                     # writes web/dist/; `hijackscan serve` picks i
 
 `npm run check` runs the type checker and ESLint; both must pass with no warnings.
 
-The one-command version (`docker compose up` in the project root, see the main README) builds the page and the
+The one-command version (`docker compose up -d` in the project root, see the main README) builds the page and the
 API into one image and loads the demo data from `data/demo/collected/`. API documentation: `/docs`.
 
 ## Refresh the demo data
@@ -35,7 +35,7 @@ uv run hijackscan collect data/samples/dev100.txt --force
 uv run hijackscan collect data/samples/ee100.txt --force
 rm -f data/demo/collected/*.json
 for d in $(grep -hv '^#' data/samples/dev100.txt data/samples/ee100.txt); do cp "data/collected/$d.json" data/demo/collected/; done
-docker compose down -v && docker compose up --build
+docker compose down -v && docker compose up -d --build
 ```
 
 `down -v` empties the database, so the new records are loaded instead of the old runs being kept.

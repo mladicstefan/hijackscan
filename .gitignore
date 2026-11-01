@@ -3,11 +3,12 @@ __pycache__/
 *.pyc
 .ruff_cache/
 dist/
-lab/logs
+lab/
 
 data/*
 !data/samples/
 !data/demo/
+!data/out/
 .superpowers/
 lab/build/
 lab/.labctl.lock

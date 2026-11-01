@@ -1,0 +1,1834 @@
+[demo] log: /home/djamla/hijackscan/data/out/demo-20261101T101601Z.log
+
+==== step 1: preflight
+[demo] OK: prerequisites checked (0s)
+
+==== step 2/12: resolver
+$ uv run scripts/check_resolver.py
+{
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+}
+11:16:02 ✔ resolver validates  9.9.9.9:853 (DoT)                                                                        
+[demo] exit 0 after 1s
+[demo] OK: 9.9.9.9:853 validates DNSSEC (1s)
+
+==== step 3/12: sample
+$ uv run hijackscan sample data/samples/zone.ee.part-aa data/samples/zone.ee.part-ab --n 100 --seed 1 --out data/samples/ee100.txt
+11:16:03 reading  data/samples/zone.ee.part-aa                                                                          
+11:16:04 reading  data/samples/zone.ee.part-ab                                                                          
+11:16:05 ✔ zone ee  serial 1793464230: 204,698 delegations, 52,785 with DS                                              
+11:16:05 ✔ wrote 100 domains  data/samples/ee100.txt                                                                    
+[demo] exit 0 after 2s
+[demo] OK: 204,698 delegations, 52,785 with DS, 100 drawn (2s)
+
+==== step 4/12: collect
+$ uv run hijackscan collect data/samples/ee100.txt
+
+collect  0 of 100 domains ──────────────────────────────────────────────────────────────────────────────────────────────
+11:16:05 resolver  9.9.9.9:853 (DoT)                                                                                    
+11:16:05 workers  8   (100 cached, younger than 168 h)                                                                  
+11:16:05 ✔ 0 collected in 0s                                                                                            
+11:16:05 rpki day  2026-08-28, 2026-10-31  (from the cached records)                                                    
+[demo] exit 0 after 0s
+[demo] OK: 0 collected live, 100 from cache, 0 with errors (0s)
+
+==== step 5/12: zone report
+[demo] How the sample splits by severity (CVSS scale); the HTML reports carry the rest.
+$ uv run hijackscan zone data/samples/ee100.txt --out data/out/ee/
+
+collect  0 of 100 domains ──────────────────────────────────────────────────────────────────────────────────────────────
+11:16:05 resolver  9.9.9.9:853 (DoT)                                                                                    
+11:16:05 workers  8   (100 cached, younger than 168 h)                                                                  
+11:16:05 ✔ 0 collected in 0s                                                                                            
+11:16:05 rpki day  2026-08-28, 2026-10-31  (from the cached records)                                                    
+
+zone report  100 domains ───────────────────────────────────────────────────────────────────────────────────────────────
+  None        0  
+  Low        58  ███████████████████████
+  Medium      2  █
+  High        3  █
+  Critical   36  ██████████████
+  Unknown     1  
+11:16:05 ✔ wrote  data/out/ee/report.json, data/out/ee/report.html, data/out/ee/domains.jsonl, data/out/ee/domains.html 
+[demo] exit 0 after 0s
+[demo] OK: report.html, domains.html written to data/out/ee/ (0s)
+
+==== step 6/12: drill-down: 3a.ee
+[demo] The worst domain of the sample in full: its verdict line (domain, severity and score, label), the one sentence that says what an attacker can do, the fix that helps most, then how the score was calculated, every finding, what each fix does, and the raw facts per address. Red marks a forgeable address or an open path, green a defended one, yellow a loose ROA or a missing record.
+$ uv run hijackscan 3a.ee --details
+
+collect  0 of 1 domains ────────────────────────────────────────────────────────────────────────────────────────────────
+11:16:05 resolver  9.9.9.9:853 (DoT)                                                                                    
+11:16:05 workers  8   (1 cached, younger than 168 h)                                                                    
+11:16:05 ✔ 0 collected in 0s                                                                                            
+11:16:05 rpki day  2026-10-31  (from the cached records)                                                                
+3a.ee  CRITICAL 10.0  open-web
+  A forged more-specific route to the web server of 3a.ee gets a certificate from any CA (1 of 1 addresses forgeable; 100% success in 5 attempts).
+  fix first   domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 1.1 Low
+  to close    domain-owner + dns-host: publish CAA issue=<your CA>; accounturi=<your ACME account> + sign the zone and publish the DS at the registrar (DNSSEC) → 0.0 None
+
+RISK CALCULATION   (design/formula.md)
+  driving path   web → 3a.ee
+  p              1.00   1 of 1 addresses forgeable
+  P per attempt  1.000   = p × P(≥ 3 of 4 remote perspectives fooled)   [BR 3.2.2.9]
+  likelihood L   1.000   = 1 − (1 − P)^5
+  complexity K   1.000   = 0.87^0
+  score          10.0   = Roundup(10 × 1 × K × L)   → Critical (CVSS scale)
+
+ALL PATHS
+  web      10.0 Critical p=1.00 h=0  3a.ee: 1 of 1 addresses forgeable
+  web      10.0 Critical p=1.00 h=0  www.3a.ee: 1 of 1 addresses forgeable
+  contest   1.1 Low      p=0.30 h=1  web + nameservers: exact-prefix origin contest, always possible without ASPA (assumed share)
+
+FINDINGS
+  WEB_MORE_SPECIFIC     [Critical] 3a.ee: 1 of 1 addresses forgeable
+                        - 185.26.106.234 in 185.26.106.0/23: no ROA, a forged more-specific is never RPKI-invalid
+  WEB_MORE_SPECIFIC     [Critical] www.3a.ee: 1 of 1 addresses forgeable
+                        - 185.26.106.234 in 185.26.106.0/23: no ROA, a forged more-specific is never RPKI-invalid
+  EXACT_PREFIX_CONTEST  [Low] exact-prefix origin contest, always possible without ASPA (assumed share)
+  NO_ROA                1 addresses not covered by any ROA
+                        - 185.26.106.234 in 185.26.106.0/23: no ROA, a forged more-specific is never RPKI-invalid
+  NO_CAA                no CAA record at any label up to the TLD: every CA may issue
+  UNSIGNED              no DS at the parent: DNS answers can be forged
+
+WHAT EACH FIX DOES (re-scored)
+   0.0 None     domain-owner + dns-host: publish CAA issue=<your CA>; accounturi=<your ACME account> + sign the zone and publish the DS at the registrar (DNSSEC)
+   1.1 Low      domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account>
+   1.1 Low      hosting-provider: set ROA maxLength = announced length for the web prefixes
+  10.0 Critical dns-host: sign the zone and publish the DS at the registrar (DNSSEC)
+  10.0 Critical dns-host: set ROA maxLength = announced length for the nameserver prefixes
+
+VECTORS
+  CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:N   base 10.0  (CVSS alone: same for every domain on this path)
+  CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:N/SC:H/SI:H/SA:N
+
+MITRE ATT&CK
+  T1590.005  Gather Victim Network Information: IP Addresses
+  T1596      Search Open Technical Databases (BGP, RPKI)
+  T1584.008  Compromise Infrastructure: Network Devices (a BGP-speaking network)
+  T1557      Adversary-in-the-Middle (closest fit: ATT&CK has no BGP hijack technique)
+  T1588.004  Obtain Capabilities: Digital Certificates
+  T1608.003  Stage Capabilities: Install Digital Certificate
+
+RAW FACTS
+
+3a.ee
+  collected     2026-11-01T04:56:16+00:00  resolver 9.9.9.9:853 (DoT)  routing https://stat.ripe.net/...  ROAs from /home/djamla/hijackscan/data/rpki/2026-10-31, 2026-10-31
+
+DNS
+  DNSSEC        unsigned   DS records at parent: 0   DNSKEY records at apex: 0
+                no DS at the registry: validators cannot verify anything for this zone
+  CAA           none at any label up to the TLD: every CA may issue
+  zones         3a.ee  DS 0  ns ns3.netim.net, ns2.netim.net, ns1.netim.net
+  nameservers   ns3.netim.net, ns2.netim.net, ns1.netim.net
+  NS operators  netim.net
+
+WEB ADDRESSES   — at least one FORGEABLE: HTTP-01 can be captured
+  185.26.106.234
+      announced as   185.26.106.0/23  (length /23)  by AS24935 (ATE-AS Eurofiber France SAS)
+      RIPEstat RPKI  unknown  (live verdict for that origin + prefix)
+      no more-specific of 185.26.106.0/23 is announced by anyone  (seen by 323/323 RIS peers)
+      ROAs           none cover this prefix on 2026-10-31
+      → UNKNOWN ORIGIN, effectively forgeable: with no ROA no announcement of this space is ever RPKI-invalid, so a forged more-specific up to /24 passes every ROV filter and becomes the longest match
+
+NAMESERVER ADDRESSES   — none forgeable
+  ns3.netim.net
+    176.97.158.97
+        announced as   176.97.158.0/24  (length /24)  by AS1921 (RCODEZERO-ANYCAST-SEC1-TLD ipcom GmbH), AS207021 (RCODEZERO-ANYCAST-SEC2 ipcom GmbH)
+        RIPEstat RPKI  valid  (live verdict for that origin + prefix)
+        no more-specific of 176.97.158.0/24 is announced by anyone  (seen by 321/323 RIS peers)
+        ROAs           3 covering on 2026-10-31
+          176.97.158.0/24      maxLength 24  origin AS1921    TA ripencc  exact length only
+          176.97.158.0/24      maxLength 24  origin AS201612  TA ripencc  exact length only
+          176.97.158.0/24      maxLength 24  origin AS207021  TA ripencc  exact length only
+        → not forgeable: ROA maxLength /24 equals the announced length; only an exact-prefix origin contest remains
+    2001:67c:10b8::97
+        announced as   2001:67c:10b8::/48  (length /48)  by AS1921 (RCODEZERO-ANYCAST-SEC1-TLD ipcom GmbH), AS207021 (RCODEZERO-ANYCAST-SEC2 ipcom GmbH)
+        RIPEstat RPKI  valid  (live verdict for that origin + prefix)
+        no more-specific of 2001:67c:10b8::/48 is announced by anyone  (seen by 313/313 RIS peers)
+        ROAs           3 covering on 2026-10-31
+          2001:67c:10b8::/48   maxLength 48  origin AS1921    TA ripencc  exact length only
+          2001:67c:10b8::/48   maxLength 48  origin AS201612  TA ripencc  exact length only
+          2001:67c:10b8::/48   maxLength 48  origin AS207021  TA ripencc  exact length only
+        → not forgeable: ROA maxLength /48 equals the announced length; only an exact-prefix origin contest remains
+  ns2.netim.net
+    192.174.68.97
+        announced as   192.174.68.0/24  (length /24)  by AS1921 (RCODEZERO-ANYCAST-SEC1-TLD ipcom GmbH)
+        RIPEstat RPKI  valid  (live verdict for that origin + prefix)
+        no more-specific of 192.174.68.0/24 is announced by anyone  (seen by 322/323 RIS peers)
+        ROAs           3 covering on 2026-10-31
+          192.174.68.0/24      maxLength 24  origin AS1921    TA ripencc  exact length only
+          192.174.68.0/24      maxLength 24  origin AS201612  TA ripencc  exact length only
+          192.174.68.0/24      maxLength 24  origin AS207021  TA ripencc  exact length only
+        → not forgeable: ROA maxLength /24 equals the announced length; only an exact-prefix origin contest remains
+    2001:67c:1bc::97
+        announced as   2001:67c:1bc::/48  (length /48)  by AS1921 (RCODEZERO-ANYCAST-SEC1-TLD ipcom GmbH)
+        RIPEstat RPKI  valid  (live verdict for that origin + prefix)
+        no more-specific of 2001:67c:1bc::/48 is announced by anyone  (seen by 313/313 RIS peers)
+        ROAs           3 covering on 2026-10-31
+          2001:67c:1bc::/48    maxLength 48  origin AS1921    TA ripencc  exact length only
+          2001:67c:1bc::/48    maxLength 48  origin AS201612  TA ripencc  exact length only
+          2001:67c:1bc::/48    maxLength 48  origin AS207021  TA ripencc  exact length only
+        → not forgeable: ROA maxLength /48 equals the announced length; only an exact-prefix origin contest remains
+  ns1.netim.net
+    198.50.216.33
+        announced as   198.50.128.0/17  (length /17)  by AS16276 (OVH OVH SAS)
+        RIPEstat RPKI  valid  (live verdict for that origin + prefix)
+        no more-specific of 198.50.128.0/17 is announced by anyone  (seen by 323/323 RIS peers)
+        ROAs           1 covering on 2026-10-31
+          198.50.128.0/17      maxLength 17  origin AS16276   TA arin     exact length only
+        → not forgeable: ROA maxLength /17 equals the announced length; only an exact-prefix origin contest remains
+[demo] exit 2 after 0s
+[demo] OK: 3a.ee reported in full (exit 2 = its severity) (0s)
+
+==== step 7/12: list High and Critical
+[demo] Every High and Critical domain, worst first, with the single fix that lowers its score most.
+$ uv run hijackscan list data/samples/ee100.txt --severity High,Critical
+SCORE  SEVERITY  LABEL           DOMAIN                   FIX FIRST
+ 10.0  Critical  open-web        3a.ee                    domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 1.1
+ 10.0  Critical  open-web        84k.ee                   domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 1.1
+ 10.0  Critical  open-web        aindpro.ee               domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        andmebaas.ee             domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        autolist.ee              domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 1.1
+ 10.0  Critical  open-web        disconnect.ee            domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 5.0
+ 10.0  Critical  open-web        em.ee                    domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        estoniatransfer.ee       domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        globalauto.ee            domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 2.4
+ 10.0  Critical  open-web        heahommik.ee             domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        hexestmaterials.ee       domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        laanoja.ee               domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 2.4
+ 10.0  Critical  open-web        lhevents.ee              domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        lonashome.ee             domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        luxecar.ee               domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 1.1
+ 10.0  Critical  open-web        luxelekter.ee            domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        matchabear.ee            domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        metallikunst.ee          domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        mizon.ee                 domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 2.4
+ 10.0  Critical  open-web        nob.ee                   domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        nuiamoto.ee              domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        omm.ee                   domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 2.4
+ 10.0  Critical  open-web        perekinnisvara.ee        domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 2.4
+ 10.0  Critical  open-web        poniga.ee                domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        purtsepark.ee            domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        roberiehitus.ee          domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 1.1
+ 10.0  Critical  open-web        roosiait.ee              domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 8.7
+ 10.0  Critical  open-web        tarvascup.ee             domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        taustainfo.ee            domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 2.4
+ 10.0  Critical  open-web        veekann.ee               domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        voistebrikett.ee         domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+ 10.0  Critical  open-web        warnetehitus.ee          domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 1.1
+ 10.0  Critical  open-web        xn--krvaklapikeskus-ssb.ee domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 2.4
+ 10.0  Critical  open-web        xn--krvauss-10a.ee       domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 2.4
+ 10.0  Critical  open-web        xn--mk-xkaa.ee           domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 2.4
+ 10.0  Critical  open-web        xn--r-zfaa.ee            domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 0.0
+  8.7  High      open-web        marcopolo.ee             domain-owner: publish CAA issue=<your CA>; accounturi=<your ACME account> → 7.6
+  7.6  High      open-dns        aurala.ee                dns-host: sign the zone and publish the DS at the registrar (DNSSEC) → 1.1
+  7.6  High      open-dns        vendauctions.ee          dns-host: sign the zone and publish the DS at the registrar (DNSSEC) → 0.0
+
+39 of 100 collected domains match   (--details for the calculation and evidence, --json for machine output)
+[demo] exit 0 after 0s
+[demo] OK: every High and Critical domain of the sample listed (0s)
+
+==== step 8/12: lab matrix
+[demo] Five rows: deploy a scenario, scan it with the real scanner, announce the forged route, let the CA try to issue to the attacker. The results block follows when the run ends: per row, the scanner's label, who answered each CA perspective (attacker = captured) and the CA's decision against the expectation. Every transcript is in lab/logs/.
+$ uv run lab/labctl.py matrix
+11:16:06 logs: /home/djamla/hijackscan/lab/logs/20261101T101606Z-matrix (latest-matrix -> 20261101T101606Z-matrix)      
+
+how to read a row ──────────────────────────────────────────────────────────────────────────────────────────────────────
+  Each row: deploy one scenario, scan it with the real scanner, announce the forged route, let the CA try to issue to the attacker, withdraw the route, let the owner's account try (the control). The scanner's label must predict the CA's decision; the row's expectation is in its banner.
+the lines of evidence
+  [request  ]  what is asked: the domain, the ACME account (attacker or legit), the method
+  [dns      ]  one lookup through the validating resolver: rcode and AD flag (ad=1 validated, SERVFAIL bogus)
+  [caa      ]  the CAA walk victim.rs -> rs -> . (RFC 8659) and what the issue tag allows (RFC 8657)
+  [http-01  ]  one perspective: behind which AS it sits and which host answered (attacker = hijacked route)
+  [quorum   ]  CA/B MPIC rule: the primary and at least 3 of 4 remotes must corroborate
+  [decision ]  ISSUED or REFUSED and the reason; this line is what the matrix checks
+  attack ...   control plane (paths at the collector) and data plane (who answers the web and ns addresses)
+
+
+row: baseline / attack web  (expect scanner open-web, CA -> attacker ISSUED) ───────────────────────────────────────────
+  loose ROA (/24, maxLength 28), no CAA, unsigned zone: the forged /28 is RPKI-valid, so every CA perspective except the victim's own AS lands on the attacker, and the attacker gets the certificate.
+11:16:06 rendered scenario baseline -> /home/djamla/hijackscan/lab/build                                                
+
+deploy: containerlab up ────────────────────────────────────────────────────────────────────────────────────────────────
+11:16:06 $ containerlab deploy -t /home/djamla/hijackscan/lab/build/lab.clab.yml --reconfigure                          
+11:16:06 INFO Containerlab started version=0.82.0
+11:16:06 INFO Parsing & checking topology file=lab.clab.yml
+11:16:06 INFO Removing directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:16:06 INFO Creating lab directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:16:06 INFO Creating container name=ca
+11:16:06 INFO Creating container name=collector
+11:16:06 INFO Creating container name=victim
+11:16:06 INFO Creating container name=transit1
+11:16:06 INFO Creating container name=origin2
+11:16:06 INFO Creating container name=origin
+11:16:06 INFO Creating container name=attacker
+11:16:06 INFO Creating container name=rpki
+11:16:06 INFO Creating container name=transit2
+11:16:06 INFO Creating container name=resolver
+11:16:07 INFO Created link: transit2:eth2 ▪┄┄▪ origin2:eth1
+11:16:08 INFO Created link: transit2:eth4 ▪┄┄▪ ca:eth2
+11:16:08 INFO Created link: transit2:eth3 ▪┄┄▪ collector:eth3
+11:16:08 INFO Created link: origin:eth2 ▪┄┄▪ collector:eth1
+11:16:08 INFO Created link: origin2:eth2 ▪┄┄▪ collector:eth4
+11:16:08 INFO Created link: origin:eth1 ▪┄┄▪ transit1:eth1
+11:16:08 INFO Created link: collector:eth5 ▪┄┄▪ ca:eth3
+11:16:08 INFO Created link: transit1:eth2 ▪┄┄▪ transit2:eth1
+11:16:08 INFO Created link: origin2:eth3 ▪┄┄▪ attacker:eth1
+11:16:08 INFO Created link: origin:eth3 ▪┄┄▪ ca:eth4
+11:16:08 INFO Created link: transit1:eth3 ▪┄┄▪ collector:eth2
+11:16:08 INFO Created link: origin:eth4 ▪┄┄▪ victim:eth1
+11:16:08 INFO Created link: transit1:eth5 ▪┄┄▪ ca:eth1
+11:16:08 INFO Created link: transit1:eth4 ▪┄┄▪ resolver:eth1
+11:16:09 INFO Executed command node=rpki command="ip route del default" stdout=""
+11:16:09 INFO Executed command node=victim command="ip route del default" stdout=""
+11:16:09 INFO Executed command node=victim command="ip addr add 203.0.113.10/24 dev eth1" stdout=""
+11:16:09 INFO Executed command node=victim command="ip addr add 203.0.113.100/24 dev eth1" stdout=""
+11:16:09 INFO Executed command node=victim command="ip route add default via 203.0.113.1" stdout=""
+11:16:09 INFO Executed command node=origin2 command="ip route del default" stdout=""
+11:16:09 INFO Executed command node=origin2 command="ip addr add 198.51.100.10/30 dev eth1" stdout=""
+11:16:09 INFO Executed command node=ca command="ip route del default" stdout=""
+11:16:09 INFO Executed command node=origin2 command="ip addr add 198.51.100.25/30 dev eth2" stdout=""
+11:16:09 INFO Executed command node=transit2 command="ip route del default" stdout=""
+11:16:09 INFO Executed command node=transit2 command="ip addr add 198.51.100.6/30 dev eth1" stdout=""
+11:16:09 INFO Executed command node=origin2 command="ip addr add 203.0.113.1/28 dev eth3" stdout=""
+11:16:09 INFO Executed command node=ca command="ip addr add 192.0.2.10/29 dev eth1" stdout=""
+11:16:09 INFO Executed command node=origin2 command="ip addr add 203.0.113.97/28 dev eth3" stdout=""
+11:16:09 INFO Executed command node=transit2 command="ip addr add 198.51.100.9/30 dev eth2" stdout=""
+11:16:09 INFO Executed command node=ca command="ip addr add 192.0.2.18/30 dev eth2" stdout=""
+11:16:09 INFO Executed command node=collector command="ip route del default" stdout=""
+11:16:09 INFO Executed command node=transit2 command="ip addr add 198.51.100.21/30 dev eth3" stdout=""
+11:16:09 INFO Executed command node=ca command="ip addr add 192.0.2.22/30 dev eth3" stdout=""
+11:16:09 INFO Executed command node=attacker command="ip route del default" stdout=""
+11:16:09 INFO Executed command node=collector command="ip addr add 198.51.100.14/30 dev eth1" stdout=""
+11:16:09 INFO Executed command node=ca command="ip addr add 192.0.2.26/30 dev eth4" stdout=""
+11:16:09 INFO Executed command node=transit2 command="ip addr add 192.0.2.17/30 dev eth4" stdout=""
+11:16:09 INFO Executed command node=collector command="ip addr add 198.51.100.18/30 dev eth2" stdout=""
+11:16:09 INFO Executed command node=attacker command="ip addr add 203.0.113.10/28 dev eth1" stdout=""
+11:16:09 INFO Executed command node=ca command="ip addr add 192.0.2.11/29 dev eth1" stdout=""
+11:16:09 INFO Executed command node=origin command="ip route del default" stdout=""
+11:16:09 INFO Executed command node=attacker command="ip addr add 203.0.113.100/28 dev eth1" stdout=""
+11:16:09 INFO Executed command node=collector command="ip addr add 198.51.100.22/30 dev eth3" stdout=""
+11:16:09 INFO Executed command node=ca command="ip route add default via 192.0.2.9" stdout=""
+11:16:09 INFO Executed command node=collector command="ip addr add 198.51.100.26/30 dev eth4" stdout=""
+11:16:09 INFO Executed command node=attacker command="ip route add default via 203.0.113.1" stdout=""
+11:16:09 INFO Executed command node=origin command="ip addr add 198.51.100.1/30 dev eth1" stdout=""
+11:16:09 INFO Executed command node=resolver command="ip route del default" stdout=""
+11:16:09 INFO Executed command node=collector command="ip addr add 192.0.2.21/30 dev eth5" stdout=""
+11:16:09 INFO Executed command node=transit1 command="ip route del default" stdout=""
+11:16:09 INFO Executed command node=ca command="ip rule add from 192.0.2.18 table 101" stdout=""
+11:16:09 INFO Executed command node=origin command="ip addr add 198.51.100.13/30 dev eth2" stdout=""
+11:16:09 INFO Executed command node=ca command="ip route add default via 192.0.2.17 dev eth2 table 101" stdout=""
+11:16:09 INFO Executed command node=origin command="ip addr add 192.0.2.25/30 dev eth3" stdout=""
+11:16:09 INFO Executed command node=resolver command="ip addr add 192.0.2.2/30 dev eth1" stdout=""
+11:16:09 INFO Executed command node=collector command="sh -c nohup python3 /lab/feed.py --port 8080 --config /lab/feed.json >/tmp/feed.log 2>&1 &" stdout=""
+11:16:09 INFO Executed command node=transit1 command="ip addr add 198.51.100.2/30 dev eth1" stdout=""
+11:16:09 INFO Executed command node=origin command="ip addr add 203.0.113.1/24 dev eth4" stdout=""
+11:16:09 INFO Executed command node=resolver command="ip route add default via 192.0.2.1" stdout=""
+11:16:09 INFO Executed command node=transit1 command="ip addr add 198.51.100.5/30 dev eth2" stdout=""
+11:16:09 INFO Executed command node=ca command="ip rule add from 192.0.2.22 table 102" stdout=""
+11:16:09 INFO Executed command node=transit1 command="ip addr add 198.51.100.17/30 dev eth3" stdout=""
+11:16:09 INFO Executed command node=ca command="ip route add default via 192.0.2.21 dev eth3 table 102" stdout=""
+11:16:09 INFO Executed command node=transit1 command="ip addr add 192.0.2.1/30 dev eth4" stdout=""
+11:16:09 INFO Executed command node=ca command="ip rule add from 192.0.2.26 table 103" stdout=""
+11:16:09 INFO Executed command node=transit1 command="ip addr add 192.0.2.9/29 dev eth5" stdout=""
+11:16:09 INFO Executed command node=ca command="ip route add default via 192.0.2.25 dev eth4 table 103" stdout=""
+11:16:09 INFO Executed command node=ca command="ip rule add from 192.0.2.11 table 104" stdout=""
+11:16:09 INFO Executed command node=ca command="ip route add default via 192.0.2.9 dev eth1 table 104" stdout=""
+11:16:09 INFO Adding host entries path=/etc/hosts
+11:16:09 INFO Adding SSH config for nodes path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+╭───────────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────┬─────────┬────────────────╮
+│            Name           │                                              Kind/Image                                              │  State  │ IPv4/6 Address │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-attacker  │ linux                                                                                                │ running │ 172.31.40.23   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-ca        │ linux                                                                                                │ running │ 172.31.40.21   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-collector │ linux                                                                                                │ running │ 172.31.40.15   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin    │ linux                                                                                                │ running │ 172.31.40.10   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin2   │ linux                                                                                                │ running │ 172.31.40.13   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-resolver  │ linux                                                                                                │ running │ 172.31.40.20   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-rpki      │ linux                                                                                                │ running │ 172.31.40.16   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit1  │ linux                                                                                                │ running │ 172.31.40.11   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit2  │ linux                                                                                                │ running │ 172.31.40.12   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-victim    │ linux                                                                                                │ running │ 172.31.40.22   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+╰───────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────┴─────────┴────────────────╯
+
+deploy: waiting for BGP sessions and RTR caches ────────────────────────────────────────────────────────────────────────
+11:16:14 ✔ all BGP sessions established and RTR caches connected after 5s                                               
+11:16:14 collector holds 203.0.113.0/24 from all 4 peers after 0.0s                                                     
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:15 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:16:15 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:15 attack off: collector table converged after 0.1s                                                               
+11:16:16 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:16:16 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:16 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 0 rrsets, 0 messages and
+         0 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:16:16 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+scan: the real scanner against the lab (victim.rs) ─────────────────────────────────────────────────────────────────────
+11:16:16 $ uv run hijackscan --data-dir /home/djamla/hijackscan/lab/build/data --resolver 172.31.40.20:53 --rpki-date   
+         lab --ripestat-url http://172.31.40.15:8080/data/{call}/data.json --routable-cap-v4 28 domain victim.rs --force
+         --details                                                                                                      
+11:16:16 scanner says open-web (CRITICAL 10.0); evidence complete                                                       
+
+attack web: origin2 (AS65010) announces the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:17 attack web: 203.0.113.0/28 (web) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010 65000  
+         via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17                                                   
+11:16:17 attack web: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:17 attack web: collector table converged after 0.3s                                                               
+11:16:17 attack web: 203.0.113.10 (web) is answered by host 'attacker'                                                  
+11:16:17 attack web: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:17 attack web: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 7 rrsets, 11 messages   
+         and 1 key entries; flush_bogus -> ok removed 0 rrsets, 1 messages and 1 key entries                            
+11:16:17 attack web: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+CA: the attacker's account asks for a certificate during the hijack ────────────────────────────────────────────────────
+  Expect ISSUED. Watch the [http-01] hosts (attacker = the forged route won that perspective) and the [decision] line.
+11:16:17   [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca             
+11:16:17   [dns      ] victim.rs CAA: NOERROR ad=0                                                                      
+11:16:17   [dns      ] rs CAA: NOERROR ad=1                                                                             
+11:16:17   [dns      ] . CAA: NOERROR ad=1                                                                              
+11:16:17   [caa      ] no CAA anywhere up to the root                                                                   
+11:16:17   [caa      ] allowed: no issue tag: any CA may issue                                                          
+11:16:17   [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                       
+11:16:17   [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates 
+11:16:17   [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates 
+11:16:17   [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates 
+11:16:17   [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT       
+         corroborate                                                                                                    
+11:16:17   [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates 
+11:16:17   [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met                  
+11:16:17   [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                                
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:17 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:16:17 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:17 attack off: collector table converged after 0.3s                                                               
+11:16:18 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:16:18 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:18 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 5 rrsets, 2 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:16:18 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+CA: the legitimate account asks for a certificate, attack off (control) ────────────────────────────────────────────────
+  Expect ISSUED with every perspective answered by the victim: the lab itself is sound.
+11:16:18   [request  ] victim.rs for account https://ca.lab/acct/legit (legit) via http-01, CA lab-ca                   
+11:16:18   [dns      ] victim.rs CAA: NOERROR ad=0                                                                      
+11:16:18   [dns      ] rs CAA: NOERROR ad=1                                                                             
+11:16:18   [dns      ] . CAA: NOERROR ad=1                                                                              
+11:16:18   [caa      ] no CAA anywhere up to the root                                                                   
+11:16:18   [caa      ] allowed: no issue tag: any CA may issue                                                          
+11:16:18   [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                       
+11:16:18   [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:18   [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:18   [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:18   [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:18   [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:18   [quorum   ] primary ok; remotes 4/4 corroborate (need >= 4 remotes, at most 1 failing): met                  
+11:16:18   [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/legit                                   
+11:16:18 ✔ baseline / attack web  expected open-web / ISSUED                                                            
+11:16:18   scanner            open-web (CRITICAL 10.0)                                                                  
+11:16:18   data plane         web=attacker ns=victim                                                                    
+11:16:18   CA -> attacker     ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                         
+11:16:18   HTTP-01 hosts      primary=attacker r1=attacker r2=attacker r3=victim r4=attacker                            
+11:16:18   CA -> legit (off)  ISSUED                                                                                    
+
+row: tight-maxlength / attack web  (expect scanner contested, CA -> attacker REFUSED) ──────────────────────────────────
+  one change, ROA maxLength 24: the same forged /28 is now RPKI-invalid, both transits drop it, the CA's checks reach the real host, and the attacker is refused for lack of domain control.
+11:16:18 rendered scenario tight-maxlength -> /home/djamla/hijackscan/lab/build                                         
+
+deploy: containerlab up ────────────────────────────────────────────────────────────────────────────────────────────────
+11:16:18 $ containerlab deploy -t /home/djamla/hijackscan/lab/build/lab.clab.yml --reconfigure                          
+11:16:18 INFO Containerlab started version=0.82.0
+11:16:18 INFO Parsing & checking topology file=lab.clab.yml
+11:16:18 INFO Destroying lab name=hijackscan
+11:16:18 INFO Removed container name=clab-hijackscan-rpki
+11:16:18 INFO Removed container name=clab-hijackscan-resolver
+11:16:19 INFO Removed container name=clab-hijackscan-victim
+11:16:19 INFO Removed container name=clab-hijackscan-attacker
+11:16:19 INFO Removed container name=clab-hijackscan-origin2
+11:16:19 INFO Removed container name=clab-hijackscan-origin
+11:16:19 INFO Removed container name=clab-hijackscan-transit1
+11:16:19 INFO Removed container name=clab-hijackscan-collector
+11:16:19 INFO Removed container name=clab-hijackscan-ca
+11:16:20 INFO Removed container name=clab-hijackscan-transit2
+11:16:20 INFO Removing host entries path=/etc/hosts
+11:16:20 INFO Removing SSH config path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+11:16:20 INFO Removing directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:16:20 INFO Creating lab directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:16:20 INFO Creating container name=transit2
+11:16:20 INFO Creating container name=transit1
+11:16:20 INFO Creating container name=victim
+11:16:20 INFO Creating container name=attacker
+11:16:20 INFO Creating container name=rpki
+11:16:20 INFO Creating container name=ca
+11:16:20 INFO Creating container name=collector
+11:16:20 INFO Creating container name=origin
+11:16:20 INFO Creating container name=origin2
+11:16:20 INFO Creating container name=resolver
+11:16:21 INFO Created link: transit2:eth4 ▪┄┄▪ ca:eth2
+11:16:21 INFO Created link: origin:eth3 ▪┄┄▪ ca:eth4
+11:16:21 INFO Created link: origin:eth4 ▪┄┄▪ victim:eth1
+11:16:21 INFO Created link: origin:eth1 ▪┄┄▪ transit1:eth1
+11:16:21 INFO Created link: transit2:eth2 ▪┄┄▪ origin2:eth1
+11:16:21 INFO Created link: origin:eth2 ▪┄┄▪ collector:eth1
+11:16:21 INFO Created link: transit1:eth2 ▪┄┄▪ transit2:eth1
+11:16:22 INFO Created link: origin2:eth3 ▪┄┄▪ attacker:eth1
+11:16:22 INFO Created link: transit1:eth3 ▪┄┄▪ collector:eth2
+11:16:22 INFO Created link: transit2:eth3 ▪┄┄▪ collector:eth3
+11:16:22 INFO Created link: transit1:eth4 ▪┄┄▪ resolver:eth1
+11:16:22 INFO Created link: transit1:eth5 ▪┄┄▪ ca:eth1
+11:16:22 INFO Created link: origin2:eth2 ▪┄┄▪ collector:eth4
+11:16:22 INFO Created link: collector:eth5 ▪┄┄▪ ca:eth3
+11:16:22 INFO Executed command node=victim command="ip route del default" stdout=""
+11:16:22 INFO Executed command node=victim command="ip addr add 203.0.113.10/24 dev eth1" stdout=""
+11:16:22 INFO Executed command node=rpki command="ip route del default" stdout=""
+11:16:22 INFO Executed command node=victim command="ip addr add 203.0.113.100/24 dev eth1" stdout=""
+11:16:22 INFO Executed command node=victim command="ip route add default via 203.0.113.1" stdout=""
+11:16:22 INFO Executed command node=transit2 command="ip route del default" stdout=""
+11:16:22 INFO Executed command node=ca command="ip route del default" stdout=""
+11:16:22 INFO Executed command node=transit2 command="ip addr add 198.51.100.6/30 dev eth1" stdout=""
+11:16:22 INFO Executed command node=ca command="ip addr add 192.0.2.10/29 dev eth1" stdout=""
+11:16:22 INFO Executed command node=transit2 command="ip addr add 198.51.100.9/30 dev eth2" stdout=""
+11:16:22 INFO Executed command node=ca command="ip addr add 192.0.2.18/30 dev eth2" stdout=""
+11:16:22 INFO Executed command node=transit2 command="ip addr add 198.51.100.21/30 dev eth3" stdout=""
+11:16:22 INFO Executed command node=resolver command="ip route del default" stdout=""
+11:16:22 INFO Executed command node=origin command="ip route del default" stdout=""
+11:16:22 INFO Executed command node=transit2 command="ip addr add 192.0.2.17/30 dev eth4" stdout=""
+11:16:22 INFO Executed command node=ca command="ip addr add 192.0.2.22/30 dev eth3" stdout=""
+11:16:22 INFO Executed command node=resolver command="ip addr add 192.0.2.2/30 dev eth1" stdout=""
+11:16:22 INFO Executed command node=origin command="ip addr add 198.51.100.1/30 dev eth1" stdout=""
+11:16:22 INFO Executed command node=resolver command="ip route add default via 192.0.2.1" stdout=""
+11:16:22 INFO Executed command node=ca command="ip addr add 192.0.2.26/30 dev eth4" stdout=""
+11:16:22 INFO Executed command node=ca command="ip addr add 192.0.2.11/29 dev eth1" stdout=""
+11:16:22 INFO Executed command node=origin command="ip addr add 198.51.100.13/30 dev eth2" stdout=""
+11:16:22 INFO Executed command node=attacker command="ip route del default" stdout=""
+11:16:22 INFO Executed command node=ca command="ip route add default via 192.0.2.9" stdout=""
+11:16:22 INFO Executed command node=attacker command="ip addr add 203.0.113.10/28 dev eth1" stdout=""
+11:16:22 INFO Executed command node=origin command="ip addr add 192.0.2.25/30 dev eth3" stdout=""
+11:16:22 INFO Executed command node=origin2 command="ip route del default" stdout=""
+11:16:22 INFO Executed command node=ca command="ip rule add from 192.0.2.18 table 101" stdout=""
+11:16:22 INFO Executed command node=origin command="ip addr add 203.0.113.1/24 dev eth4" stdout=""
+11:16:22 INFO Executed command node=attacker command="ip addr add 203.0.113.100/28 dev eth1" stdout=""
+11:16:22 INFO Executed command node=origin2 command="ip addr add 198.51.100.10/30 dev eth1" stdout=""
+11:16:22 INFO Executed command node=attacker command="ip route add default via 203.0.113.1" stdout=""
+11:16:22 INFO Executed command node=ca command="ip route add default via 192.0.2.17 dev eth2 table 101" stdout=""
+11:16:22 INFO Executed command node=ca command="ip rule add from 192.0.2.22 table 102" stdout=""
+11:16:22 INFO Executed command node=origin2 command="ip addr add 198.51.100.25/30 dev eth2" stdout=""
+11:16:22 INFO Executed command node=transit1 command="ip route del default" stdout=""
+11:16:22 INFO Executed command node=transit1 command="ip addr add 198.51.100.2/30 dev eth1" stdout=""
+11:16:22 INFO Executed command node=ca command="ip route add default via 192.0.2.21 dev eth3 table 102" stdout=""
+11:16:22 INFO Executed command node=origin2 command="ip addr add 203.0.113.1/28 dev eth3" stdout=""
+11:16:22 INFO Executed command node=collector command="ip route del default" stdout=""
+11:16:22 INFO Executed command node=origin2 command="ip addr add 203.0.113.97/28 dev eth3" stdout=""
+11:16:22 INFO Executed command node=ca command="ip rule add from 192.0.2.26 table 103" stdout=""
+11:16:22 INFO Executed command node=collector command="ip addr add 198.51.100.14/30 dev eth1" stdout=""
+11:16:22 INFO Executed command node=transit1 command="ip addr add 198.51.100.5/30 dev eth2" stdout=""
+11:16:22 INFO Executed command node=ca command="ip route add default via 192.0.2.25 dev eth4 table 103" stdout=""
+11:16:22 INFO Executed command node=transit1 command="ip addr add 198.51.100.17/30 dev eth3" stdout=""
+11:16:22 INFO Executed command node=collector command="ip addr add 198.51.100.18/30 dev eth2" stdout=""
+11:16:22 INFO Executed command node=transit1 command="ip addr add 192.0.2.1/30 dev eth4" stdout=""
+11:16:22 INFO Executed command node=ca command="ip rule add from 192.0.2.11 table 104" stdout=""
+11:16:22 INFO Executed command node=collector command="ip addr add 198.51.100.22/30 dev eth3" stdout=""
+11:16:22 INFO Executed command node=ca command="ip route add default via 192.0.2.9 dev eth1 table 104" stdout=""
+11:16:22 INFO Executed command node=collector command="ip addr add 198.51.100.26/30 dev eth4" stdout=""
+11:16:22 INFO Executed command node=transit1 command="ip addr add 192.0.2.9/29 dev eth5" stdout=""
+11:16:22 INFO Executed command node=collector command="ip addr add 192.0.2.21/30 dev eth5" stdout=""
+11:16:22 INFO Executed command node=collector command="sh -c nohup python3 /lab/feed.py --port 8080 --config /lab/feed.json >/tmp/feed.log 2>&1 &" stdout=""
+11:16:22 INFO Adding host entries path=/etc/hosts
+11:16:22 INFO Adding SSH config for nodes path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+╭───────────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────┬─────────┬────────────────╮
+│            Name           │                                              Kind/Image                                              │  State  │ IPv4/6 Address │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-attacker  │ linux                                                                                                │ running │ 172.31.40.23   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-ca        │ linux                                                                                                │ running │ 172.31.40.21   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-collector │ linux                                                                                                │ running │ 172.31.40.15   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin    │ linux                                                                                                │ running │ 172.31.40.10   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin2   │ linux                                                                                                │ running │ 172.31.40.13   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-resolver  │ linux                                                                                                │ running │ 172.31.40.20   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-rpki      │ linux                                                                                                │ running │ 172.31.40.16   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit1  │ linux                                                                                                │ running │ 172.31.40.11   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit2  │ linux                                                                                                │ running │ 172.31.40.12   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-victim    │ linux                                                                                                │ running │ 172.31.40.22   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+╰───────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────┴─────────┴────────────────╯
+
+deploy: waiting for BGP sessions and RTR caches ────────────────────────────────────────────────────────────────────────
+11:16:27 ✔ all BGP sessions established and RTR caches connected after 5s                                               
+11:16:27 collector holds 203.0.113.0/24 from all 4 peers after 0.0s                                                     
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:29 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:16:29 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:29 attack off: collector table converged after 0.1s                                                               
+11:16:29 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:16:29 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:29 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 0 rrsets, 0 messages and
+         0 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:16:29 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+scan: the real scanner against the lab (victim.rs) ─────────────────────────────────────────────────────────────────────
+11:16:29 $ uv run hijackscan --data-dir /home/djamla/hijackscan/lab/build/data --resolver 172.31.40.20:53 --rpki-date   
+         lab --ripestat-url http://172.31.40.15:8080/data/{call}/data.json --routable-cap-v4 28 domain victim.rs --force
+         --details                                                                                                      
+11:16:30 scanner says contested (LOW 1.1); evidence complete                                                            
+
+attack web: origin2 (AS65010) announces the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:30 attack web: 203.0.113.0/28 (web) 1 path(s) at the collector: 65010 65000 via 198.51.100.25                     
+11:16:30 attack web: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:30 attack web: collector table converged after 0.3s                                                               
+11:16:30 attack web: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:16:30 attack web: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:30 attack web: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 7 rrsets, 11 messages   
+         and 1 key entries; flush_bogus -> ok removed 0 rrsets, 1 messages and 1 key entries                            
+11:16:30 attack web: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+CA: the attacker's account asks for a certificate during the hijack ────────────────────────────────────────────────────
+  Expect REFUSED. Watch the [http-01] hosts (attacker = the forged route won that perspective) and the [decision] line.
+11:16:30   [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca             
+11:16:30   [dns      ] victim.rs CAA: NOERROR ad=0                                                                      
+11:16:30   [dns      ] rs CAA: NOERROR ad=1                                                                             
+11:16:30   [dns      ] . CAA: NOERROR ad=1                                                                              
+11:16:30   [caa      ] no CAA anywhere up to the root                                                                   
+11:16:30   [caa      ] allowed: no issue tag: any CA may issue                                                          
+11:16:30   [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                       
+11:16:30   [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT       
+         corroborate                                                                                                    
+11:16:31   [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT       
+         corroborate                                                                                                    
+11:16:31   [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates 
+11:16:31   [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT       
+         corroborate                                                                                                    
+11:16:31   [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT       
+         corroborate                                                                                                    
+11:16:31   [quorum   ] primary FAILED; remotes 1/4 corroborate (need >= 4 remotes, at most 1 failing): NOT met          
+11:16:31   [decision ] REFUSED: domain control not demonstrated                                                         
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:31 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:16:31 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:31 attack off: collector table converged after 0.3s                                                               
+11:16:31 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:16:31 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:31 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 5 rrsets, 2 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:16:31 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+CA: the legitimate account asks for a certificate, attack off (control) ────────────────────────────────────────────────
+  Expect ISSUED with every perspective answered by the victim: the lab itself is sound.
+11:16:31   [request  ] victim.rs for account https://ca.lab/acct/legit (legit) via http-01, CA lab-ca                   
+11:16:31   [dns      ] victim.rs CAA: NOERROR ad=0                                                                      
+11:16:31   [dns      ] rs CAA: NOERROR ad=1                                                                             
+11:16:31   [dns      ] . CAA: NOERROR ad=1                                                                              
+11:16:31   [caa      ] no CAA anywhere up to the root                                                                   
+11:16:31   [caa      ] allowed: no issue tag: any CA may issue                                                          
+11:16:31   [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                       
+11:16:31   [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:31   [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:31   [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:31   [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:31   [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:31   [quorum   ] primary ok; remotes 4/4 corroborate (need >= 4 remotes, at most 1 failing): met                  
+11:16:31   [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/legit                                   
+11:16:31 ✔ tight-maxlength / attack web  expected contested / REFUSED                                                   
+11:16:31   scanner            contested (LOW 1.1)                                                                       
+11:16:31   data plane         web=victim ns=victim                                                                      
+11:16:31   CA -> attacker     REFUSED: domain control not demonstrated                                                  
+11:16:31   HTTP-01 hosts      primary=victim r1=victim r2=attacker r3=victim r4=victim                                  
+11:16:31   CA -> legit (off)  ISSUED                                                                                    
+
+row: caa-unsigned / attack web  (expect scanner caa-erasable, CA -> attacker REFUSED) ──────────────────────────────────
+  CAA with accounturi, only the web address hijacked: the real nameserver still serves the CAA record, the account pin refuses the attacker before any HTTP-01 runs.
+11:16:31 rendered scenario caa-unsigned -> /home/djamla/hijackscan/lab/build                                            
+
+deploy: containerlab up ────────────────────────────────────────────────────────────────────────────────────────────────
+11:16:31 $ containerlab deploy -t /home/djamla/hijackscan/lab/build/lab.clab.yml --reconfigure                          
+11:16:31 INFO Containerlab started version=0.82.0
+11:16:31 INFO Parsing & checking topology file=lab.clab.yml
+11:16:31 INFO Destroying lab name=hijackscan
+11:16:32 INFO Removed container name=clab-hijackscan-rpki
+11:16:32 INFO Removed container name=clab-hijackscan-resolver
+11:16:32 INFO Removed container name=clab-hijackscan-victim
+11:16:32 INFO Removed container name=clab-hijackscan-attacker
+11:16:33 INFO Removed container name=clab-hijackscan-origin
+11:16:33 INFO Removed container name=clab-hijackscan-collector
+11:16:33 INFO Removed container name=clab-hijackscan-ca
+11:16:33 INFO Removed container name=clab-hijackscan-origin2
+11:16:33 INFO Removed container name=clab-hijackscan-transit2
+11:16:33 INFO Removed container name=clab-hijackscan-transit1
+11:16:33 INFO Removing host entries path=/etc/hosts
+11:16:33 INFO Removing SSH config path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+11:16:33 INFO Removing directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:16:33 INFO Creating lab directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:16:33 INFO Creating container name=origin2
+11:16:33 INFO Creating container name=transit2
+11:16:33 INFO Creating container name=collector
+11:16:33 INFO Creating container name=resolver
+11:16:33 INFO Creating container name=attacker
+11:16:33 INFO Creating container name=transit1
+11:16:33 INFO Creating container name=ca
+11:16:33 INFO Creating container name=origin
+11:16:33 INFO Creating container name=rpki
+11:16:33 INFO Creating container name=victim
+11:16:34 INFO Created link: origin2:eth2 ▪┄┄▪ collector:eth4
+11:16:34 INFO Created link: transit1:eth3 ▪┄┄▪ collector:eth2
+11:16:35 INFO Created link: transit1:eth5 ▪┄┄▪ ca:eth1
+11:16:35 INFO Created link: origin2:eth3 ▪┄┄▪ attacker:eth1
+11:16:35 INFO Created link: collector:eth5 ▪┄┄▪ ca:eth3
+11:16:35 INFO Created link: transit1:eth4 ▪┄┄▪ resolver:eth1
+11:16:35 INFO Created link: origin:eth1 ▪┄┄▪ transit1:eth1
+11:16:35 INFO Created link: origin:eth2 ▪┄┄▪ collector:eth1
+11:16:35 INFO Created link: origin:eth3 ▪┄┄▪ ca:eth4
+11:16:35 INFO Created link: transit1:eth2 ▪┄┄▪ transit2:eth1
+11:16:35 INFO Created link: origin:eth4 ▪┄┄▪ victim:eth1
+11:16:35 INFO Created link: transit2:eth2 ▪┄┄▪ origin2:eth1
+11:16:35 INFO Created link: transit2:eth3 ▪┄┄▪ collector:eth3
+11:16:35 INFO Created link: transit2:eth4 ▪┄┄▪ ca:eth2
+11:16:36 INFO Executed command node=rpki command="ip route del default" stdout=""
+11:16:36 INFO Executed command node=origin2 command="ip route del default" stdout=""
+11:16:36 INFO Executed command node=victim command="ip route del default" stdout=""
+11:16:36 INFO Executed command node=origin2 command="ip addr add 198.51.100.10/30 dev eth1" stdout=""
+11:16:36 INFO Executed command node=victim command="ip addr add 203.0.113.10/24 dev eth1" stdout=""
+11:16:36 INFO Executed command node=origin2 command="ip addr add 198.51.100.25/30 dev eth2" stdout=""
+11:16:36 INFO Executed command node=victim command="ip addr add 203.0.113.100/24 dev eth1" stdout=""
+11:16:36 INFO Executed command node=collector command="ip route del default" stdout=""
+11:16:36 INFO Executed command node=origin2 command="ip addr add 203.0.113.1/28 dev eth3" stdout=""
+11:16:36 INFO Executed command node=victim command="ip route add default via 203.0.113.1" stdout=""
+11:16:36 INFO Executed command node=collector command="ip addr add 198.51.100.14/30 dev eth1" stdout=""
+11:16:36 INFO Executed command node=origin2 command="ip addr add 203.0.113.97/28 dev eth3" stdout=""
+11:16:36 INFO Executed command node=transit1 command="ip route del default" stdout=""
+11:16:36 INFO Executed command node=collector command="ip addr add 198.51.100.18/30 dev eth2" stdout=""
+11:16:36 INFO Executed command node=transit1 command="ip addr add 198.51.100.2/30 dev eth1" stdout=""
+11:16:36 INFO Executed command node=collector command="ip addr add 198.51.100.22/30 dev eth3" stdout=""
+11:16:36 INFO Executed command node=transit1 command="ip addr add 198.51.100.5/30 dev eth2" stdout=""
+11:16:36 INFO Executed command node=attacker command="ip route del default" stdout=""
+11:16:36 INFO Executed command node=attacker command="ip addr add 203.0.113.10/28 dev eth1" stdout=""
+11:16:36 INFO Executed command node=resolver command="ip route del default" stdout=""
+11:16:36 INFO Executed command node=transit1 command="ip addr add 198.51.100.17/30 dev eth3" stdout=""
+11:16:36 INFO Executed command node=collector command="ip addr add 198.51.100.26/30 dev eth4" stdout=""
+11:16:36 INFO Executed command node=resolver command="ip addr add 192.0.2.2/30 dev eth1" stdout=""
+11:16:36 INFO Executed command node=ca command="ip route del default" stdout=""
+11:16:36 INFO Executed command node=attacker command="ip addr add 203.0.113.100/28 dev eth1" stdout=""
+11:16:36 INFO Executed command node=transit1 command="ip addr add 192.0.2.1/30 dev eth4" stdout=""
+11:16:36 INFO Executed command node=collector command="ip addr add 192.0.2.21/30 dev eth5" stdout=""
+11:16:36 INFO Executed command node=collector command="sh -c nohup python3 /lab/feed.py --port 8080 --config /lab/feed.json >/tmp/feed.log 2>&1 &" stdout=""
+11:16:36 INFO Executed command node=resolver command="ip route add default via 192.0.2.1" stdout=""
+11:16:36 INFO Executed command node=attacker command="ip route add default via 203.0.113.1" stdout=""
+11:16:36 INFO Executed command node=ca command="ip addr add 192.0.2.10/29 dev eth1" stdout=""
+11:16:36 INFO Executed command node=transit1 command="ip addr add 192.0.2.9/29 dev eth5" stdout=""
+11:16:36 INFO Executed command node=ca command="ip addr add 192.0.2.18/30 dev eth2" stdout=""
+11:16:36 INFO Executed command node=ca command="ip addr add 192.0.2.22/30 dev eth3" stdout=""
+11:16:36 INFO Executed command node=origin command="ip route del default" stdout=""
+11:16:36 INFO Executed command node=ca command="ip addr add 192.0.2.26/30 dev eth4" stdout=""
+11:16:36 INFO Executed command node=ca command="ip addr add 192.0.2.11/29 dev eth1" stdout=""
+11:16:36 INFO Executed command node=origin command="ip addr add 198.51.100.1/30 dev eth1" stdout=""
+11:16:36 INFO Executed command node=ca command="ip route add default via 192.0.2.9" stdout=""
+11:16:36 INFO Executed command node=transit2 command="ip route del default" stdout=""
+11:16:36 INFO Executed command node=origin command="ip addr add 198.51.100.13/30 dev eth2" stdout=""
+11:16:36 INFO Executed command node=transit2 command="ip addr add 198.51.100.6/30 dev eth1" stdout=""
+11:16:36 INFO Executed command node=origin command="ip addr add 192.0.2.25/30 dev eth3" stdout=""
+11:16:36 INFO Executed command node=ca command="ip rule add from 192.0.2.18 table 101" stdout=""
+11:16:36 INFO Executed command node=ca command="ip route add default via 192.0.2.17 dev eth2 table 101" stdout=""
+11:16:36 INFO Executed command node=transit2 command="ip addr add 198.51.100.9/30 dev eth2" stdout=""
+11:16:36 INFO Executed command node=origin command="ip addr add 203.0.113.1/24 dev eth4" stdout=""
+11:16:36 INFO Executed command node=ca command="ip rule add from 192.0.2.22 table 102" stdout=""
+11:16:36 INFO Executed command node=transit2 command="ip addr add 198.51.100.21/30 dev eth3" stdout=""
+11:16:36 INFO Executed command node=ca command="ip route add default via 192.0.2.21 dev eth3 table 102" stdout=""
+11:16:36 INFO Executed command node=transit2 command="ip addr add 192.0.2.17/30 dev eth4" stdout=""
+11:16:36 INFO Executed command node=ca command="ip rule add from 192.0.2.26 table 103" stdout=""
+11:16:36 INFO Executed command node=ca command="ip route add default via 192.0.2.25 dev eth4 table 103" stdout=""
+11:16:36 INFO Executed command node=ca command="ip rule add from 192.0.2.11 table 104" stdout=""
+11:16:36 INFO Executed command node=ca command="ip route add default via 192.0.2.9 dev eth1 table 104" stdout=""
+11:16:36 INFO Adding host entries path=/etc/hosts
+11:16:36 INFO Adding SSH config for nodes path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+╭───────────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────┬─────────┬────────────────╮
+│            Name           │                                              Kind/Image                                              │  State  │ IPv4/6 Address │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-attacker  │ linux                                                                                                │ running │ 172.31.40.23   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-ca        │ linux                                                                                                │ running │ 172.31.40.21   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-collector │ linux                                                                                                │ running │ 172.31.40.15   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin    │ linux                                                                                                │ running │ 172.31.40.10   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin2   │ linux                                                                                                │ running │ 172.31.40.13   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-resolver  │ linux                                                                                                │ running │ 172.31.40.20   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-rpki      │ linux                                                                                                │ running │ 172.31.40.16   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit1  │ linux                                                                                                │ running │ 172.31.40.11   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit2  │ linux                                                                                                │ running │ 172.31.40.12   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-victim    │ linux                                                                                                │ running │ 172.31.40.22   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+╰───────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────┴─────────┴────────────────╯
+
+deploy: waiting for BGP sessions and RTR caches ────────────────────────────────────────────────────────────────────────
+11:16:41 ✔ all BGP sessions established and RTR caches connected after 5s                                               
+11:16:42 collector holds 203.0.113.0/24 from all 4 peers after 1.1s                                                     
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:43 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:16:43 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:43 attack off: collector table converged after 0.1s                                                               
+11:16:44 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:16:44 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:44 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 0 rrsets, 0 messages and
+         0 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:16:44 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+scan: the real scanner against the lab (victim.rs) ─────────────────────────────────────────────────────────────────────
+11:16:44 $ uv run hijackscan --data-dir /home/djamla/hijackscan/lab/build/data --resolver 172.31.40.20:53 --rpki-date   
+         lab --ripestat-url http://172.31.40.15:8080/data/{call}/data.json --routable-cap-v4 28 domain victim.rs --force
+         --details                                                                                                      
+11:16:44 scanner says caa-erasable (HIGH 8.7); evidence complete                                                        
+
+attack web: origin2 (AS65010) announces the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:45 attack web: 203.0.113.0/28 (web) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010 65000  
+         via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17                                                   
+11:16:45 attack web: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:45 attack web: collector table converged after 0.3s                                                               
+11:16:45 attack web: 203.0.113.10 (web) is answered by host 'attacker'                                                  
+11:16:45 attack web: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:45 attack web: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 8 rrsets, 11 messages   
+         and 1 key entries; flush_bogus -> ok removed 0 rrsets, 1 messages and 1 key entries                            
+11:16:45 attack web: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+CA: the attacker's account asks for a certificate during the hijack ────────────────────────────────────────────────────
+  Expect REFUSED before any HTTP-01 runs: the [caa] or [dns] lines stop it.
+11:16:45   [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca             
+11:16:45   [dns      ] victim.rs CAA: NOERROR ad=0 ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']           
+11:16:45   [caa      ] found at victim.rs (ad=0): ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']            
+11:16:45   [caa      ] REFUSED: accounturi pins https://ca.lab/acct/legit                                               
+11:16:45   [decision ] REFUSED: CAA forbids this issuance (accounturi pins https://ca.lab/acct/legit)                   
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:45 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:16:45 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:45 attack off: collector table converged after 0.3s                                                               
+11:16:46 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:16:46 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:46 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 5 rrsets, 2 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:16:46 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+CA: the legitimate account asks for a certificate, attack off (control) ────────────────────────────────────────────────
+  Expect ISSUED with every perspective answered by the victim: the lab itself is sound.
+11:16:46   [request  ] victim.rs for account https://ca.lab/acct/legit (legit) via http-01, CA lab-ca                   
+11:16:46   [dns      ] victim.rs CAA: NOERROR ad=0 ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']           
+11:16:46   [caa      ] found at victim.rs (ad=0): ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']            
+11:16:46   [caa      ] allowed: issue "lab-ca; accounturi=https://ca.lab/acct/legit" permits lab-ca for                 
+         https://ca.lab/acct/legit                                                                                      
+11:16:46   [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                       
+11:16:46   [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:46   [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:46   [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:46   [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:46   [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:46   [quorum   ] primary ok; remotes 4/4 corroborate (need >= 4 remotes, at most 1 failing): met                  
+11:16:46   [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/legit                                   
+11:16:46 ✔ caa-unsigned / attack web  expected caa-erasable / REFUSED                                                   
+11:16:46   scanner            caa-erasable (HIGH 8.7)                                                                   
+11:16:46   data plane         web=attacker ns=victim                                                                    
+11:16:46   CA -> attacker     REFUSED: CAA forbids this issuance (accounturi pins https://ca.lab/acct/legit)            
+11:16:46   HTTP-01 hosts      -                                                                                         
+11:16:46   CA -> legit (off)  ISSUED                                                                                    
+
+row: caa-unsigned / attack web+ns  (expect scanner caa-erasable, CA -> attacker ISSUED) ────────────────────────────────
+  the same CAA, nameserver hijacked too: the zone is unsigned, so the forged nameserver answers 'no CAA' unchallenged and the attacker gets the certificate (caa-erasable).
+
+scan: the real scanner against the lab (victim.rs) ─────────────────────────────────────────────────────────────────────
+11:16:46 $ uv run hijackscan --data-dir /home/djamla/hijackscan/lab/build/data --resolver 172.31.40.20:53 --rpki-date   
+         lab --ripestat-url http://172.31.40.15:8080/data/{call}/data.json --routable-cap-v4 28 domain victim.rs --force
+         --details                                                                                                      
+11:16:46 scanner says caa-erasable (HIGH 8.7); evidence complete                                                        
+
+attack web+ns: origin2 (AS65010) announces the forged more-specific(s) ─────────────────────────────────────────────────
+11:16:47 attack web+ns: 203.0.113.0/28 (web) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010     
+         65000 via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17                                             
+11:16:47 attack web+ns: 203.0.113.96/28 (ns) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010     
+         65000 via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17                                             
+11:16:47 attack web+ns: collector table converged after 0.3s                                                            
+11:16:47 attack web+ns: 203.0.113.10 (web) is answered by host 'attacker'                                               
+11:16:47 attack web+ns: 203.0.113.100 (ns) is answered by host 'attacker'                                               
+11:16:47 attack web+ns: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 8 rrsets, 11 messages
+         and 1 key entries; flush_bogus -> ok removed 0 rrsets, 1 messages and 1 key entries                            
+11:16:47 attack web+ns: resolver answers victim.rs A with NOERROR after 0.0s                                            
+
+CA: the attacker's account asks for a certificate during the hijack ────────────────────────────────────────────────────
+  Expect ISSUED. Watch the [http-01] hosts (attacker = the forged route won that perspective) and the [decision] line.
+11:16:47   [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca             
+11:16:47   [dns      ] victim.rs CAA: NOERROR ad=0                                                                      
+11:16:47   [dns      ] rs CAA: NOERROR ad=1                                                                             
+11:16:47   [dns      ] . CAA: NOERROR ad=1                                                                              
+11:16:47   [caa      ] no CAA anywhere up to the root                                                                   
+11:16:47   [caa      ] allowed: no issue tag: any CA may issue                                                          
+11:16:47   [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                       
+11:16:47   [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates 
+11:16:47   [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates 
+11:16:47   [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates 
+11:16:47   [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT       
+         corroborate                                                                                                    
+11:16:47   [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates 
+11:16:47   [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met                  
+11:16:47   [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                                
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:48 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:16:48 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:48 attack off: collector table converged after 0.3s                                                               
+11:16:48 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:16:48 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:48 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 5 rrsets, 2 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:16:48 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+CA: the legitimate account asks for a certificate, attack off (control) ────────────────────────────────────────────────
+  Expect ISSUED with every perspective answered by the victim: the lab itself is sound.
+11:16:48   [request  ] victim.rs for account https://ca.lab/acct/legit (legit) via http-01, CA lab-ca                   
+11:16:48   [dns      ] victim.rs CAA: NOERROR ad=0 ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']           
+11:16:48   [caa      ] found at victim.rs (ad=0): ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']            
+11:16:48   [caa      ] allowed: issue "lab-ca; accounturi=https://ca.lab/acct/legit" permits lab-ca for                 
+         https://ca.lab/acct/legit                                                                                      
+11:16:48   [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                       
+11:16:48   [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:48   [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:48   [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:48   [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:48   [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:16:48   [quorum   ] primary ok; remotes 4/4 corroborate (need >= 4 remotes, at most 1 failing): met                  
+11:16:48   [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/legit                                   
+11:16:48 ✔ caa-unsigned / attack web+ns  expected caa-erasable / ISSUED                                                 
+11:16:48   scanner            caa-erasable (HIGH 8.7)                                                                   
+11:16:48   data plane         web=attacker ns=attacker                                                                  
+11:16:48   CA -> attacker     ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                         
+11:16:48   HTTP-01 hosts      primary=attacker r1=attacker r2=attacker r3=victim r4=attacker                            
+11:16:48   CA -> legit (off)  ISSUED                                                                                    
+
+row: caa-signed / attack web+ns  (expect scanner closed, CA -> attacker REFUSED) ───────────────────────────────────────
+  the same CAA in a signed zone, both addresses hijacked: the forged nameserver cannot sign, the validating resolver answers SERVFAIL, the CA fails closed. The project's central claim.
+11:16:48 rendered scenario caa-signed -> /home/djamla/hijackscan/lab/build                                              
+
+deploy: containerlab up ────────────────────────────────────────────────────────────────────────────────────────────────
+11:16:48 $ containerlab deploy -t /home/djamla/hijackscan/lab/build/lab.clab.yml --reconfigure                          
+11:16:48 INFO Containerlab started version=0.82.0
+11:16:48 INFO Parsing & checking topology file=lab.clab.yml
+11:16:48 INFO Destroying lab name=hijackscan
+11:16:49 INFO Removed container name=clab-hijackscan-rpki
+11:16:49 INFO Removed container name=clab-hijackscan-attacker
+11:16:49 INFO Removed container name=clab-hijackscan-resolver
+11:16:49 INFO Removed container name=clab-hijackscan-victim
+11:16:49 INFO Removed container name=clab-hijackscan-origin2
+11:16:49 INFO Removed container name=clab-hijackscan-origin
+11:16:49 INFO Removed container name=clab-hijackscan-ca
+11:16:49 INFO Removed container name=clab-hijackscan-collector
+11:16:49 INFO Removed container name=clab-hijackscan-transit1
+11:16:49 INFO Removed container name=clab-hijackscan-transit2
+11:16:49 INFO Removing host entries path=/etc/hosts
+11:16:49 INFO Removing SSH config path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+11:16:49 INFO Removing directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:16:49 INFO Creating lab directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:16:50 INFO Creating container name=transit2
+11:16:50 INFO Creating container name=attacker
+11:16:50 INFO Creating container name=transit1
+11:16:50 INFO Creating container name=resolver
+11:16:50 INFO Creating container name=ca
+11:16:50 INFO Creating container name=origin2
+11:16:50 INFO Creating container name=rpki
+11:16:50 INFO Creating container name=collector
+11:16:50 INFO Creating container name=origin
+11:16:50 INFO Creating container name=victim
+11:16:51 INFO Created link: origin:eth1 ▪┄┄▪ transit1:eth1
+11:16:51 INFO Created link: transit2:eth3 ▪┄┄▪ collector:eth3
+11:16:51 INFO Created link: origin:eth2 ▪┄┄▪ collector:eth1
+11:16:51 INFO Created link: transit1:eth2 ▪┄┄▪ transit2:eth1
+11:16:51 INFO Created link: transit2:eth2 ▪┄┄▪ origin2:eth1
+11:16:51 INFO Created link: transit1:eth3 ▪┄┄▪ collector:eth2
+11:16:51 INFO Created link: origin2:eth2 ▪┄┄▪ collector:eth4
+11:16:51 INFO Created link: transit1:eth4 ▪┄┄▪ resolver:eth1
+11:16:52 INFO Created link: origin2:eth3 ▪┄┄▪ attacker:eth1
+11:16:52 INFO Created link: origin:eth4 ▪┄┄▪ victim:eth1
+11:16:52 INFO Created link: transit1:eth5 ▪┄┄▪ ca:eth1
+11:16:52 INFO Created link: transit2:eth4 ▪┄┄▪ ca:eth2
+11:16:52 INFO Created link: collector:eth5 ▪┄┄▪ ca:eth3
+11:16:52 INFO Created link: origin:eth3 ▪┄┄▪ ca:eth4
+11:16:52 INFO Executed command node=resolver command="ip route del default" stdout=""
+11:16:52 INFO Executed command node=resolver command="ip addr add 192.0.2.2/30 dev eth1" stdout=""
+11:16:52 INFO Executed command node=attacker command="ip route del default" stdout=""
+11:16:52 INFO Executed command node=resolver command="ip route add default via 192.0.2.1" stdout=""
+11:16:52 INFO Executed command node=attacker command="ip addr add 203.0.113.10/28 dev eth1" stdout=""
+11:16:52 INFO Executed command node=rpki command="ip route del default" stdout=""
+11:16:52 INFO Executed command node=attacker command="ip addr add 203.0.113.100/28 dev eth1" stdout=""
+11:16:52 INFO Executed command node=attacker command="ip route add default via 203.0.113.1" stdout=""
+11:16:52 INFO Executed command node=transit2 command="ip route del default" stdout=""
+11:16:52 INFO Executed command node=transit2 command="ip addr add 198.51.100.6/30 dev eth1" stdout=""
+11:16:52 INFO Executed command node=transit2 command="ip addr add 198.51.100.9/30 dev eth2" stdout=""
+11:16:52 INFO Executed command node=transit2 command="ip addr add 198.51.100.21/30 dev eth3" stdout=""
+11:16:52 INFO Executed command node=collector command="ip route del default" stdout=""
+11:16:52 INFO Executed command node=victim command="ip route del default" stdout=""
+11:16:52 INFO Executed command node=transit2 command="ip addr add 192.0.2.17/30 dev eth4" stdout=""
+11:16:52 INFO Executed command node=collector command="ip addr add 198.51.100.14/30 dev eth1" stdout=""
+11:16:52 INFO Executed command node=victim command="ip addr add 203.0.113.10/24 dev eth1" stdout=""
+11:16:52 INFO Executed command node=victim command="ip addr add 203.0.113.100/24 dev eth1" stdout=""
+11:16:52 INFO Executed command node=collector command="ip addr add 198.51.100.18/30 dev eth2" stdout=""
+11:16:52 INFO Executed command node=origin2 command="ip route del default" stdout=""
+11:16:52 INFO Executed command node=origin command="ip route del default" stdout=""
+11:16:52 INFO Executed command node=victim command="ip route add default via 203.0.113.1" stdout=""
+11:16:52 INFO Executed command node=collector command="ip addr add 198.51.100.22/30 dev eth3" stdout=""
+11:16:52 INFO Executed command node=transit1 command="ip route del default" stdout=""
+11:16:52 INFO Executed command node=origin command="ip addr add 198.51.100.1/30 dev eth1" stdout=""
+11:16:52 INFO Executed command node=collector command="ip addr add 198.51.100.26/30 dev eth4" stdout=""
+11:16:52 INFO Executed command node=transit1 command="ip addr add 198.51.100.2/30 dev eth1" stdout=""
+11:16:52 INFO Executed command node=origin2 command="ip addr add 198.51.100.10/30 dev eth1" stdout=""
+11:16:52 INFO Executed command node=collector command="ip addr add 192.0.2.21/30 dev eth5" stdout=""
+11:16:52 INFO Executed command node=origin2 command="ip addr add 198.51.100.25/30 dev eth2" stdout=""
+11:16:52 INFO Executed command node=transit1 command="ip addr add 198.51.100.5/30 dev eth2" stdout=""
+11:16:52 INFO Executed command node=origin command="ip addr add 198.51.100.13/30 dev eth2" stdout=""
+11:16:52 INFO Executed command node=collector command="sh -c nohup python3 /lab/feed.py --port 8080 --config /lab/feed.json >/tmp/feed.log 2>&1 &" stdout=""
+11:16:52 INFO Executed command node=origin2 command="ip addr add 203.0.113.1/28 dev eth3" stdout=""
+11:16:52 INFO Executed command node=transit1 command="ip addr add 198.51.100.17/30 dev eth3" stdout=""
+11:16:52 INFO Executed command node=origin command="ip addr add 192.0.2.25/30 dev eth3" stdout=""
+11:16:52 INFO Executed command node=origin2 command="ip addr add 203.0.113.97/28 dev eth3" stdout=""
+11:16:52 INFO Executed command node=transit1 command="ip addr add 192.0.2.1/30 dev eth4" stdout=""
+11:16:52 INFO Executed command node=ca command="ip route del default" stdout=""
+11:16:52 INFO Executed command node=origin command="ip addr add 203.0.113.1/24 dev eth4" stdout=""
+11:16:52 INFO Executed command node=transit1 command="ip addr add 192.0.2.9/29 dev eth5" stdout=""
+11:16:52 INFO Executed command node=ca command="ip addr add 192.0.2.10/29 dev eth1" stdout=""
+11:16:52 INFO Executed command node=ca command="ip addr add 192.0.2.18/30 dev eth2" stdout=""
+11:16:52 INFO Executed command node=ca command="ip addr add 192.0.2.22/30 dev eth3" stdout=""
+11:16:52 INFO Executed command node=ca command="ip addr add 192.0.2.26/30 dev eth4" stdout=""
+11:16:52 INFO Executed command node=ca command="ip addr add 192.0.2.11/29 dev eth1" stdout=""
+11:16:52 INFO Executed command node=ca command="ip route add default via 192.0.2.9" stdout=""
+11:16:52 INFO Executed command node=ca command="ip rule add from 192.0.2.18 table 101" stdout=""
+11:16:52 INFO Executed command node=ca command="ip route add default via 192.0.2.17 dev eth2 table 101" stdout=""
+11:16:52 INFO Executed command node=ca command="ip rule add from 192.0.2.22 table 102" stdout=""
+11:16:52 INFO Executed command node=ca command="ip route add default via 192.0.2.21 dev eth3 table 102" stdout=""
+11:16:52 INFO Executed command node=ca command="ip rule add from 192.0.2.26 table 103" stdout=""
+11:16:52 INFO Executed command node=ca command="ip route add default via 192.0.2.25 dev eth4 table 103" stdout=""
+11:16:52 INFO Executed command node=ca command="ip rule add from 192.0.2.11 table 104" stdout=""
+11:16:52 INFO Executed command node=ca command="ip route add default via 192.0.2.9 dev eth1 table 104" stdout=""
+11:16:52 INFO Adding host entries path=/etc/hosts
+11:16:52 INFO Adding SSH config for nodes path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+╭───────────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────┬─────────┬────────────────╮
+│            Name           │                                              Kind/Image                                              │  State  │ IPv4/6 Address │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-attacker  │ linux                                                                                                │ running │ 172.31.40.23   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-ca        │ linux                                                                                                │ running │ 172.31.40.21   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-collector │ linux                                                                                                │ running │ 172.31.40.15   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin    │ linux                                                                                                │ running │ 172.31.40.10   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin2   │ linux                                                                                                │ running │ 172.31.40.13   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-resolver  │ linux                                                                                                │ running │ 172.31.40.20   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-rpki      │ linux                                                                                                │ running │ 172.31.40.16   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit1  │ linux                                                                                                │ running │ 172.31.40.11   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit2  │ linux                                                                                                │ running │ 172.31.40.12   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-victim    │ linux                                                                                                │ running │ 172.31.40.22   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+╰───────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────┴─────────┴────────────────╯
+
+deploy: waiting for BGP sessions and RTR caches ────────────────────────────────────────────────────────────────────────
+11:16:57 ✔ all BGP sessions established and RTR caches connected after 5s                                               
+11:16:57 collector holds 203.0.113.0/24 from all 4 peers after 0.0s                                                     
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:16:59 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:16:59 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:16:59 attack off: collector table converged after 0.1s                                                               
+11:16:59 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:16:59 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:16:59 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 0 rrsets, 0 messages and
+         0 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:16:59 attack off: resolver answers victim.rs A with NOERROR ad after 0.0s                                            
+
+scan: the real scanner against the lab (victim.rs) ─────────────────────────────────────────────────────────────────────
+11:16:59 $ uv run hijackscan --data-dir /home/djamla/hijackscan/lab/build/data --resolver 172.31.40.20:53 --rpki-date   
+         lab --ripestat-url http://172.31.40.15:8080/data/{call}/data.json --routable-cap-v4 28 domain victim.rs --force
+         --details                                                                                                      
+11:17:00 scanner says closed (NONE 0.0); evidence complete                                                              
+
+attack web+ns: origin2 (AS65010) announces the forged more-specific(s) ─────────────────────────────────────────────────
+11:17:00 attack web+ns: 203.0.113.0/28 (web) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010     
+         65000 via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17                                             
+11:17:00 attack web+ns: 203.0.113.96/28 (ns) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010     
+         65000 via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17                                             
+11:17:00 attack web+ns: collector table converged after 0.3s                                                            
+11:17:00 attack web+ns: 203.0.113.10 (web) is answered by host 'attacker'                                               
+11:17:00 attack web+ns: 203.0.113.100 (ns) is answered by host 'attacker'                                               
+11:17:00 attack web+ns: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 12 rrsets, 11        
+         messages and 1 key entries; flush_bogus -> ok removed 0 rrsets, 1 messages and 1 key entries                   
+11:17:00 attack web+ns: resolver answers victim.rs A with SERVFAIL after 0.0s                                           
+
+CA: the attacker's account asks for a certificate during the hijack ────────────────────────────────────────────────────
+  Expect REFUSED before any HTTP-01 runs: the [caa] or [dns] lines stop it.
+11:17:01   [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca             
+11:17:01   [dns      ] victim.rs CAA: SERVFAIL ad=0                                                                     
+11:17:01   [dns      ] victim.rs CAA with CD: NOERROR []                                                                
+11:17:01   [caa      ] victim.rs: SERVFAIL without CD, NOERROR with CD -> reachable but DNSSEC-bogus                    
+11:17:01   [decision ] REFUSED: DNSSEC validation failed (reachable but bogus)                                          
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:17:01 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:17:01 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:17:01 attack off: collector table converged after 0.3s                                                               
+11:17:01 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:17:01 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:17:01 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 5 rrsets, 3 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:17:01 attack off: resolver answers victim.rs A with NOERROR ad after 0.0s                                            
+
+CA: the legitimate account asks for a certificate, attack off (control) ────────────────────────────────────────────────
+  Expect ISSUED with every perspective answered by the victim: the lab itself is sound.
+11:17:01   [request  ] victim.rs for account https://ca.lab/acct/legit (legit) via http-01, CA lab-ca                   
+11:17:01   [dns      ] victim.rs CAA: NOERROR ad=1 ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']           
+11:17:01   [caa      ] found at victim.rs (ad=1): ['0 issue "lab-ca; accounturi=https://ca.lab/acct/legit"']            
+11:17:01   [caa      ] allowed: issue "lab-ca; accounturi=https://ca.lab/acct/legit" permits lab-ca for                 
+         https://ca.lab/acct/legit                                                                                      
+11:17:01   [dns      ] victim.rs A: NOERROR ad=1 ['203.0.113.10']                                                       
+11:17:01   [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:17:01   [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:17:01   [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:17:01   [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:17:01   [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'victim': corroborates   
+11:17:01   [quorum   ] primary ok; remotes 4/4 corroborate (need >= 4 remotes, at most 1 failing): met                  
+11:17:01   [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/legit                                   
+11:17:01 ✔ caa-signed / attack web+ns  expected closed / REFUSED                                                        
+11:17:01   scanner            closed (NONE 0.0)                                                                         
+11:17:01   data plane         web=attacker ns=attacker                                                                  
+11:17:01   CA -> attacker     REFUSED: DNSSEC validation failed (reachable but bogus)                                   
+11:17:01   HTTP-01 hosts      -                                                                                         
+11:17:01   CA -> legit (off)  ISSUED                                                                                    
+
+matrix: results ────────────────────────────────────────────────────────────────────────────────────────────────────────
+11:17:01 ✔ baseline / attack web  expected open-web / ISSUED                                                            
+11:17:01   scanner            open-web (CRITICAL 10.0)                                                                  
+11:17:01   data plane         web=attacker ns=victim                                                                    
+11:17:01   CA -> attacker     ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                         
+11:17:01   HTTP-01 hosts      primary=attacker r1=attacker r2=attacker r3=victim r4=attacker                            
+11:17:01   CA -> legit (off)  ISSUED                                                                                    
+11:17:01 ✔ tight-maxlength / attack web  expected contested / REFUSED                                                   
+11:17:01   scanner            contested (LOW 1.1)                                                                       
+11:17:01   data plane         web=victim ns=victim                                                                      
+11:17:01   CA -> attacker     REFUSED: domain control not demonstrated                                                  
+11:17:01   HTTP-01 hosts      primary=victim r1=victim r2=attacker r3=victim r4=victim                                  
+11:17:01   CA -> legit (off)  ISSUED                                                                                    
+11:17:01 ✔ caa-unsigned / attack web  expected caa-erasable / REFUSED                                                   
+11:17:01   scanner            caa-erasable (HIGH 8.7)                                                                   
+11:17:01   data plane         web=attacker ns=victim                                                                    
+11:17:01   CA -> attacker     REFUSED: CAA forbids this issuance (accounturi pins https://ca.lab/acct/legit)            
+11:17:01   HTTP-01 hosts      -                                                                                         
+11:17:01   CA -> legit (off)  ISSUED                                                                                    
+11:17:01 ✔ caa-unsigned / attack web+ns  expected caa-erasable / ISSUED                                                 
+11:17:01   scanner            caa-erasable (HIGH 8.7)                                                                   
+11:17:01   data plane         web=attacker ns=attacker                                                                  
+11:17:01   CA -> attacker     ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                         
+11:17:01   HTTP-01 hosts      primary=attacker r1=attacker r2=attacker r3=victim r4=attacker                            
+11:17:01   CA -> legit (off)  ISSUED                                                                                    
+11:17:01 ✔ caa-signed / attack web+ns  expected closed / REFUSED                                                        
+11:17:01   scanner            closed (NONE 0.0)                                                                         
+11:17:01   data plane         web=attacker ns=attacker                                                                  
+11:17:01   CA -> attacker     REFUSED: DNSSEC validation failed (reachable but bogus)                                   
+11:17:01   HTTP-01 hosts      -                                                                                         
+11:17:01   CA -> legit (off)  ISSUED                                                                                    
+11:17:01 ✔ matrix: 5/5 rows ok                                                                                          
+11:17:01 logs: /home/djamla/hijackscan/lab/logs/20261101T101606Z-matrix  (markdown table:                               
+         /home/djamla/hijackscan/lab/logs/20261101T101606Z-matrix/matrix.md)                                            
+11:17:01 demo written: /home/djamla/hijackscan/lab/demo.md                                                              
+[demo] exit 0 after 56s
+[demo] OK: matrix 5/5 rows ok  (/home/djamla/hijackscan/lab/logs/20261101T101606Z-matrix) (56s)
+
+==== step 9/12: lab controls
+[demo] Four controls, each removing the one mechanism a verdict rests on (the resolver's validator, ROV at the transits, the attacker's address, the ROA day) and putting it back: one ✔ per expectation as it is checked, with the decision or label observed.
+$ uv run lab/labctl.py controls
+11:17:02 logs: /home/djamla/hijackscan/lab/logs/20261101T101702Z-controls (latest-controls -> 20261101T101702Z-controls)
+11:17:02 reusing the deployed scenario caa-signed (containers up): no apply for its controls                            
+11:17:02 negative controls, 2026-11-01T11:17:02+0100                                                                    
+
+how to read a control ──────────────────────────────────────────────────────────────────────────────────────────────────
+  Each control takes one matrix verdict, removes the single mechanism it rests on, checks that the CA's decision (or the scanner's label) flips, restores the mechanism and checks that it flips back. Three expectations per control (five for B), each a ✔ line.
+the lines of evidence
+  ✔ A1 ...                                   an expectation met: its id, what was expected, and the observed decision or label
+  ✘ ...                                      an expectation missed: the control's claim does not hold, the run exits 1
+  -- ...                                     the mechanism being removed or restored (a config edit, a route-map, an address, the ROA day)
+  [dns] [caa] [http-01] [quorum] [decision]  the CA's transcript for that state, one check per line
+
+
+A. caa-signed / web+ns: the REFUSED rests on the resolver validating ───────────────────────────────────────────────────
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:17:02 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:17:02 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:17:02 attack off: collector table converged after 0.1s                                                               
+11:17:02 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:17:02 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:17:02 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 6 rrsets, 3 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:17:02 attack off: resolver answers victim.rs A with NOERROR ad after 0.0s                                            
+
+attack web+ns: origin2 (AS65010) announces the forged more-specific(s) ─────────────────────────────────────────────────
+11:17:03 attack web+ns: 203.0.113.0/28 (web) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010     
+         65000 via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17                                             
+11:17:03 attack web+ns: 203.0.113.96/28 (ns) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010     
+         65000 via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17                                             
+11:17:03 attack web+ns: collector table converged after 0.3s                                                            
+11:17:03 attack web+ns: 203.0.113.10 (web) is answered by host 'attacker'                                               
+11:17:03 attack web+ns: 203.0.113.100 (ns) is answered by host 'attacker'                                               
+11:17:03 attack web+ns: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 5 rrsets, 2 messages 
+         and 1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                            
+11:17:03 attack web+ns: resolver answers victim.rs A with SERVFAIL after 0.0s                                           
+11:17:03     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca           
+11:17:03     [dns      ] victim.rs CAA: SERVFAIL ad=0                                                                   
+11:17:03     [dns      ] victim.rs CAA with CD: NOERROR []                                                              
+11:17:03     [caa      ] victim.rs: SERVFAIL without CD, NOERROR with CD -> reachable but DNSSEC-bogus                  
+11:17:03     [decision ] REFUSED: DNSSEC validation failed (reachable but bogus)                                        
+11:17:03 ✔ A1 validating: REFUSED, reachable but bogus  REFUSED: DNSSEC validation failed (reachable but bogus)         
+11:17:03   -- module-config: "iterator" in unbound.conf, kill -HUP unbound                                              
+11:17:03   -- resolver reloaded, answers rnids.rs with NOERROR after 0.0s                                               
+11:17:03     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca           
+11:17:03     [dns      ] victim.rs CAA: NOERROR ad=0                                                                    
+11:17:03     [dns      ] rs CAA: NOERROR ad=0                                                                           
+11:17:03     [dns      ] . CAA: NOERROR ad=0                                                                            
+11:17:03     [caa      ] no CAA anywhere up to the root                                                                 
+11:17:03     [caa      ] allowed: no issue tag: any CA may issue                                                        
+11:17:03     [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                     
+11:17:03     [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:03     [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:03     [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:03     [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:03     [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:03     [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met                
+11:17:03     [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                              
+11:17:03 ✔ A2 validation off: ISSUED  ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                 
+11:17:03   -- validator restored                                                                                        
+11:17:03   -- resolver reloaded, answers rnids.rs with NOERROR ad after 0.0s                                            
+11:17:04     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca           
+11:17:04     [dns      ] victim.rs CAA: SERVFAIL ad=0                                                                   
+11:17:04     [dns      ] victim.rs CAA with CD: NOERROR []                                                              
+11:17:04     [caa      ] victim.rs: SERVFAIL without CD, NOERROR with CD -> reachable but DNSSEC-bogus                  
+11:17:04     [decision ] REFUSED: DNSSEC validation failed (reachable but bogus)                                        
+11:17:04 ✔ A3 validating again: REFUSED  REFUSED: DNSSEC validation failed (reachable but bogus)                        
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:17:04 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:17:04 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:17:04 attack off: collector table converged after 0.3s                                                               
+11:17:04 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:17:04 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:17:04 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 4 rrsets, 2 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:17:04 attack off: resolver answers victim.rs A with NOERROR ad after 0.0s                                            
+
+B. tight-maxlength / web: the REFUSED rests on ROV at the transits ─────────────────────────────────────────────────────
+11:17:04 rendered scenario tight-maxlength -> /home/djamla/hijackscan/lab/build                                         
+
+deploy: containerlab up ────────────────────────────────────────────────────────────────────────────────────────────────
+11:17:04 $ containerlab deploy -t /home/djamla/hijackscan/lab/build/lab.clab.yml --reconfigure                          
+11:17:04 INFO Containerlab started version=0.82.0
+11:17:04 INFO Parsing & checking topology file=lab.clab.yml
+11:17:04 INFO Destroying lab name=hijackscan
+11:17:05 INFO Removed container name=clab-hijackscan-rpki
+11:17:05 INFO Removed container name=clab-hijackscan-attacker
+11:17:05 INFO Removed container name=clab-hijackscan-resolver
+11:17:05 INFO Removed container name=clab-hijackscan-victim
+11:17:05 INFO Removed container name=clab-hijackscan-transit2
+11:17:05 INFO Removed container name=clab-hijackscan-origin
+11:17:05 INFO Removed container name=clab-hijackscan-origin2
+11:17:06 INFO Removed container name=clab-hijackscan-transit1
+11:17:06 INFO Removed container name=clab-hijackscan-collector
+11:17:06 INFO Removed container name=clab-hijackscan-ca
+11:17:06 INFO Removing host entries path=/etc/hosts
+11:17:06 INFO Removing SSH config path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+11:17:06 INFO Removing directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:17:06 INFO Creating lab directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:17:06 INFO Creating container name=origin
+11:17:06 INFO Creating container name=collector
+11:17:06 INFO Creating container name=victim
+11:17:06 INFO Creating container name=transit2
+11:17:06 INFO Creating container name=rpki
+11:17:06 INFO Creating container name=origin2
+11:17:06 INFO Creating container name=attacker
+11:17:06 INFO Creating container name=transit1
+11:17:06 INFO Creating container name=resolver
+11:17:06 INFO Creating container name=ca
+11:17:07 INFO Created link: transit2:eth2 ▪┄┄▪ origin2:eth1
+11:17:07 INFO Created link: transit2:eth3 ▪┄┄▪ collector:eth3
+11:17:07 INFO Created link: origin:eth2 ▪┄┄▪ collector:eth1
+11:17:07 INFO Created link: origin2:eth2 ▪┄┄▪ collector:eth4
+11:17:07 INFO Created link: origin2:eth3 ▪┄┄▪ attacker:eth1
+11:17:07 INFO Created link: origin:eth4 ▪┄┄▪ victim:eth1
+11:17:08 INFO Created link: origin:eth1 ▪┄┄▪ transit1:eth1
+11:17:08 INFO Created link: transit2:eth4 ▪┄┄▪ ca:eth2
+11:17:08 INFO Created link: transit1:eth2 ▪┄┄▪ transit2:eth1
+11:17:08 INFO Created link: collector:eth5 ▪┄┄▪ ca:eth3
+11:17:08 INFO Created link: transit1:eth3 ▪┄┄▪ collector:eth2
+11:17:08 INFO Created link: origin:eth3 ▪┄┄▪ ca:eth4
+11:17:08 INFO Created link: transit1:eth4 ▪┄┄▪ resolver:eth1
+11:17:08 INFO Created link: transit1:eth5 ▪┄┄▪ ca:eth1
+11:17:08 INFO Executed command node=rpki command="ip route del default" stdout=""
+11:17:08 INFO Executed command node=resolver command="ip route del default" stdout=""
+11:17:08 INFO Executed command node=resolver command="ip addr add 192.0.2.2/30 dev eth1" stdout=""
+11:17:08 INFO Executed command node=resolver command="ip route add default via 192.0.2.1" stdout=""
+11:17:08 INFO Executed command node=transit2 command="ip route del default" stdout=""
+11:17:08 INFO Executed command node=transit2 command="ip addr add 198.51.100.6/30 dev eth1" stdout=""
+11:17:08 INFO Executed command node=origin2 command="ip route del default" stdout=""
+11:17:08 INFO Executed command node=origin2 command="ip addr add 198.51.100.10/30 dev eth1" stdout=""
+11:17:08 INFO Executed command node=transit2 command="ip addr add 198.51.100.9/30 dev eth2" stdout=""
+11:17:08 INFO Executed command node=origin2 command="ip addr add 198.51.100.25/30 dev eth2" stdout=""
+11:17:08 INFO Executed command node=transit2 command="ip addr add 198.51.100.21/30 dev eth3" stdout=""
+11:17:08 INFO Executed command node=origin2 command="ip addr add 203.0.113.1/28 dev eth3" stdout=""
+11:17:08 INFO Executed command node=transit2 command="ip addr add 192.0.2.17/30 dev eth4" stdout=""
+11:17:08 INFO Executed command node=origin2 command="ip addr add 203.0.113.97/28 dev eth3" stdout=""
+11:17:08 INFO Executed command node=victim command="ip route del default" stdout=""
+11:17:08 INFO Executed command node=victim command="ip addr add 203.0.113.10/24 dev eth1" stdout=""
+11:17:08 INFO Executed command node=collector command="ip route del default" stdout=""
+11:17:08 INFO Executed command node=attacker command="ip route del default" stdout=""
+11:17:08 INFO Executed command node=origin command="ip route del default" stdout=""
+11:17:08 INFO Executed command node=victim command="ip addr add 203.0.113.100/24 dev eth1" stdout=""
+11:17:08 INFO Executed command node=collector command="ip addr add 198.51.100.14/30 dev eth1" stdout=""
+11:17:08 INFO Executed command node=attacker command="ip addr add 203.0.113.10/28 dev eth1" stdout=""
+11:17:08 INFO Executed command node=origin command="ip addr add 198.51.100.1/30 dev eth1" stdout=""
+11:17:08 INFO Executed command node=victim command="ip route add default via 203.0.113.1" stdout=""
+11:17:08 INFO Executed command node=collector command="ip addr add 198.51.100.18/30 dev eth2" stdout=""
+11:17:08 INFO Executed command node=origin command="ip addr add 198.51.100.13/30 dev eth2" stdout=""
+11:17:08 INFO Executed command node=attacker command="ip addr add 203.0.113.100/28 dev eth1" stdout=""
+11:17:08 INFO Executed command node=origin command="ip addr add 192.0.2.25/30 dev eth3" stdout=""
+11:17:08 INFO Executed command node=attacker command="ip route add default via 203.0.113.1" stdout=""
+11:17:08 INFO Executed command node=collector command="ip addr add 198.51.100.22/30 dev eth3" stdout=""
+11:17:08 INFO Executed command node=collector command="ip addr add 198.51.100.26/30 dev eth4" stdout=""
+11:17:08 INFO Executed command node=origin command="ip addr add 203.0.113.1/24 dev eth4" stdout=""
+11:17:08 INFO Executed command node=collector command="ip addr add 192.0.2.21/30 dev eth5" stdout=""
+11:17:08 INFO Executed command node=collector command="sh -c nohup python3 /lab/feed.py --port 8080 --config /lab/feed.json >/tmp/feed.log 2>&1 &" stdout=""
+11:17:08 INFO Executed command node=ca command="ip route del default" stdout=""
+11:17:08 INFO Executed command node=transit1 command="ip route del default" stdout=""
+11:17:08 INFO Executed command node=ca command="ip addr add 192.0.2.10/29 dev eth1" stdout=""
+11:17:08 INFO Executed command node=ca command="ip addr add 192.0.2.18/30 dev eth2" stdout=""
+11:17:08 INFO Executed command node=transit1 command="ip addr add 198.51.100.2/30 dev eth1" stdout=""
+11:17:08 INFO Executed command node=transit1 command="ip addr add 198.51.100.5/30 dev eth2" stdout=""
+11:17:08 INFO Executed command node=ca command="ip addr add 192.0.2.22/30 dev eth3" stdout=""
+11:17:08 INFO Executed command node=ca command="ip addr add 192.0.2.26/30 dev eth4" stdout=""
+11:17:08 INFO Executed command node=transit1 command="ip addr add 198.51.100.17/30 dev eth3" stdout=""
+11:17:08 INFO Executed command node=transit1 command="ip addr add 192.0.2.1/30 dev eth4" stdout=""
+11:17:08 INFO Executed command node=ca command="ip addr add 192.0.2.11/29 dev eth1" stdout=""
+11:17:08 INFO Executed command node=ca command="ip route add default via 192.0.2.9" stdout=""
+11:17:08 INFO Executed command node=transit1 command="ip addr add 192.0.2.9/29 dev eth5" stdout=""
+11:17:08 INFO Executed command node=ca command="ip rule add from 192.0.2.18 table 101" stdout=""
+11:17:08 INFO Executed command node=ca command="ip route add default via 192.0.2.17 dev eth2 table 101" stdout=""
+11:17:08 INFO Executed command node=ca command="ip rule add from 192.0.2.22 table 102" stdout=""
+11:17:08 INFO Executed command node=ca command="ip route add default via 192.0.2.21 dev eth3 table 102" stdout=""
+11:17:08 INFO Executed command node=ca command="ip rule add from 192.0.2.26 table 103" stdout=""
+11:17:08 INFO Executed command node=ca command="ip route add default via 192.0.2.25 dev eth4 table 103" stdout=""
+11:17:08 INFO Executed command node=ca command="ip rule add from 192.0.2.11 table 104" stdout=""
+11:17:08 INFO Executed command node=ca command="ip route add default via 192.0.2.9 dev eth1 table 104" stdout=""
+11:17:08 INFO Adding host entries path=/etc/hosts
+11:17:08 INFO Adding SSH config for nodes path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+╭───────────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────┬─────────┬────────────────╮
+│            Name           │                                              Kind/Image                                              │  State  │ IPv4/6 Address │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-attacker  │ linux                                                                                                │ running │ 172.31.40.23   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-ca        │ linux                                                                                                │ running │ 172.31.40.21   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-collector │ linux                                                                                                │ running │ 172.31.40.15   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin    │ linux                                                                                                │ running │ 172.31.40.10   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin2   │ linux                                                                                                │ running │ 172.31.40.13   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-resolver  │ linux                                                                                                │ running │ 172.31.40.20   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-rpki      │ linux                                                                                                │ running │ 172.31.40.16   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit1  │ linux                                                                                                │ running │ 172.31.40.11   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit2  │ linux                                                                                                │ running │ 172.31.40.12   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-victim    │ linux                                                                                                │ running │ 172.31.40.22   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+╰───────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────┴─────────┴────────────────╯
+
+deploy: waiting for BGP sessions and RTR caches ────────────────────────────────────────────────────────────────────────
+11:17:13 ✔ all BGP sessions established and RTR caches connected after 5s                                               
+11:17:13 collector holds 203.0.113.0/24 from all 4 peers after 0.0s                                                     
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:17:13 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:17:13 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:17:13 attack off: collector table converged after 0.1s                                                               
+11:17:13 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:17:13 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:17:14 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 0 rrsets, 0 messages and
+         0 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:17:14 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+attack web: origin2 (AS65010) announces the forged more-specific(s) ────────────────────────────────────────────────────
+11:17:14 attack web: 203.0.113.0/28 (web) 1 path(s) at the collector: 65010 65000 via 198.51.100.25                     
+11:17:14 attack web: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:17:14 attack web: collector table converged after 0.3s                                                               
+11:17:14 attack web: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:17:14 attack web: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:17:14 attack web: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 4 rrsets, 1 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:17:14 attack web: resolver answers victim.rs A with NOERROR after 0.0s                                               
+11:17:14 ✔ B1 transit2 drops 203.0.113.0/28 (ROV)  % Network not in table                                               
+11:17:14     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca           
+11:17:14     [dns      ] victim.rs CAA: NOERROR ad=0                                                                    
+11:17:14     [dns      ] rs CAA: NOERROR ad=1                                                                           
+11:17:14     [dns      ] . CAA: NOERROR ad=1                                                                            
+11:17:14     [caa      ] no CAA anywhere up to the root                                                                 
+11:17:14     [caa      ] allowed: no issue tag: any CA may issue                                                        
+11:17:14     [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                     
+11:17:14     [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:14     [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:14     [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:14     [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:14     [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:14     [quorum   ] primary FAILED; remotes 1/4 corroborate (need >= 4 remotes, at most 1 failing): NOT met        
+11:17:14     [decision ] REFUSED: domain control not demonstrated                                                       
+11:17:14 ✔ B2 with ROV: REFUSED, domain control not demonstrated  REFUSED: domain control not demonstrated              
+11:17:14   -- no route-map ROV in on transit2<-origin2 and transit1<-transit2, soft out from origin2                    
+11:17:15   -- ROV off: transit tables settled after 0.6s, 203.0.113.10 answered by 'attacker' after 0.0s                
+11:17:15 ✔ B3 transit1 carries 203.0.113.0/28 as rpki invalid  shown                                                    
+11:17:15     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca           
+11:17:15     [dns      ] victim.rs CAA: NOERROR ad=0                                                                    
+11:17:15     [dns      ] rs CAA: NOERROR ad=1                                                                           
+11:17:15     [dns      ] . CAA: NOERROR ad=1                                                                            
+11:17:15     [caa      ] no CAA anywhere up to the root                                                                 
+11:17:15     [caa      ] allowed: no issue tag: any CA may issue                                                        
+11:17:15     [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                     
+11:17:15     [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:15     [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:15     [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:15     [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:15     [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:15     [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met                
+11:17:15     [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                              
+11:17:15 ✔ B4 ROV removed: ISSUED  ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                    
+11:17:15   -- route-map ROV restored                                                                                    
+11:17:16   -- ROV on: transit tables settled after 0.6s, 203.0.113.10 answered by 'victim' after 0.0s                   
+11:17:16     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca           
+11:17:16     [dns      ] victim.rs CAA: NOERROR ad=0                                                                    
+11:17:16     [dns      ] rs CAA: NOERROR ad=1                                                                           
+11:17:16     [dns      ] . CAA: NOERROR ad=1                                                                            
+11:17:16     [caa      ] no CAA anywhere up to the root                                                                 
+11:17:16     [caa      ] allowed: no issue tag: any CA may issue                                                        
+11:17:16     [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                     
+11:17:16     [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:16     [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:16     [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:16     [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:16     [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:16     [quorum   ] primary FAILED; remotes 1/4 corroborate (need >= 4 remotes, at most 1 failing): NOT met        
+11:17:16     [decision ] REFUSED: domain control not demonstrated                                                       
+11:17:16 ✔ B5 ROV back: REFUSED  REFUSED: domain control not demonstrated                                               
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:17:17 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:17:17 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:17:17 attack off: collector table converged after 0.3s                                                               
+11:17:17 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:17:17 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:17:17 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 5 rrsets, 2 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:17:17 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+C. baseline / web: the ISSUED rests on the attacker serving; the feed reads the live table ─────────────────────────────
+11:17:17 rendered scenario baseline -> /home/djamla/hijackscan/lab/build                                                
+
+deploy: containerlab up ────────────────────────────────────────────────────────────────────────────────────────────────
+11:17:17 $ containerlab deploy -t /home/djamla/hijackscan/lab/build/lab.clab.yml --reconfigure                          
+11:17:17 INFO Containerlab started version=0.82.0
+11:17:17 INFO Parsing & checking topology file=lab.clab.yml
+11:17:17 INFO Destroying lab name=hijackscan
+11:17:17 INFO Removed container name=clab-hijackscan-rpki
+11:17:18 INFO Removed container name=clab-hijackscan-attacker
+11:17:18 INFO Removed container name=clab-hijackscan-resolver
+11:17:18 INFO Removed container name=clab-hijackscan-victim
+11:17:18 INFO Removed container name=clab-hijackscan-transit2
+11:17:18 INFO Removed container name=clab-hijackscan-origin2
+11:17:18 INFO Removed container name=clab-hijackscan-transit1
+11:17:18 INFO Removed container name=clab-hijackscan-origin
+11:17:18 INFO Removed container name=clab-hijackscan-ca
+11:17:18 INFO Removed container name=clab-hijackscan-collector
+11:17:18 INFO Removing host entries path=/etc/hosts
+11:17:18 INFO Removing SSH config path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+11:17:18 INFO Removing directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:17:18 INFO Creating lab directory path=/home/djamla/hijackscan/lab/build/clab-hijackscan
+11:17:18 INFO Creating container name=transit2
+11:17:18 INFO Creating container name=rpki
+11:17:18 INFO Creating container name=victim
+11:17:18 INFO Creating container name=ca
+11:17:18 INFO Creating container name=transit1
+11:17:18 INFO Creating container name=collector
+11:17:18 INFO Creating container name=resolver
+11:17:18 INFO Creating container name=origin2
+11:17:18 INFO Creating container name=origin
+11:17:18 INFO Creating container name=attacker
+11:17:19 INFO Created link: origin2:eth3 ▪┄┄▪ attacker:eth1
+11:17:20 INFO Created link: transit2:eth2 ▪┄┄▪ origin2:eth1
+11:17:20 INFO Created link: transit1:eth2 ▪┄┄▪ transit2:eth1
+11:17:20 INFO Created link: origin:eth1 ▪┄┄▪ transit1:eth1
+11:17:20 INFO Created link: transit1:eth3 ▪┄┄▪ collector:eth2
+11:17:20 INFO Created link: transit2:eth3 ▪┄┄▪ collector:eth3
+11:17:20 INFO Created link: transit1:eth4 ▪┄┄▪ resolver:eth1
+11:17:20 INFO Created link: transit2:eth4 ▪┄┄▪ ca:eth2
+11:17:20 INFO Created link: origin:eth2 ▪┄┄▪ collector:eth1
+11:17:20 INFO Created link: transit1:eth5 ▪┄┄▪ ca:eth1
+11:17:21 INFO Created link: origin2:eth2 ▪┄┄▪ collector:eth4
+11:17:21 INFO Created link: origin:eth4 ▪┄┄▪ victim:eth1
+11:17:21 INFO Created link: origin:eth3 ▪┄┄▪ ca:eth4
+11:17:21 INFO Created link: collector:eth5 ▪┄┄▪ ca:eth3
+11:17:21 INFO Executed command node=attacker command="ip route del default" stdout=""
+11:17:21 INFO Executed command node=resolver command="ip route del default" stdout=""
+11:17:21 INFO Executed command node=resolver command="ip addr add 192.0.2.2/30 dev eth1" stdout=""
+11:17:21 INFO Executed command node=attacker command="ip addr add 203.0.113.10/28 dev eth1" stdout=""
+11:17:21 INFO Executed command node=origin2 command="ip route del default" stdout=""
+11:17:21 INFO Executed command node=victim command="ip route del default" stdout=""
+11:17:21 INFO Executed command node=resolver command="ip route add default via 192.0.2.1" stdout=""
+11:17:21 INFO Executed command node=origin2 command="ip addr add 198.51.100.10/30 dev eth1" stdout=""
+11:17:21 INFO Executed command node=victim command="ip addr add 203.0.113.10/24 dev eth1" stdout=""
+11:17:21 INFO Executed command node=attacker command="ip addr add 203.0.113.100/28 dev eth1" stdout=""
+11:17:21 INFO Executed command node=origin2 command="ip addr add 198.51.100.25/30 dev eth2" stdout=""
+11:17:21 INFO Executed command node=attacker command="ip route add default via 203.0.113.1" stdout=""
+11:17:21 INFO Executed command node=victim command="ip addr add 203.0.113.100/24 dev eth1" stdout=""
+11:17:21 INFO Executed command node=rpki command="ip route del default" stdout=""
+11:17:21 INFO Executed command node=victim command="ip route add default via 203.0.113.1" stdout=""
+11:17:21 INFO Executed command node=origin2 command="ip addr add 203.0.113.1/28 dev eth3" stdout=""
+11:17:21 INFO Executed command node=origin2 command="ip addr add 203.0.113.97/28 dev eth3" stdout=""
+11:17:21 INFO Executed command node=transit2 command="ip route del default" stdout=""
+11:17:21 INFO Executed command node=transit2 command="ip addr add 198.51.100.6/30 dev eth1" stdout=""
+11:17:21 INFO Executed command node=transit2 command="ip addr add 198.51.100.9/30 dev eth2" stdout=""
+11:17:21 INFO Executed command node=transit1 command="ip route del default" stdout=""
+11:17:21 INFO Executed command node=transit2 command="ip addr add 198.51.100.21/30 dev eth3" stdout=""
+11:17:21 INFO Executed command node=transit2 command="ip addr add 192.0.2.17/30 dev eth4" stdout=""
+11:17:21 INFO Executed command node=transit1 command="ip addr add 198.51.100.2/30 dev eth1" stdout=""
+11:17:21 INFO Executed command node=ca command="ip route del default" stdout=""
+11:17:21 INFO Executed command node=origin command="ip route del default" stdout=""
+11:17:21 INFO Executed command node=transit1 command="ip addr add 198.51.100.5/30 dev eth2" stdout=""
+11:17:21 INFO Executed command node=collector command="ip route del default" stdout=""
+11:17:21 INFO Executed command node=ca command="ip addr add 192.0.2.10/29 dev eth1" stdout=""
+11:17:21 INFO Executed command node=origin command="ip addr add 198.51.100.1/30 dev eth1" stdout=""
+11:17:21 INFO Executed command node=transit1 command="ip addr add 198.51.100.17/30 dev eth3" stdout=""
+11:17:21 INFO Executed command node=collector command="ip addr add 198.51.100.14/30 dev eth1" stdout=""
+11:17:21 INFO Executed command node=ca command="ip addr add 192.0.2.18/30 dev eth2" stdout=""
+11:17:21 INFO Executed command node=transit1 command="ip addr add 192.0.2.1/30 dev eth4" stdout=""
+11:17:21 INFO Executed command node=origin command="ip addr add 198.51.100.13/30 dev eth2" stdout=""
+11:17:21 INFO Executed command node=collector command="ip addr add 198.51.100.18/30 dev eth2" stdout=""
+11:17:21 INFO Executed command node=ca command="ip addr add 192.0.2.22/30 dev eth3" stdout=""
+11:17:21 INFO Executed command node=origin command="ip addr add 192.0.2.25/30 dev eth3" stdout=""
+11:17:21 INFO Executed command node=transit1 command="ip addr add 192.0.2.9/29 dev eth5" stdout=""
+11:17:21 INFO Executed command node=collector command="ip addr add 198.51.100.22/30 dev eth3" stdout=""
+11:17:21 INFO Executed command node=ca command="ip addr add 192.0.2.26/30 dev eth4" stdout=""
+11:17:21 INFO Executed command node=origin command="ip addr add 203.0.113.1/24 dev eth4" stdout=""
+11:17:21 INFO Executed command node=collector command="ip addr add 198.51.100.26/30 dev eth4" stdout=""
+11:17:21 INFO Executed command node=ca command="ip addr add 192.0.2.11/29 dev eth1" stdout=""
+11:17:21 INFO Executed command node=collector command="ip addr add 192.0.2.21/30 dev eth5" stdout=""
+11:17:21 INFO Executed command node=ca command="ip route add default via 192.0.2.9" stdout=""
+11:17:21 INFO Executed command node=collector command="sh -c nohup python3 /lab/feed.py --port 8080 --config /lab/feed.json >/tmp/feed.log 2>&1 &" stdout=""
+11:17:21 INFO Executed command node=ca command="ip rule add from 192.0.2.18 table 101" stdout=""
+11:17:21 INFO Executed command node=ca command="ip route add default via 192.0.2.17 dev eth2 table 101" stdout=""
+11:17:21 INFO Executed command node=ca command="ip rule add from 192.0.2.22 table 102" stdout=""
+11:17:21 INFO Executed command node=ca command="ip route add default via 192.0.2.21 dev eth3 table 102" stdout=""
+11:17:21 INFO Executed command node=ca command="ip rule add from 192.0.2.26 table 103" stdout=""
+11:17:21 INFO Executed command node=ca command="ip route add default via 192.0.2.25 dev eth4 table 103" stdout=""
+11:17:21 INFO Executed command node=ca command="ip rule add from 192.0.2.11 table 104" stdout=""
+11:17:21 INFO Executed command node=ca command="ip route add default via 192.0.2.9 dev eth1 table 104" stdout=""
+11:17:21 INFO Adding host entries path=/etc/hosts
+11:17:21 INFO Adding SSH config for nodes path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+╭───────────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────┬─────────┬────────────────╮
+│            Name           │                                              Kind/Image                                              │  State  │ IPv4/6 Address │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-attacker  │ linux                                                                                                │ running │ 172.31.40.23   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-ca        │ linux                                                                                                │ running │ 172.31.40.21   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-collector │ linux                                                                                                │ running │ 172.31.40.15   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin    │ linux                                                                                                │ running │ 172.31.40.10   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-origin2   │ linux                                                                                                │ running │ 172.31.40.13   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-resolver  │ linux                                                                                                │ running │ 172.31.40.20   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-rpki      │ linux                                                                                                │ running │ 172.31.40.16   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit1  │ linux                                                                                                │ running │ 172.31.40.11   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-transit2  │ linux                                                                                                │ running │ 172.31.40.12   │
+│                           │ quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2 │         │ N/A            │
+├───────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────┼─────────┼────────────────┤
+│ clab-hijackscan-victim    │ linux                                                                                                │ running │ 172.31.40.22   │
+│                           │ hijackscan-lab:latest                                                                                │         │ N/A            │
+╰───────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────┴─────────┴────────────────╯
+
+deploy: waiting for BGP sessions and RTR caches ────────────────────────────────────────────────────────────────────────
+11:17:26 ✔ all BGP sessions established and RTR caches connected after 5s                                               
+11:17:26 collector holds 203.0.113.0/24 from all 4 peers after 0.0s                                                     
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:17:26 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:17:26 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:17:26 attack off: collector table converged after 0.1s                                                               
+11:17:26 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:17:26 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:17:26 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 0 rrsets, 0 messages and
+         0 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:17:26 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+11:17:26   -- feed network-info 203.0.113.10 before the attack: {'prefix': '203.0.113.0/24', 'asns': ['65000']}         
+
+attack web: origin2 (AS65010) announces the forged more-specific(s) ────────────────────────────────────────────────────
+11:17:27 attack web: 203.0.113.0/28 (web) 3 path(s) at the collector: 65010 65000 via 198.51.100.25; 65003 65010 65000  
+         via 198.51.100.21; 65002 65003 65010 65000 via 198.51.100.17                                                   
+11:17:27 attack web: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:17:27 attack web: collector table converged after 0.3s                                                               
+11:17:27 attack web: 203.0.113.10 (web) is answered by host 'attacker'                                                  
+11:17:27 attack web: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:17:27 attack web: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 4 rrsets, 1 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:17:27 attack web: resolver answers victim.rs A with NOERROR after 0.0s                                               
+11:17:27 ✔ C1 feed shows the forged more-specific with the victim's origin  {'prefix': '203.0.113.0/28', 'asns':        
+         ['65000']}                                                                                                     
+11:17:27     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca           
+11:17:27     [dns      ] victim.rs CAA: NOERROR ad=0                                                                    
+11:17:27     [dns      ] rs CAA: NOERROR ad=1                                                                           
+11:17:27     [dns      ] . CAA: NOERROR ad=1                                                                            
+11:17:27     [caa      ] no CAA anywhere up to the root                                                                 
+11:17:27     [caa      ] allowed: no issue tag: any CA may issue                                                        
+11:17:27     [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                     
+11:17:27     [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:27     [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:27     [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:27     [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:27     [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:27     [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met                
+11:17:27     [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                              
+11:17:27 ✔ C2 attacker serving: ISSUED  ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker               
+11:17:27   -- ip addr del 203.0.113.10/28 dev eth1 on the attacker (hijack still announced)                             
+11:17:27     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca           
+11:17:27     [dns      ] victim.rs CAA: NOERROR ad=0                                                                    
+11:17:27     [dns      ] rs CAA: NOERROR ad=1                                                                           
+11:17:27     [dns      ] . CAA: NOERROR ad=1                                                                            
+11:17:27     [caa      ] no CAA anywhere up to the root                                                                 
+11:17:27     [caa      ] allowed: no issue tag: any CA may issue                                                        
+11:17:27     [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                     
+11:17:27     [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: OSError: [Errno 113] Host is unreachable: 
+         does NOT corroborate                                                                                           
+11:17:27     [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: OSError: [Errno 113] Host is unreachable: 
+         does NOT corroborate                                                                                           
+11:17:27     [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: OSError: [Errno 113] Host is unreachable: 
+         does NOT corroborate                                                                                           
+11:17:27     [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:27     [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: OSError: [Errno 113] Host is unreachable: 
+         does NOT corroborate                                                                                           
+11:17:27     [quorum   ] primary FAILED; remotes 0/4 corroborate (need >= 4 remotes, at most 1 failing): NOT met        
+11:17:27     [decision ] REFUSED: domain control not demonstrated                                                       
+11:17:27 ✔ C3 attacker silent: REFUSED, unreachable  REFUSED: domain control not demonstrated                           
+11:17:28     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca           
+11:17:28     [dns      ] victim.rs CAA: NOERROR ad=0                                                                    
+11:17:28     [dns      ] rs CAA: NOERROR ad=1                                                                           
+11:17:28     [dns      ] . CAA: NOERROR ad=1                                                                            
+11:17:28     [caa      ] no CAA anywhere up to the root                                                                 
+11:17:28     [caa      ] allowed: no issue tag: any CA may issue                                                        
+11:17:28     [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']                                                     
+11:17:28     [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:28     [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:28     [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:28     [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT     
+         corroborate                                                                                                    
+11:17:28     [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker':            
+         corroborates                                                                                                   
+11:17:28     [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met                
+11:17:28     [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker                              
+11:17:28 ✔ C4 address restored: ISSUED  ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker               
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:17:28 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:17:28 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:17:28 attack off: collector table converged after 0.3s                                                               
+11:17:28 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:17:28 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:17:28 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 5 rrsets, 2 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:17:28 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+D. baseline: the scanner's verdict follows the ROA day it is given ─────────────────────────────────────────────────────
+
+attack off: origin2 (AS65010) withdraws the forged more-specific(s) ────────────────────────────────────────────────────
+11:17:28 attack off: 203.0.113.0/28 (web) withdrawn                                                                     
+11:17:28 attack off: 203.0.113.96/28 (ns) withdrawn                                                                     
+11:17:28 attack off: collector table converged after 0.1s                                                               
+11:17:28 attack off: 203.0.113.10 (web) is answered by host 'victim'                                                    
+11:17:28 attack off: 203.0.113.100 (ns) is answered by host 'victim'                                                    
+11:17:29 attack off: resolver cache flushed: unbound-control flush_zone victim.rs -> ok removed 4 rrsets, 1 messages and
+         1 key entries; flush_bogus -> ok removed 0 rrsets, 0 messages and 0 key entries                                
+11:17:29 attack off: resolver answers victim.rs A with NOERROR after 0.0s                                               
+
+scan: the real scanner against the lab (victim.rs) ─────────────────────────────────────────────────────────────────────
+11:17:29 $ uv run hijackscan --data-dir /home/djamla/hijackscan/lab/build/data --resolver 172.31.40.20:53 --rpki-date   
+         lab --ripestat-url http://172.31.40.15:8080/data/{call}/data.json --routable-cap-v4 28 domain victim.rs --force
+11:17:29 ✔ D1 ROA day as rendered: open-web  open-web (CRITICAL 10.0)                                                   
+11:17:29   -- rewrite the ROA day: every maxLength = the prefix length                                                  
+
+scan: the real scanner against the lab (victim.rs) ─────────────────────────────────────────────────────────────────────
+11:17:29 $ uv run hijackscan --data-dir /home/djamla/hijackscan/lab/build/data --resolver 172.31.40.20:53 --rpki-date   
+         lab --ripestat-url http://172.31.40.15:8080/data/{call}/data.json --routable-cap-v4 28 domain victim.rs --force
+11:17:30 ✔ D2 tight ROA day: contested  contested (LOW 1.1)                                                             
+
+scan: the real scanner against the lab (victim.rs) ─────────────────────────────────────────────────────────────────────
+11:17:30 $ uv run hijackscan --data-dir /home/djamla/hijackscan/lab/build/data --resolver 172.31.40.20:53 --rpki-date   
+         lab --ripestat-url http://172.31.40.15:8080/data/{call}/data.json --routable-cap-v4 28 domain victim.rs --force
+11:17:30 ✔ D3 ROA day restored: open-web  open-web (CRITICAL 10.0)                                                      
+11:17:30 ✔ controls: all expected flips observed                                                                        
+[demo] exit 0 after 29s
+[demo] OK: controls 4/4 expected flips observed (29s)
+
+==== step 10/12: lab check
+$ uv run lab/labctl.py check
+
+containment check ──────────────────────────────────────────────────────────────────────────────────────────────────────
+11:17:32   check: no default route off the fabric                                                                       
+11:17:32   check: all ASNs private                                                                                      
+11:17:32   check: all BGP neighbours in RFC 5737 space                                                                  
+11:17:32   check: management network without masquerade                                                                 
+11:17:32   check: egress probes fail                                                                                    
+11:17:32 ✔ containment OK                                                                                               
+[demo] exit 0 after 2s
+[demo] OK: containment OK (2s)
+
+==== step 11/12: lab destroy
+$ uv run lab/labctl.py destroy
+11:17:32 $ containerlab destroy -t /home/djamla/hijackscan/lab/build/lab.clab.yml --cleanup                             
+11:17:32 INFO Parsing & checking topology file=lab.clab.yml
+11:17:32 INFO Parsing & checking topology file=lab.clab.yml
+11:17:32 INFO Destroying lab name=hijackscan
+11:17:33 INFO Removed container name=clab-hijackscan-rpki
+11:17:33 INFO Removed container name=clab-hijackscan-resolver
+11:17:33 INFO Removed container name=clab-hijackscan-victim
+11:17:33 INFO Removed container name=clab-hijackscan-attacker
+11:17:34 INFO Removed container name=clab-hijackscan-origin
+11:17:34 INFO Removed container name=clab-hijackscan-origin2
+11:17:34 INFO Removed container name=clab-hijackscan-transit1
+11:17:34 INFO Removed container name=clab-hijackscan-transit2
+11:17:34 INFO Removed container name=clab-hijackscan-collector
+11:17:34 INFO Removed container name=clab-hijackscan-ca
+11:17:34 INFO Removing host entries path=/etc/hosts
+11:17:34 INFO Removing SSH config path=/etc/ssh/ssh_config.d/clab-hijackscan.conf
+[demo] exit 0 after 2s
+[demo] OK: lab destroyed (2s)
+
+==== step 12/12: scoreboard

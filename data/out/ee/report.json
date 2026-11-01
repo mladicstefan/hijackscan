@@ -1,0 +1,1836 @@
+{
+ "schema_version": 2,
+ "generated_at": "2026-11-01T10:16:05+00:00",
+ "scope": {
+  "domains": 100,
+  "tld": "ee",
+  "resolver": "9.9.9.9:853 (DoT)",
+  "routing_source": "https://stat.ripe.net/data/{call}/data.json",
+  "rpki_source": "/home/djamla/hijackscan/data/rpki/2026-10-31",
+  "rpki_date": "2026-10-31",
+  "population": {
+   "apex": "ee",
+   "soa_serial": "1793464230",
+   "seed": 1,
+   "delegations": 204698,
+   "ds": 52785,
+   "ds_share": 0.2579,
+   "sample_ds": 23,
+   "sample_ds_share": 0.23,
+   "ns_operators": [
+    {
+     "operator": "zone.eu",
+     "delegations": 78228,
+     "ds": 50446
+    },
+    {
+     "operator": "zone.ee",
+     "delegations": 78223,
+     "ds": 50446
+    },
+    {
+     "operator": "zonedata.net",
+     "delegations": 78197,
+     "ds": 50446
+    },
+    {
+     "operator": "elkdata.ee",
+     "delegations": 34556,
+     "ds": 2
+    },
+    {
+     "operator": "elkdata.net",
+     "delegations": 32582,
+     "ds": 1
+    },
+    {
+     "operator": "cloudflare.com",
+     "delegations": 16174,
+     "ds": 1265
+    },
+    {
+     "operator": "netsto.net",
+     "delegations": 8688,
+     "ds": 0
+    },
+    {
+     "operator": "estpak.ee",
+     "delegations": 5600,
+     "ds": 1
+    },
+    {
+     "operator": "dnsip.com",
+     "delegations": 5199,
+     "ds": 0
+    },
+    {
+     "operator": "radicenter.eu",
+     "delegations": 4963,
+     "ds": 5
+    },
+    {
+     "operator": "radicenter.com",
+     "delegations": 4855,
+     "ds": 5
+    },
+    {
+     "operator": "radicenter.ee",
+     "delegations": 4854,
+     "ds": 5
+    },
+    {
+     "operator": "radicenter.fi",
+     "delegations": 4853,
+     "ds": 5
+    },
+    {
+     "operator": "xundns.com",
+     "delegations": 3833,
+     "ds": 0
+    },
+    {
+     "operator": "domeeninimi.ee",
+     "delegations": 2846,
+     "ds": 0
+    },
+    {
+     "operator": "virtuaal.com",
+     "delegations": 2587,
+     "ds": 1
+    },
+    {
+     "operator": "serveriai.lt",
+     "delegations": 1784,
+     "ds": 1
+    },
+    {
+     "operator": "alidns.com",
+     "delegations": 1678,
+     "ds": 1
+    },
+    {
+     "operator": "netim.net",
+     "delegations": 1648,
+     "ds": 111
+    },
+    {
+     "operator": "wavecom.ee",
+     "delegations": 1646,
+     "ds": 5
+    }
+   ]
+  }
+ },
+ "model": {
+  "formula": "design/formula.md",
+  "score": "10 x I x max over paths (open x K x L); L = 1-(1-P)^N; K = complexity_step^h",
+  "scale": {
+   "None": "0.0",
+   "Low": "0.1-3.9",
+   "Medium": "4.0-6.9",
+   "High": "7.0-8.9",
+   "Critical": "9.0-10.0",
+   "Unknown": "not scored"
+  },
+  "params": {
+   "remote_perspectives": 4,
+   "allowed_non_corroborations": 1,
+   "attempts": 5,
+   "contest_share": 0.3,
+   "impact": 1.0,
+   "complexity_step": 0.87
+  }
+ },
+ "severity": {
+  "None": {
+   "band": "0.0",
+   "domains": 0,
+   "share": 0.0
+  },
+  "Low": {
+   "band": "0.1-3.9",
+   "domains": 58,
+   "share": 0.58
+  },
+  "Medium": {
+   "band": "4.0-6.9",
+   "domains": 2,
+   "share": 0.02
+  },
+  "High": {
+   "band": "7.0-8.9",
+   "domains": 3,
+   "share": 0.03
+  },
+  "Critical": {
+   "band": "9.0-10.0",
+   "domains": 36,
+   "share": 0.36
+  },
+  "Unknown": {
+   "band": "not scored",
+   "domains": 1,
+   "share": 0.01
+  }
+ },
+ "summary": {
+  "severity": {
+   "None": 0,
+   "Low": 58,
+   "Medium": 2,
+   "High": 3,
+   "Critical": 36,
+   "Unknown": 1
+  },
+  "scored": 99,
+  "mean_score": 4.72,
+  "median_score": 1.4,
+  "high_or_critical": 39
+ },
+ "labels": {
+  "contested": {
+   "domains": 48,
+   "meaning": "no forged more-specific route; only an exact-prefix contest remains, with no DNS-side defence"
+  },
+  "open-web": {
+   "domains": 39,
+   "meaning": "no CAA; a forged more-specific route to the web server wins everywhere (HTTP-01 at any CA)"
+  },
+  "ns-partial": {
+   "domains": 10,
+   "meaning": "unsigned; some nameserver addresses can be captured, success depends on the CA's perspectives"
+  },
+  "open-dns": {
+   "domains": 2,
+   "meaning": "no CAA, unsigned; every nameserver address can be captured, forged answers pass DNS-01 at any CA"
+  },
+  "unknown": {
+   "domains": 1,
+   "meaning": "the record is incomplete; not scored"
+  }
+ },
+ "findings": {
+  "EXACT_PREFIX_CONTEST": 99,
+  "NO_CAA": 99,
+  "UNSIGNED": 77,
+  "NS_CAPTURABLE": 62,
+  "WEB_MORE_SPECIFIC": 41,
+  "NO_ROA": 13,
+  "DATA_INCOMPLETE": 1
+ },
+ "defences": {
+  "dnssec_secure": 22,
+  "dnssec_bogus": 0,
+  "dnssec_unsigned": 78,
+  "caa": 0,
+  "caa_accounturi": 0
+ },
+ "fixes": {
+  "first_fix": {
+   "publish CAA issue=<your CA>; accounturi=<your ACME account>": 42,
+   "sign the zone and publish the DS at the registrar (DNSSEC)": 15
+  },
+  "to_close": {
+   "publish CAA issue=<your CA>; accounturi=<your ACME account> + sign the zone and publish the DS at the registrar (DNSSEC)": 71,
+   "publish CAA issue=<your CA>; accounturi=<your ACME account>": 22,
+   "sign the zone and publish the DS at the registrar (DNSSEC)": 6
+  }
+ },
+ "by_ns_operator": [
+  {
+   "operator": "zone.ee",
+   "domains": 34,
+   "severity": {
+    "None": 0,
+    "Low": 6,
+    "Medium": 1,
+    "High": 0,
+    "Critical": 27,
+    "Unknown": 0
+   },
+   "scored": 34,
+   "mean_score": 8.36,
+   "median_score": 10.0,
+   "high_or_critical": 27,
+   "signed": 21,
+   "zone_delegations": 78223,
+   "zone_ds": 50446
+  },
+  {
+   "operator": "zone.eu",
+   "domains": 34,
+   "severity": {
+    "None": 0,
+    "Low": 6,
+    "Medium": 1,
+    "High": 0,
+    "Critical": 27,
+    "Unknown": 0
+   },
+   "scored": 34,
+   "mean_score": 8.36,
+   "median_score": 10.0,
+   "high_or_critical": 27,
+   "signed": 21,
+   "zone_delegations": 78228,
+   "zone_ds": 50446
+  },
+  {
+   "operator": "zonedata.net",
+   "domains": 34,
+   "severity": {
+    "None": 0,
+    "Low": 6,
+    "Medium": 1,
+    "High": 0,
+    "Critical": 27,
+    "Unknown": 0
+   },
+   "scored": 34,
+   "mean_score": 8.36,
+   "median_score": 10.0,
+   "high_or_critical": 27,
+   "signed": 21,
+   "zone_delegations": 78197,
+   "zone_ds": 50446
+  },
+  {
+   "operator": "elkdata.ee",
+   "domains": 23,
+   "severity": {
+    "None": 0,
+    "Low": 21,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 2,
+    "Unknown": 0
+   },
+   "scored": 23,
+   "mean_score": 1.87,
+   "median_score": 1.1,
+   "high_or_critical": 2,
+   "signed": 0,
+   "zone_delegations": 34556,
+   "zone_ds": 2
+  },
+  {
+   "operator": "elkdata.net",
+   "domains": 23,
+   "severity": {
+    "None": 0,
+    "Low": 21,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 2,
+    "Unknown": 0
+   },
+   "scored": 23,
+   "mean_score": 1.87,
+   "median_score": 1.1,
+   "high_or_critical": 2,
+   "signed": 0,
+   "zone_delegations": 32582,
+   "zone_ds": 1
+  },
+  {
+   "operator": "cloudflare.com",
+   "domains": 10,
+   "severity": {
+    "None": 0,
+    "Low": 9,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 10,
+   "mean_score": 1.99,
+   "median_score": 1.1,
+   "high_or_critical": 1,
+   "signed": 1,
+   "zone_delegations": 16174,
+   "zone_ds": 1265
+  },
+  {
+   "operator": "alidns.com",
+   "domains": 7,
+   "severity": {
+    "None": 0,
+    "Low": 7,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 7,
+   "mean_score": 1.7,
+   "median_score": 2.0,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": 1678,
+   "zone_ds": 1
+  },
+  {
+   "operator": "nsone.net",
+   "domains": 3,
+   "severity": {
+    "None": 0,
+    "Low": 3,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 3,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "dnsip.com",
+   "domains": 3,
+   "severity": {
+    "None": 0,
+    "Low": 3,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 3,
+   "mean_score": 1.3,
+   "median_score": 1.4,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": 5199,
+   "zone_ds": 0
+  },
+  {
+   "operator": "netsto.net",
+   "domains": 2,
+   "severity": {
+    "None": 0,
+    "Low": 2,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 2,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": 8688,
+   "zone_ds": 0
+  },
+  {
+   "operator": "netim.net",
+   "domains": 2,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 2,
+    "Unknown": 0
+   },
+   "scored": 2,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 2,
+   "signed": 0,
+   "zone_delegations": 1648,
+   "zone_ds": 111
+  },
+  {
+   "operator": "foundationdns.com",
+   "domains": 2,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 1,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 2,
+   "mean_score": 7.9,
+   "median_score": 7.9,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "foundationdns.net",
+   "domains": 2,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 1,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 2,
+   "mean_score": 7.9,
+   "median_score": 7.9,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "foundationdns.org",
+   "domains": 2,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 1,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 2,
+   "mean_score": 7.9,
+   "median_score": 7.9,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "estpak.ee",
+   "domains": 2,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 2,
+   "mean_score": 5.55,
+   "median_score": 5.55,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": 5600,
+   "zone_ds": 1
+  },
+  {
+   "operator": "dnspod.net",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "dnsv2.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "uphost.pro",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 1,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 7.6,
+   "median_score": 7.6,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "atom.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 1,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 5.0,
+   "median_score": 5.0,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "iptwins.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.4,
+   "median_score": 1.4,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "iptwins.net",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.4,
+   "median_score": 1.4,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "platinum.co.hu",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 1,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 8.7,
+   "median_score": 8.7,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "squarespacedns.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "wavecom.ee",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": 1646,
+   "zone_ds": 5
+  },
+  {
+   "operator": "vercel-dns-3.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "dns.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "akam.net",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "eulerhermes.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "ns14.net",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 1,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 7.6,
+   "median_score": 7.6,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "awsdns-11.org",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.8,
+   "median_score": 1.8,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "awsdns-25.co.uk",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.8,
+   "median_score": 1.8,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "awsdns-35.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.8,
+   "median_score": 1.8,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "awsdns-62.net",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.8,
+   "median_score": 1.8,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "eurodns.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "pcrewdns.net",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "sedoparking.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 1,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "radicenter.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": 4855,
+   "zone_ds": 5
+  },
+  {
+   "operator": "radicenter.ee",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": 4854,
+   "zone_ds": 5
+  },
+  {
+   "operator": "radicenter.eu",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": 4963,
+   "zone_ds": 5
+  },
+  {
+   "operator": "radicenter.fi",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": 4853,
+   "zone_ds": 5
+  },
+  {
+   "operator": "datacenter.no",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "huaweicloud-dns.cn",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 3.1,
+   "median_score": 3.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "huaweicloud-dns.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 3.1,
+   "median_score": 3.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "huaweicloud-dns.net",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 3.1,
+   "median_score": 3.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "huaweicloud-dns.org",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 3.1,
+   "median_score": 3.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "dnspod.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  },
+  {
+   "operator": "xundns.com",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": 3833,
+   "zone_ds": 0
+  },
+  {
+   "operator": "ut.ee",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "signed": 0,
+   "zone_delegations": null,
+   "zone_ds": null
+  }
+ ],
+ "by_hosting_as": [
+  {
+   "asn": "49604",
+   "name": "ZONE Zone Media OU",
+   "domains": 27,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 27,
+    "Unknown": 0
+   },
+   "scored": 27,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 27,
+   "web_forgeable": 27
+  },
+  {
+   "asn": "61189",
+   "name": "ELKDATA Elkdata OU",
+   "domains": 19,
+   "severity": {
+    "None": 0,
+    "Low": 19,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 19,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "13335",
+   "name": "CLOUDFLARENET - Cloudflare, Inc.",
+   "domains": 13,
+   "severity": {
+    "None": 0,
+    "Low": 11,
+    "Medium": 1,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 13,
+   "mean_score": 2.28,
+   "median_score": 1.1,
+   "high_or_critical": 1,
+   "web_forgeable": 4
+  },
+  {
+   "asn": "16509",
+   "name": "AMAZON-02 - Amazon.com, Inc.",
+   "domains": 8,
+   "severity": {
+    "None": 0,
+    "Low": 8,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 8,
+   "mean_score": 1.41,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 3
+  },
+  {
+   "asn": "4907",
+   "name": "BGPNETPTELTD-AS-AP - BGPNET PTE. LTD.",
+   "domains": 4,
+   "severity": {
+    "None": 0,
+    "Low": 4,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 4,
+   "mean_score": 1.48,
+   "median_score": 1.4,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "135074",
+   "name": "DCIPL-AS-AP - DREAM CLOUD INNOVATION PTE. LTD.",
+   "domains": 3,
+   "severity": {
+    "None": 0,
+    "Low": 3,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 3,
+   "mean_score": 1.7,
+   "median_score": 2.0,
+   "high_or_critical": 0,
+   "web_forgeable": 2
+  },
+  {
+   "asn": "152194",
+   "name": "CTGSERVERLIMITED-AS-AP - CTG Server Limited",
+   "domains": 2,
+   "severity": {
+    "None": 0,
+    "Low": 2,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 2,
+   "mean_score": 2.0,
+   "median_score": 2.0,
+   "high_or_critical": 0,
+   "web_forgeable": 2
+  },
+  {
+   "asn": "3249",
+   "name": "ESTPAK Telia Eesti AS",
+   "domains": 2,
+   "severity": {
+    "None": 0,
+    "Low": 2,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 2,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "24935",
+   "name": "ATE-AS Eurofiber France SAS",
+   "domains": 2,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 2,
+    "Unknown": 0
+   },
+   "scored": 2,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 2,
+   "web_forgeable": 2
+  },
+  {
+   "asn": "132839",
+   "name": "POWERLINE-AS-AP - POWER LINE DATACENTER",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 1,
+   "web_forgeable": 1
+  },
+  {
+   "asn": "197155",
+   "name": "ARTNET Artnet Sp. z o.o.",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 1,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 7.6,
+   "median_score": 7.6,
+   "high_or_critical": 1,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "14618",
+   "name": "AMAZON-AES - Amazon.com, Inc.",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 1,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 5.0,
+   "median_score": 5.0,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "16276",
+   "name": "OVH OVH SAS",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.4,
+   "median_score": 1.4,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "51167",
+   "name": "CONTABO Contabo GmbH",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 1,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 8.7,
+   "median_score": 8.7,
+   "high_or_critical": 1,
+   "web_forgeable": 1
+  },
+  {
+   "asn": "53831",
+   "name": "SQUARESPACE - Squarespace, Inc.",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "2586",
+   "name": "ELISAEE-AS Elisa Eesti AS",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 1,
+   "web_forgeable": 1
+  },
+  {
+   "asn": "34702",
+   "name": "WAVECOM-AS Aktsiaselts WaveCom",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 1,
+   "web_forgeable": 1
+  },
+  {
+   "asn": "201501",
+   "name": "isec-asn ISECLAYER INC",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "8075",
+   "name": "MICROSOFT-CORP-MSN-AS-BLOCK - Microsoft Corporation",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 2.0,
+   "median_score": 2.0,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "963",
+   "name": "N963-AS-AP - N963 PTE. LTD.",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 2.0,
+   "median_score": 2.0,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "15580",
+   "name": "Allianz Technology SE",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "20473",
+   "name": "AS-VULTR - The Constant Company, LLC",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 1,
+   "web_forgeable": 1
+  },
+  {
+   "asn": "8796",
+   "name": "FD-298-8796 - FASTNET DATA INC",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "206834",
+   "name": "TEAMINTERNET-CA-AS Team Internet AG",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "47846",
+   "name": "SEDO-AS SEDO GmbH",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 1,
+   "web_forgeable": 1
+  },
+  {
+   "asn": "24940",
+   "name": "HETZNER-AS Hetzner Online GmbH",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 1,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 10.0,
+   "median_score": 10.0,
+   "high_or_critical": 1,
+   "web_forgeable": 1
+  },
+  {
+   "asn": "216263",
+   "name": "RADICENTER Radicenter OU",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "138415",
+   "name": "YANCYLIMITED-AS-HK - Yancy Limited",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "39783",
+   "name": "WEBHUSET-AS Webhuset AS",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "36002",
+   "name": "GOMAMI - GoMami Networks",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  },
+  {
+   "asn": "3221",
+   "name": "EENet-AS Haridus- ja Teadusministeerium",
+   "domains": 1,
+   "severity": {
+    "None": 0,
+    "Low": 1,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 0
+   },
+   "scored": 1,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0,
+   "web_forgeable": 0
+  }
+ ],
+ "what_if": [
+  {
+   "scenario": "sign all zones",
+   "overrides": {
+    "signed": true
+   },
+   "reads_as": "DNSSEC alone closes the nameserver path, not the web path.",
+   "severity": {
+    "None": 6,
+    "Low": 55,
+    "Medium": 1,
+    "High": 1,
+    "Critical": 36,
+    "Unknown": 1
+   },
+   "scored": 99,
+   "mean_score": 4.4,
+   "median_score": 1.1,
+   "high_or_critical": 37
+  },
+  {
+   "scenario": "CAA on all (no accounturi)",
+   "overrides": {
+    "has_caa": true
+   },
+   "reads_as": "CAA without accounturi changes no score: the attacker opens an account at the allowed CA.",
+   "severity": {
+    "None": 0,
+    "Low": 58,
+    "Medium": 2,
+    "High": 3,
+    "Critical": 36,
+    "Unknown": 1
+   },
+   "scored": 99,
+   "mean_score": 4.72,
+   "median_score": 1.4,
+   "high_or_critical": 39
+  },
+  {
+   "scenario": "CAA + accounturi on all",
+   "overrides": {
+    "pinned": true
+   },
+   "reads_as": "Closes the web path; in unsigned zones a nameserver capture still erases CAA.",
+   "severity": {
+    "None": 22,
+    "Low": 71,
+    "Medium": 2,
+    "High": 4,
+    "Critical": 0,
+    "Unknown": 1
+   },
+   "scored": 99,
+   "mean_score": 1.41,
+   "median_score": 1.1,
+   "high_or_critical": 4
+  },
+  {
+   "scenario": "sign all + CAA + accounturi",
+   "overrides": {
+    "signed": true,
+    "pinned": true
+   },
+   "reads_as": "Both DNS-side fixes: every path blocked. The ceiling, by definition.",
+   "severity": {
+    "None": 99,
+    "Low": 0,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 1
+   },
+   "scored": 99,
+   "mean_score": 0.0,
+   "median_score": 0.0,
+   "high_or_critical": 0
+  },
+  {
+   "scenario": "tighten all ROAs (RFC 9319)",
+   "overrides": {
+    "web_tight": true,
+    "ns_tight": true
+   },
+   "reads_as": "Routing-side fix only: removes forged more-specifics, leaves the exact-prefix contest.",
+   "severity": {
+    "None": 0,
+    "Low": 99,
+    "Medium": 0,
+    "High": 0,
+    "Critical": 0,
+    "Unknown": 1
+   },
+   "scored": 99,
+   "mean_score": 1.1,
+   "median_score": 1.1,
+   "high_or_critical": 0
+  },
+  {
+   "scenario": "top-3 NS operators sign by default (zone.ee, zone.eu, zonedata.net)",
+   "overrides": {
+    "signed": true,
+    "only_ns_operators": [
+     "zone.ee",
+     "zone.eu",
+     "zonedata.net"
+    ]
+   },
+   "reads_as": "The three largest nameserver operators sign every zone they host.",
+   "severity": {
+    "None": 1,
+    "Low": 57,
+    "Medium": 2,
+    "High": 3,
+    "Critical": 36,
+    "Unknown": 1
+   },
+   "scored": 99,
+   "mean_score": 4.69,
+   "median_score": 1.4,
+   "high_or_critical": 39
+  }
+ ]
+}

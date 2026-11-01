@@ -314,7 +314,7 @@ Every expectation the last run checked, read from the log below:
 
 ```
   -- lab already running scenario caa-signed: reused, reset with attack off
-negative controls, 2026-11-01T10:49:56+0100
+negative controls, 2026-11-01T11:14:16+0100
 ######## A. caa-signed / web+ns: the REFUSED rests on the resolver validating
     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
     [dns      ] victim.rs CAA: SERVFAIL ad=0

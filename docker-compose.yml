@@ -1,5 +1,5 @@
 # hijackscan demo: the database and the app (web page + API).
-#   docker compose up            build if needed, start both, then open http://127.0.0.1:8000
+#   docker compose up -d         build if needed, start both in the background, then open http://127.0.0.1:8000
 #   docker compose down          stop (the database is kept)
 #   docker compose down -v       stop and delete the database (the demo data is loaded again on the next up)
 #   docker compose up -d mongo   only the database, for development with `uv run hijackscan serve`

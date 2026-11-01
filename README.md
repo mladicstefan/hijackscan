@@ -10,14 +10,15 @@ Needs only [Docker Desktop](https://www.docker.com/products/docker-desktop/), ru
 ```bash
 git clone https://github.com/mladicstefan/hijackscan.git
 cd hijackscan
-docker compose up
+docker compose up -d
 ```
 
-When the terminal says `hijackscan is ready`, open **http://127.0.0.1:8000**. The first start takes a few minutes
-(it builds the app), later ones a few seconds. The page shows 200 scanned domains (`.rs` top 100 and a 100-domain
-`.ee` sample, collected 2026-10-31); no scan or internet access is needed.
+Then open **http://127.0.0.1:8000**. The first start takes a few minutes (it builds the app), later ones a few
+seconds; `docker compose logs -f app` shows the progress and says `hijackscan is ready` when the page is up.
+The page shows 200 scanned domains (`.rs` top 100 and a 100-domain `.ee` sample, collected 2026-10-31); no scan
+or internet access is needed.
 
-Stop with `Ctrl+C`; `docker compose down -v` removes everything, database included.
+Stop with `docker compose down`; `docker compose down -v` removes everything, database included.
 
 ## Documentation
 
