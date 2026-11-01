@@ -1,0 +1,13 @@
+# MongoDB for the hijackscan web page. Start: docker compose up -d   Stop: docker compose down
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: hijackscan-mongo
+    ports:
+      - "127.0.0.1:27017:27017"   # only this computer can connect
+    volumes:
+      - mongo-data:/data/db       # the data survives when the container is deleted
+    restart: unless-stopped
+
+volumes:
+  mongo-data:

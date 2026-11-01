@@ -6,6 +6,7 @@ hijackscan zone <domains.txt> --out dir/                 zone report (report.jso
 hijackscan <domain> [--details] [--html file]            one domain: risk summary; --details for everything
 hijackscan list [domains.txt|domain] [filters]           filter and sort collected domains by risk (no network)
 hijackscan browse <domains.jsonl> [--out file]           one HTML page of every domain, details on click
+hijackscan load <domains.txt> [--name NAME]              score collected records, save them to MongoDB as a run
 """
 
 from __future__ import annotations
@@ -68,6 +69,9 @@ def parser() -> argparse.ArgumentParser:
     li.add_argument("--sort", choices=("score", "domain", "label"), default="score")
     li.add_argument("--details", action="store_true", help="print the full details of every match")
     li.add_argument("--json", action="store_true", help="one JSON object per line (summary, or full with --details)")
+    lo = sub.add_parser("load", help="score collected records (no network) and save them to MongoDB as a new run")
+    lo.add_argument("domains", help="file with one domain per line (the same list as for `zone`)")
+    lo.add_argument("--name", help="a name for the run shown on the web page (default: the file name)")
     return p
 
 
@@ -76,7 +80,7 @@ def main() -> None:
     if (
         argv
         and not argv[0].startswith("-")
-        and argv[0] not in ("sample", "collect", "zone", "domain", "list", "browse")
+        and argv[0] not in ("sample", "collect", "zone", "domain", "list", "browse", "load")
     ):
         argv = ["domain", *argv]  # `hijackscan blic.rs`
     a = parser().parse_args(argv)
@@ -133,5 +137,12 @@ def main() -> None:
         from .report.listing import listing
 
         sys.exit(listing(cfg, a))
+    if a.cmd == "load":
+        from .store import load
+
+        domains, meta = read_list(a.domains)
+        r = load(cfg, domains, meta, source=a.domains, name=a.name)
+        print(f"run {r['run_id']}: {r['domains']} domains saved, {r['missing']} not collected ({r['db']})")
+        return
     parser().print_help()
     sys.exit(2)
