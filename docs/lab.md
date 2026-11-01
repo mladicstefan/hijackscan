@@ -73,6 +73,7 @@ and the report footer prints it, so a lab report is never mistaken for a real on
 
 ```bash
 # once: containerlab, membership of the docker and clab_admins groups, the lab image, ldns on the host
+# (ldns: Debian/Ubuntu `sudo apt install ldnsutils`, Arch `pacman -S ldns`)
 curl -sL https://containerlab.dev/setup | sudo -E bash -s "install-containerlab"
 sudo usermod -aG docker,clab_admins "$USER"
 docker build -t hijackscan-lab:latest lab/image

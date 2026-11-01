@@ -38,7 +38,15 @@ BUILD = LAB_DIR / "build"
 def sh(*cmd: str, check: bool = True, quiet: bool = False) -> subprocess.CompletedProcess:
     if not quiet:
         console.cmd(" ".join(cmd))
-    return subprocess.run(cmd, check=check, capture_output=quiet, text=True)
+    try:
+        return subprocess.run(cmd, check=check, capture_output=quiet, text=True)
+    except FileNotFoundError:
+        hint = {
+            "containerlab": 'curl -sL https://containerlab.dev/setup | sudo -E bash -s "install-containerlab"',
+            "docker": "https://docs.docker.com/engine/install/",
+        }.get(cmd[0], "install it and retry")
+        console.fail(f"{cmd[0]} not found", hint)
+        raise SystemExit(1) from None
 
 
 def dexec(node: str, *cmd: str, quiet: bool = True) -> str:
