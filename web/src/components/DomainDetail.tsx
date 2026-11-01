@@ -155,9 +155,9 @@ function Body({ d }: { d: Detail }) {
         </>
       ) : null}
 
-      {x.vectors.cvss31 || x.attack_techniques.length || x.references.length ? (
+      {x.vectors.cvss31 || x.attack_techniques.length ? (
         <details>
-          <summary>Vectors, techniques and references</summary>
+          <summary>CVSS vectors and MITRE ATT&amp;CK techniques</summary>
           {x.vectors.cvss31 ? (
             <p className="small">
               <code>{x.vectors.cvss31}</code> (base {fmtScore(x.vectors.cvss31_base)})
@@ -172,15 +172,6 @@ function Body({ d }: { d: Detail }) {
               </li>
             ))}
           </ul>
-          <ol className="small refs">
-            {x.references.map((r) => (
-              <li key={r.n} value={r.n}>
-                <a href={r.url} target="_blank" rel="noreferrer">
-                  {r.title}
-                </a>
-              </li>
-            ))}
-          </ol>
         </details>
       ) : null}
     </>

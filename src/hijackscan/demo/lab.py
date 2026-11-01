@@ -141,6 +141,12 @@ def run_lab(runner: Runner) -> LabSummary:
     runner.step("lab matrix", inner_total=MATRIX_ROWS, expect="about 1 min")
     try:
         matrix = _Matrix(lab)
+        runner.explain(
+            "Five rows: deploy a scenario, scan it with the real scanner, announce the forged route, let the CA try "
+            "to issue to the attacker. The results block follows when the run ends: per row, the scanner's label, "
+            "who answered each CA perspective (attacker = captured) and the CA's decision against the expectation. "
+            "Every transcript is in lab/logs/."
+        )
         res = runner.run("matrix", [*LABCTL, "matrix"], matrix)
         for line in matrix.results:
             runner.show(line)
@@ -153,6 +159,11 @@ def run_lab(runner: Runner) -> LabSummary:
 
         runner.step("lab controls", inner_total=CONTROLS)
         controls = _Controls(lab)
+        runner.explain(
+            "Four controls, each removing the one mechanism a verdict rests on (the resolver's validator, ROV at the "
+            "transits, the attacker's address, the ROA day) and putting it back: one ✔ per expectation as it is "
+            "checked, with the decision or label observed."
+        )
         res = runner.run("controls", [*LABCTL, "controls"], controls)
         if not res.ok and not controls.verdict_seen:  # died before its verdict line
             runner.tail(res)

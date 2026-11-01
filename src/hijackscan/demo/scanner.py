@@ -158,6 +158,7 @@ def _zone(runner: Runner) -> dict[str, int] | None:
             r.show(line)
 
     command = ["uv", "run", "hijackscan", "zone", str(SAMPLE), "--out", f"{OUT}/"]
+    runner.explain("How the sample splits by severity (CVSS scale); the HTML reports carry the rest.")
     res = runner.run("zone", command, on_line)
     if not res.ok:
         _failed(runner, res, "zone report failed")
@@ -179,6 +180,12 @@ def _domain(runner: Runner, name: str) -> bool:
             return
         r.show(line.rstrip())
 
+    runner.explain(
+        "The worst domain of the sample in full: its verdict line (domain, severity and score, label), the one "
+        "sentence that says what an attacker can do, the fix that helps most, then how the score was calculated, "
+        "every finding, what each fix does, and the raw facts per address. Red marks a forgeable address or an "
+        "open path, green a defended one, yellow a loose ROA or a missing record."
+    )
     res = runner.run("domain", ["uv", "run", "hijackscan", name, "--details"], on_line)
     if res.returncode > DOMAIN_EXIT_MAX or res.returncode < 0 or seen_traceback:
         _failed(runner, res, f"hijackscan {name} failed (exit {res.returncode})")
@@ -190,6 +197,7 @@ def _domain(runner: Runner, name: str) -> bool:
 def _list(runner: Runner) -> bool:
     runner.step("list High and Critical")
     command = ["uv", "run", "hijackscan", "list", str(SAMPLE), "--severity", "High,Critical"]
+    runner.explain("Every High and Critical domain, worst first, with the single fix that lowers its score most.")
     res = runner.run("list", command, lambda line, r: r.show(line))
     if not res.ok:
         _failed(runner, res, "list failed")

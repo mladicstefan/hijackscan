@@ -38,7 +38,9 @@ def domain_report(
     if details:
         lines += risk_view.details_text(r) + ["", "RAW FACTS", "", render_text(s, rec)]
     else:
-        lines.append("  (--details: the calculation, every finding, vectors, references and the raw facts)")
+        lines.append(
+            "  (--details: the calculation, every path and finding, what each fix does, vectors, and the raw facts)"
+        )
     console.show(lines)
     if html_path:
         html_path.write_text(render_html(s, rec, r), encoding="utf-8")

@@ -61,7 +61,7 @@ def parser() -> argparse.ArgumentParser:
     d.add_argument("name")
     d.add_argument("--html", type=Path)
     d.add_argument("--force", action="store_true")
-    d.add_argument("--details", action="store_true", help="calculation, findings, vectors, references, raw facts")
+    d.add_argument("--details", action="store_true", help="calculation, paths, findings, fixes, vectors, raw facts")
     b = sub.add_parser("browse", help="HTML page of every domain in a domains.jsonl, worst first, details on click")
     b.add_argument("jsonl", type=Path, help="a domains.jsonl written by `hijackscan zone`")
     b.add_argument("--out", type=Path, help="default: domains.html next to the jsonl")

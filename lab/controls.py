@@ -24,7 +24,6 @@ from pathlib import Path
 
 import console
 import labctl
-from console import log
 from render import SCENARIOS
 from render.dns import SIGNED_ZONE
 from render.topology import EXTRA_ADDRESSES, FEED_PORT, LINKS, NODES
@@ -62,8 +61,10 @@ class Controls:
             self.say(f"  -- lab already running scenario {self.applied}: reused, reset with attack off", show=False)
 
     def say(self, line: str, show: bool = True) -> None:
+        """One line of the transcript: into controls.log as plain text and, with `show`, onto the terminal
+        coloured by its shape (the text is the same)."""
         if show:
-            log.info(line)
+            console.transcript(line, indent="")
         with self.log.open("a") as f:
             f.write(line + "\n")
 
@@ -72,8 +73,9 @@ class Controls:
         self.say(f"######## {title}", show=False)
 
     def expect(self, what: str, ok: bool, detail: str) -> None:
+        """One expectation checked: `A1 validating: REFUSED, reachable but bogus` against what was observed."""
         (console.ok if ok else console.fail)(what, detail)
-        self.say(f"  [{'ok  ' if ok else 'MISS'}] {what}: {detail}", show=False)
+        self.say(f"  [{'ok  ' if ok else 'MISS'}] {what}  ->  {detail}", show=False)
         if not ok:
             self.misses.append(what)
 
@@ -241,9 +243,24 @@ def tightened(roas_csv_xz: bytes) -> bytes:
     return lzma.compress(buf.getvalue().encode())
 
 
+CONTROLS_LEGEND = [
+    ("✔ A1 ...", "an expectation met: its id, what was expected, and the observed decision or label"),
+    ("✘ ...", "an expectation missed: the control's claim does not hold, the run exits 1"),
+    ("-- ...", "the mechanism being removed or restored (a config edit, a route-map, an address, the ROA day)"),
+    ("[dns] [caa] [http-01] [quorum] [decision]", "the CA's transcript for that state, one check per line"),
+]
+
+
 def run_controls(build: Path) -> int:
     c = Controls(build, labctl.run_dir("controls") / "controls.log")
     c.say(f"negative controls, {time.strftime('%Y-%m-%dT%H:%M:%S%z')}")
+    console.stage("how to read a control")
+    console.explain(
+        "Each control takes one matrix verdict, removes the single mechanism it rests on, checks that the CA's "
+        "decision (or the scanner's label) flips, restores the mechanism and checks that it flips back. Three "
+        "expectations per control (five for B), each a ✔ line."
+    )
+    console.legend("the lines of evidence", CONTROLS_LEGEND)
     for control in (c.control_a, c.control_b, c.control_c, c.control_d):
         control()
     if c.misses:

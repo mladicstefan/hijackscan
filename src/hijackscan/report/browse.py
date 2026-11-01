@@ -1,7 +1,7 @@
 """`hijackscan browse <domains.jsonl>`: one HTML page listing every domain, worst first.
 
 Each domain is one row with the quick, actionable summary (severity, score, label, headline, first fix); clicking it
-opens the details (calculation, paths, findings with evidence, re-scored fixes, vectors, ATT&CK, references).
+opens the details (calculation, paths, findings with evidence, re-scored fixes, CVSS vectors, ATT&CK techniques).
 Self-contained: inline CSS and a small inline script for filtering. Without the script every row is still shown
 and every row still expands. This page names domains, like domains.jsonl, so it never goes next to report.json in
 anything shared.
@@ -139,9 +139,8 @@ def _details(r: dict) -> str:
         for f in finds:
             sev = f" {_badge(f['severity'], None)}" if f.get("severity") else ""
             ev = "".join(f"<li>{e(x)}</li>" for x in f.get("evidence") or [])
-            refs = f" <span class=muted>[{', '.join(map(str, f['refs']))}]</span>" if f.get("refs") else ""
             items.append(
-                f"<li><code>{e(f['id'])}</code>{sev} <span class=muted>{e(f['kind'])}</span> — {e(f['detail'])}{refs}"
+                f"<li><code>{e(f['id'])}</code>{sev} <span class=muted>{e(f['kind'])}</span> — {e(f['detail'])}"
                 + (f"<ul>{ev}</ul>" if ev else "")
                 + "</li>"
             )
@@ -179,16 +178,6 @@ def _details(r: dict) -> str:
     dq = d.get("data_quality") or {}
     if dq.get("errors"):
         out.append("<h4>Data quality</h4><ul>" + "".join(f"<li>{e(x)}</li>" for x in dq["errors"]) + "</ul>")
-    refs = d.get("references") or []
-    if refs:
-        out.append(
-            "<h4>References</h4><ul>"
-            + "".join(
-                f'<li>[{x["n"]}] <a href="{e(x["url"])}" rel="noopener noreferrer">{e(x["title"])}</a></li>'
-                for x in refs
-            )
-            + "</ul>"
-        )
     return "".join(out)
 
 
@@ -221,7 +210,7 @@ def render(rows: list[dict], source: str) -> str:
         "How to read this page",
         f"One row per domain, worst first: severity (CVSS scale), score 0–10, label (what drives the score), what an "
         f"attacker can do, and the single fix that lowers the score most. Click a row for the calculation, every "
-        f"attack path, the findings with evidence, what each fix does, vectors, ATT&amp;CK techniques and references. "
+        f"attack path, the findings with evidence, what each fix does, the CVSS vectors and the ATT&amp;CK techniques. "
         f"Formula: design/formula.md. Source: <code>{e(source)}</code>.",
     )
     body += html.bar(dict(sev), html.SEVERITY_ORDER)

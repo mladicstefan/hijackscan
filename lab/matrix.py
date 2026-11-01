@@ -42,6 +42,31 @@ ROWS: list[Row] = [
 ]
 ALL_VICTIM = {p: "victim" for p in HIJACKED}  # the control run, attack off
 
+# What each row proves, in one sentence for the reader: the configuration, what the forged route does to it, and
+# what the CA's decision therefore has to be. Shown under the row banner; the evidence follows.
+ROW_WHY: dict[tuple[str, str], str] = {
+    ("baseline", "web"): "loose ROA (/24, maxLength 28), no CAA, unsigned zone: the forged /28 is RPKI-valid, so "
+    "every CA perspective except the victim's own AS lands on the attacker, and the attacker gets the certificate.",
+    ("tight-maxlength", "web"): "one change, ROA maxLength 24: the same forged /28 is now RPKI-invalid, both transits "
+    "drop it, the CA's checks reach the real host, and the attacker is refused for lack of domain control.",
+    ("caa-unsigned", "web"): "CAA with accounturi, only the web address hijacked: the real nameserver still serves "
+    "the CAA record, the account pin refuses the attacker before any HTTP-01 runs.",
+    ("caa-unsigned", "web+ns"): "the same CAA, nameserver hijacked too: the zone is unsigned, so the forged "
+    "nameserver answers 'no CAA' unchallenged and the attacker gets the certificate (caa-erasable).",
+    ("caa-signed", "web+ns"): "the same CAA in a signed zone, both addresses hijacked: the forged nameserver cannot "
+    "sign, the validating resolver answers SERVFAIL, the CA fails closed. The project's central claim.",
+}
+
+CA_LEGEND = [
+    ("[request  ]", "what is asked: the domain, the ACME account (attacker or legit), the method"),
+    ("[dns      ]", "one lookup through the validating resolver: rcode and AD flag (ad=1 validated, SERVFAIL bogus)"),
+    ("[caa      ]", "the CAA walk victim.rs -> rs -> . (RFC 8659) and what the issue tag allows (RFC 8657)"),
+    ("[http-01  ]", "one perspective: behind which AS it sits and which host answered (attacker = hijacked route)"),
+    ("[quorum   ]", "CA/B MPIC rule: the primary and at least 3 of 4 remotes must corroborate"),
+    ("[decision ]", "ISSUED or REFUSED and the reason; this line is what the matrix checks"),
+    ("attack ...", "control plane (paths at the collector) and data plane (who answers the web and ns addresses)"),
+]
+
 
 def scan_evidence(build: Path, sc: dict, log_to: Path) -> tuple[str, list[str]]:
     """The risk label from the scanner's summary line `victim.rs  CRITICAL 10.0  open-web`, and every way the
@@ -90,7 +115,7 @@ def decision(account: str, log_to: Path | None = None, show: bool = False) -> tu
         log_to.write_text(r.stdout + (f"\n--- stderr ---\n{r.stderr}" if r.stderr else ""))
     if show:
         for ln in r.stdout.splitlines():
-            log.info("  " + ln)
+            console.transcript(ln)
     m = re.search(r"^\[decision \] ((ISSUED|REFUSED).*)$", r.stdout, re.M)
     hosts = {}
     for name, detail in HTTP01.findall(r.stdout):
@@ -136,8 +161,17 @@ def run_matrix(build: Path, rows: list[str] | None = None) -> int:
     sc = labctl.current_scenario(build) if applied else None
     if applied:
         console.note(f"reusing the deployed scenario {applied} (containers up): no apply for its rows")
+    console.stage("how to read a row")
+    console.explain(
+        "Each row: deploy one scenario, scan it with the real scanner, announce the forged route, let the CA try to "
+        "issue to the attacker, withdraw the route, let the owner's account try (the control). The scanner's label "
+        "must predict the CA's decision; the row's expectation is in its banner."
+    )
+    console.legend("the lines of evidence", CA_LEGEND)
     for scenario, mode, want_label, want_ca, want_reason, want_hosts, want_plane in selected(rows):
         console.stage(f"row: {scenario} / attack {mode}  (expect scanner {want_label}, CA -> attacker {want_ca})")
+        if why := ROW_WHY.get((scenario, mode)):
+            console.explain(why)
         if scenario != applied:
             sc = labctl.render(SCENARIOS / f"{scenario}.yml", build)
             labctl.deploy(build)
@@ -154,10 +188,17 @@ def run_matrix(build: Path, rows: list[str] | None = None) -> int:
         atk = labctl.attack(mode, sc)
         (logs / f"{tag}-attack.log").write_text(atk["text"])
         console.stage("CA: the attacker's account asks for a certificate during the hijack")
+        console.explain(
+            f"Expect {want_ca}. Watch the [http-01] hosts (attacker = the forged route won that perspective) and "
+            "the [decision] line."
+            if want_hosts
+            else f"Expect {want_ca} before any HTTP-01 runs: the [caa] or [dns] lines stop it."
+        )
         ca_a, reason_a, hosts_a = decision("attacker", logs / f"{tag}-attacker.log", show=True)
         off = labctl.attack("off", sc)
         (logs / f"{tag}-attack.log").write_text(atk["text"] + off["text"])
         console.stage("CA: the legitimate account asks for a certificate, attack off (control)")
+        console.explain("Expect ISSUED with every perspective answered by the victim: the lab itself is sound.")
         ca_l, reason_l, hosts_l = decision("legit", logs / f"{tag}-legit.log", show=True)
         fails = []
         if not label.startswith(want_label):
@@ -254,15 +295,56 @@ DEMO_LOGS = {  # placeholder -> log file; the demo's prose lives in demo_templat
 }
 
 
+def _cells(matrix_md: str) -> list[list[str]]:
+    """The cells of every data row of a matrix.md table (header and rule skipped)."""
+    rows = []
+    for line in matrix_md.splitlines():
+        if not line.startswith("|") or line.startswith("|---") or line.startswith("| scenario |"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) >= 10:
+            rows.append(cells)
+    return rows
+
+
+def compact_table(matrix_md: str) -> str:
+    """The five columns of matrix.md a reader needs first: what the scanner said, what the CA did, proven or not.
+    The full table stays in matrix.md and under the fold of demo.md."""
+    out = ["| scenario | attack | scanner says | CA to the attacker | expected | proven |", "|---|---|---|---|---|---|"]
+    for scenario, mode, _plane, label, _ev, ca_a, _hosts, _ca_l, expected, ok, *_ in _cells(matrix_md):
+        proven = "✔ yes" if ok == "yes" else f"✘ {ok}"
+        out.append(f"| {scenario} | {mode} | {label} | {ca_a.split(':')[0]} | {expected} | {proven} |")
+    return "\n".join(out)
+
+
+EXPECTATION = re.compile(r"^\s*\[(ok  |MISS)\] (.*?)(?:  ->  (.*))?$", re.M)
+
+
+def controls_summary(controls_log: str) -> str:
+    """One row per expectation in a controls.log (`[ok  ] A1 what  ->  observed`), in the order checked."""
+    out = ["| | expectation | observed |", "|---|---|---|"]
+    for m in EXPECTATION.finditer(controls_log):
+        mark = "✔" if m.group(1) == "ok  " else "✘ MISS"
+        what, seen = (x.replace("|", "\\|") if x else "" for x in (m.group(2), m.group(3)))
+        out.append(f"| {mark} | {what} | {seen} |")
+    return "\n".join(out) if len(out) > 2 else "(no expectations found in controls.log: run labctl controls)"
+
+
 def write_demo(logs: Path) -> Path:
     """Regenerate lab/demo.md from demo_template.md, this matrix run's logs and the latest controls run's log;
-    never edit demo.md by hand."""
+    never edit demo.md by hand. Two placeholders are derived from the logs rather than copied: RESULTS_COMPACT
+    (the short form of matrix.md) and CONTROLS_SUMMARY (the expectation lines of controls.log as a table)."""
     lab = Path(__file__).resolve().parent
     text = (lab / "demo_template.md").read_text()
     for key, name in DEMO_LOGS.items():
         f = (logs.parent / "latest-controls" if key == "CONTROLS_LOG" else logs) / name
-        body = f.read_text().rstrip("\n") if f.exists() else f"({name} not found: run labctl controls / matrix)"
+        found = f.exists()
+        body = f.read_text().rstrip("\n") if found else f"({name} not found: run labctl controls / matrix)"
         text = text.replace("{{" + key + "}}", body)
+        if key == "RESULTS_TABLE":
+            text = text.replace("{{RESULTS_COMPACT}}", compact_table(body) if found else body)
+        if key == "CONTROLS_LOG":
+            text = text.replace("{{CONTROLS_SUMMARY}}", controls_summary(body) if found else body)
     out = lab / "demo.md"
     out.write_text(text)
     log.info(f"demo written: {out}")

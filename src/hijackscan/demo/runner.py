@@ -28,11 +28,15 @@ from rich.rule import Rule
 from rich.theme import Theme
 
 from ..config import project_root
+from ..console import THEME as REPORT_THEME
+from ..console import paint
 
 REPO = project_root()
 ANSI = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
 CHILD_ENV = {"TERM": "dumb", "NO_COLOR": "1", "PYTHONUNBUFFERED": "1", "COLUMNS": "120", "PYTHONIOENCODING": "utf-8"}
-THEME = Theme({"ok": "bold green", "fail": "bold red", "note": "yellow", "cmd": "dim", "stage": "bold cyan"})
+# The children print plain text (NO_COLOR); every line shown here goes through the scanner's `paint`, which
+# needs the scanner's theme (severity colours, keys, verdicts) next to the demo's own styles.
+THEME = Theme({**REPORT_THEME.styles, "cmd": "dim"})
 
 OnLine = Callable[[str, "Runner"], None]
 
@@ -200,11 +204,16 @@ class Runner:
     # ------------------------------------------------------------------ terminal
 
     def show(self, renderable: RenderableType | str) -> None:
-        """Print above the bars: a table, or a verbatim line from a child."""
+        """Print above the bars: a table, or a verbatim line from a child (coloured by its shape, text unchanged)."""
         if isinstance(renderable, str):
-            self.console.print(escape(renderable))
+            self.console.print(paint(renderable), soft_wrap=True)
         else:
             self.console.print(renderable)
+
+    def explain(self, text: str) -> None:
+        """One sentence, before a block of child output, saying what it shows and what to look at."""
+        self.console.print(f"[explain]{escape(text)}[/]", soft_wrap=True)
+        self._write(f"[demo] {text}\n")
 
     def cmd(self, command: str) -> None:
         self.console.print(f"[cmd]$ {escape(command)}[/]")

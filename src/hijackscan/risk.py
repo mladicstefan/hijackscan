@@ -333,11 +333,11 @@ def assess(rec: dict, s: Scored, prm: RiskParams | None = None, ov: dict | None 
 
     web_block = []
     if pinned:
-        web_block.append("CAA accounturi: only the owner's ACME account may issue [19]")
+        web_block.append("CAA accounturi: only the owner's ACME account may issue (RFC 8657)")
     if forbids:
-        web_block.append('CAA issue ";": no CA may issue [18]')
+        web_block.append('CAA issue ";": no CA may issue (RFC 8659)')
     if vm and not vm & {"http-01", "tls-alpn-01"}:
-        web_block.append("CAA validationmethods excludes http-01 and tls-alpn-01 [19]")
+        web_block.append("CAA validationmethods excludes http-01 and tls-alpn-01 (RFC 8657)")
     ns_block = []
     if dnssec == "secure":
         ns_block.append("DNSSEC: a validating CA rejects forged answers")
