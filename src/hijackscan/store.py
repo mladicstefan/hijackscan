@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+from collections.abc import Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -149,3 +150,127 @@ def load(cfg: Config, domains: list[str], meta: dict | None, source: str, name: 
         }
     )
     return {"run_id": str(run_id), "domains": len(records), "missing": len(missing), "db": f"{MONGO_URL}/{DB_NAME}"}
+
+
+# --------------------------------------------------------------------------- read (used by the API)
+
+# The domains table shows the summary; `details` (calculation, paths, evidence) is only sent for one domain.
+SUMMARY = {"_id": 0, "run_id": 0, "details": 0}
+SORTS = {"score": [("score", -1), ("domain", 1)], "domain": [("domain", 1)]}
+
+
+def _oid(run_id: str):
+    """The ObjectId for a run id string, or None if it cannot be one."""
+    from bson import ObjectId
+
+    return ObjectId(run_id) if ObjectId.is_valid(run_id) else None
+
+
+def run_oid(db, run_id: str):
+    """The ObjectId of an existing run, or None (bad id or no such run)."""
+    oid = _oid(run_id)
+    return oid if oid and db.runs.count_documents({"_id": oid}, limit=1) else None
+
+
+def _run_out(doc: dict) -> dict:
+    doc["id"] = str(doc.pop("_id"))
+    return doc
+
+
+def list_runs(db) -> list[dict]:
+    """Every run, newest first, with what a run picker needs."""
+    fields = {"name": 1, "source": 1, "loaded_at": 1, "git_commit": 1, "scope": 1, "summary": 1, "missing": 1}
+    return [_run_out(r) for r in db.runs.find({}, fields).sort("loaded_at", -1)]
+
+
+def get_run(db, run_id: str) -> dict | None:
+    oid = _oid(run_id)
+    doc = db.runs.find_one({"_id": oid}) if oid else None
+    return _run_out(doc) if doc else None
+
+
+def domain_filter(
+    oid,
+    *,
+    severity: Sequence[str] = (),
+    label: Sequence[str] = (),
+    finding: Sequence[str] = (),
+    asn: str | None = None,
+    operator: str | None = None,
+    q: str | None = None,
+    min_score: float | None = None,
+) -> dict:
+    """The MongoDB query for the domains of one run matching every given filter."""
+    import re
+
+    f: dict = {"run_id": oid}
+    if severity:
+        f["severity"] = {"$in": list(severity)}
+    if label:
+        f["label"] = {"$in": list(label)}
+    if finding:
+        f["finding_ids"] = {"$all": list(finding)}  # all of them, not any
+    if asn:
+        f["facts.hosting_asns.asn"] = asn
+    if operator:
+        f["facts.ns_operators"] = operator
+    if q:
+        f["domain"] = {"$regex": re.escape(q.lower())}  # escaped: the text is matched literally
+    if min_score is not None:
+        f["score"] = {"$gte": min_score}
+    return f
+
+
+def find_domains(db, query: dict, *, sort: str = "score", page: int = 1, per_page: int = 50) -> dict:
+    """One page of matching domains (summary only) and how many match in total."""
+    total = db.domains.count_documents(query)
+    cursor = db.domains.find(query, SUMMARY).sort(SORTS[sort]).skip((page - 1) * per_page).limit(per_page)
+    return {"total": total, "page": page, "per_page": per_page, "items": list(cursor)}
+
+
+def facets(db, query: dict) -> dict:
+    """For the domains matching `query`: how many per severity, label, finding, hosting AS and DNS operator."""
+
+    def count(field: str, unwind: str | None = None, name: str | None = None) -> list[dict]:
+        stages: list[dict] = [{"$unwind": f"${unwind}"}] if unwind else []
+        group: dict = {"_id": f"${field}", "domains": {"$sum": 1}}
+        if name:
+            group["name"] = {"$first": f"${name}"}
+        stages += [{"$group": group}, {"$sort": {"domains": -1, "_id": 1}}]
+        return stages
+
+    pipeline = [
+        {"$match": query},
+        {
+            "$facet": {
+                "severity": count("severity"),
+                "label": count("label"),
+                "finding": count("finding_ids", unwind="finding_ids"),
+                "asn": count("facts.hosting_asns.asn", unwind="facts.hosting_asns", name="facts.hosting_asns.name"),
+                "operator": count("facts.ns_operators", unwind="facts.ns_operators"),
+            }
+        },
+    ]
+    out = next(db.domains.aggregate(pipeline))
+    return {k: [{"value": x.pop("_id"), **x} for x in v] for k, v in out.items()}
+
+
+def get_domain(db, run_id: str, domain: str) -> dict | None:
+    """One domain's full record in one run, details included."""
+    oid = _oid(run_id)
+    doc = db.domains.find_one({"run_id": oid, "domain": domain.lower()}, {"_id": 0}) if oid else None
+    if doc:
+        doc["run_id"] = str(doc["run_id"])
+    return doc
+
+
+def domain_history(db, domain: str) -> list[dict]:
+    """One domain in every run that has it, newest run first: for "check my domain" and before/after a fix."""
+    rows = list(db.domains.find({"domain": domain.lower()}, {"_id": 0, "details": 0}))
+    runs = {r["_id"]: r for r in db.runs.find({"_id": {"$in": [x["run_id"] for x in rows]}}, {"name": 1, "loaded_at": 1})}
+    out = []
+    for x in rows:
+        run = runs.get(x.pop("run_id"))
+        if run:  # skip domains of a load that never finished (see load())
+            out.append({"run_id": str(run["_id"]), "run_name": run.get("name"), "loaded_at": run["loaded_at"], **x})
+    return sorted(out, key=lambda x: x["loaded_at"], reverse=True)
