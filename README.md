@@ -3,30 +3,30 @@
 How exposed are the domains of a TLD (`.ee` from its zone file, `.rs` from a list) to certificate theft through
 BGP hijacks below DNS, and how much of it does DNSSEC + CAA close? (team dogma, DNS SEC Hackathon 2026)
 
-## Run the demo
+## Web page
 
-Needs only [Docker Desktop](https://www.docker.com/products/docker-desktop/) (running). In this folder:
+Needs only [Docker Desktop](https://www.docker.com/products/docker-desktop/), running.
 
 ```bash
+git clone https://github.com/mladicstefan/hijackscan.git
+cd hijackscan
 docker compose up
 ```
 
-Then open **http://127.0.0.1:8000**. The first start builds the app (a few minutes); later starts take seconds.
-It loads 200 scanned domains (`.rs` top 100 and a 100-domain `.ee` sample, collected 2026-10-31, in
-`data/demo/`), so no scanning or internet access is needed. Stop with `Ctrl+C` or `docker compose down`;
-`docker compose down -v` also deletes the database. The API and its documentation are at `/docs`.
+When the terminal says `hijackscan is ready`, open **http://127.0.0.1:8000**. The first start takes a few minutes
+(it builds the app), later ones a few seconds. The page shows 200 scanned domains (`.rs` top 100 and a 100-domain
+`.ee` sample, collected 2026-10-31); no scan or internet access is needed.
 
-To refresh the demo data after re-collecting (`uv run hijackscan collect data/samples/dev100.txt --force`, same
-for `ee100.txt`), copy the records of both lists from `data/collected/` to `data/demo/collected/`, then
-`docker compose down -v && docker compose up --build`.
+Stop with `Ctrl+C`; `docker compose down -v` removes everything, database included.
 
-Three parts, each documented end to end (the web page: [web/README.md](web/README.md)):
+## Documentation
 
 - **[docs/scanner.md](docs/scanner.md)**: the scanner. Sample a zone, collect DNS and routing facts, derive
   an exposure class and a 0–10 risk score, report per domain and per zone.
 - **[docs/lab.md](docs/lab.md)**: the validation lab. A sealed containerlab fabric where the unmodified scanner
   scans one domain and a minimal CA then tries to issue to an attacker; every verdict is proven by the CA's
   decision and flipped by negative controls.
+- **[web/README.md](web/README.md)**: the web page. Development, the API, refreshing the demo data.
 
 Design and results: [design/formula.md](design/formula.md) (the risk formula), [design/lab.md](design/lab.md)
 (lab decisions), [lab/demo.md](lab/demo.md) (the last lab run, generated from its logs).

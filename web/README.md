@@ -5,7 +5,8 @@ React + TypeScript page over the hijackscan API: runs, overview, filterable doma
 
 ## Run it
 
-Needs Node.js 20.19 or newer, MongoDB (`docker compose up -d` in the project root) and at least one loaded run.
+Needs Node.js 20.19 or newer, MongoDB (`docker compose up -d mongo` in the project root: only the database, so
+port 8000 stays free for your own `hijackscan serve`) and at least one loaded run.
 
 ```bash
 cd web
@@ -16,10 +17,28 @@ uv run hijackscan serve           # in another terminal, from the project root
 npm run dev
 
 # for the demo: one server for page and API on http://127.0.0.1:8000
-npm run build                     # writes web/dist/; restart `hijackscan serve` after the first build
+npm run build                     # writes web/dist/; `hijackscan serve` picks it up on the next page load
 ```
 
 `npm run check` runs the type checker and ESLint; both must pass with no warnings.
+
+The one-command version (`docker compose up` in the project root, see the main README) builds the page and the
+API into one image and loads the demo data from `data/demo/collected/`. API documentation: `/docs`.
+
+## Refresh the demo data
+
+After re-collecting with the current scanner, copy the records of both lists into `data/demo/collected/` and
+rebuild (from the project root):
+
+```bash
+uv run hijackscan collect data/samples/dev100.txt --force
+uv run hijackscan collect data/samples/ee100.txt --force
+rm -f data/demo/collected/*.json
+for d in $(grep -hv '^#' data/samples/dev100.txt data/samples/ee100.txt); do cp "data/collected/$d.json" data/demo/collected/; done
+docker compose down -v && docker compose up --build
+```
+
+`down -v` empties the database, so the new records are loaded instead of the old runs being kept.
 
 ## How it is built
 
