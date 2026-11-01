@@ -60,6 +60,10 @@ uv run hijackscan list --label ns-partial --details
 uv run hijackscan list --finding NO_CAA,UNSIGNED --min-score 4 --json
 uv run hijackscan browse data/out/ee/domains.jsonl      # (re)build domains.html from a domains.jsonl
 
+# 6. four real hijacks (Hetzner/Virtualizor 2026, Route 53/MyEtherWallet 2018, KLAYswap 2022, Celer 2022) scanned
+#    in parallel against the ROAs of their day; HTML drill-downs in data/out/replay/
+uv run hijackscan replay                                 # or: hijackscan replay hetzner celer --details
+
 # lab (containerlab, docker and clab_admins groups or sudo, the lab image: docs/lab.md §4)
 uv run lab/labctl.py matrix        # every row: render, deploy, scan, attack, CA (about 1 min); evidence in lab/logs/<timestamp>-matrix/, latest-matrix links to the newest run
 uv run lab/labctl.py controls      # negative controls: every verdict flips when its mechanism is removed
@@ -201,6 +205,7 @@ the /21 in question); (4) "no ROA" is reported as *unknown origin, effectively f
 | `src/hijackscan/collect/` | observes: zone file sampler, DNS, RIPEstat, the ROA archive |
 | `src/hijackscan/score.py`, `risk.py` | pure: exposure class, risk score, fixes |
 | `src/hijackscan/report/` | terminal, HTML and zone reports, the `list` view |
+| `src/hijackscan/replay.py` | the four historical incidents: verified facts, ROA day, what each scan shows today |
 | `lab/` | the containerlab lab: `labctl.py`, scenario files, renderers, the CA, the feed, the matrix and controls |
 | `design/` | formula and lab decisions |
 | `data/samples/` | the `.ee` zone file and the two 100-domain samples (everything else under `data/` is generated) |

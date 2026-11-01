@@ -148,8 +148,11 @@ class Scored:
 
 
 def _dnssec(rec: dict) -> str:
-    ds = rec.get("ds") or {}
-    if not ds.get("records"):
+    """unsigned when any zone a CA's resolver depends on (the name's, and every CNAME target's) has no DS:
+    forged answers from that zone's nameservers validate nowhere. Records from before `zones` was
+    recorded hold one zone, whose DS is `ds`."""
+    zones = rec.get("zones") or [{"ds": rec.get("ds")}]
+    if any(not (z.get("ds") or {}).get("records") for z in zones):
         return "unsigned"
     answers = [n for n in rec.get("names", {}).values()]
     ok = any(n["rcode"].get(t) == "NOERROR" and n["ad"].get(t) and n.get(t) for n in answers for t in ("A", "AAAA"))

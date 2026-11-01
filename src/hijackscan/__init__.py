@@ -6,6 +6,7 @@ hijackscan zone <domains.txt> --out dir/                 zone report (report.jso
 hijackscan <domain> [--details] [--html file]            one domain: risk summary; --details for everything
 hijackscan list [domains.txt|domain] [filters]           filter and sort collected domains by risk (no network)
 hijackscan browse <domains.jsonl> [--out file]           one HTML page of every domain, details on click
+hijackscan replay [incident ...] [--details]              four historical hijacks against the ROAs of their day
 """
 
 from __future__ import annotations
@@ -73,6 +74,14 @@ def parser() -> argparse.ArgumentParser:
     li.add_argument("--sort", choices=("score", "domain", "label"), default="score")
     li.add_argument("--details", action="store_true", help="print the full details of every match")
     li.add_argument("--json", action="store_true", help="one JSON object per line (summary, or full with --details)")
+    from .replay import KEYS
+
+    r = sub.add_parser("replay", help="four BGP-hijack incidents scanned against the ROAs of their day, in parallel")
+    r.add_argument("incidents", nargs="*", choices=KEYS, metavar="incident", help=f"any of {', '.join(KEYS)}")
+    r.add_argument(
+        "--out", type=Path, default=Path("data/out/replay"), help="HTML drill-downs (default data/out/replay)"
+    )
+    r.add_argument("--details", action="store_true", help="calculation, findings and raw facts for every scan")
     return p
 
 
@@ -81,7 +90,7 @@ def main() -> None:
     if (
         argv
         and not argv[0].startswith("-")
-        and argv[0] not in ("sample", "collect", "zone", "domain", "list", "browse")
+        and argv[0] not in ("sample", "collect", "zone", "domain", "list", "browse", "replay")
     ):
         argv = ["domain", *argv]  # `hijackscan blic.rs`
     a = parser().parse_args(argv)
@@ -133,5 +142,9 @@ def main() -> None:
         from .report.listing import listing
 
         sys.exit(listing(cfg, a))
+    if a.cmd == "replay":
+        from .replay import run_replay
+
+        sys.exit(run_replay(cfg, a.incidents, a.out, details=a.details))
     parser().print_help()
     sys.exit(2)

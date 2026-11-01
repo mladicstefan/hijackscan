@@ -113,6 +113,13 @@ def address_story(a: AddressDerived, asn_names: dict, rpki_date: str, caps: tupl
         allows = f"allows /{rlen}–/{r['max_length']}" if r["max_length"] > rlen else "exact length only"
         rows.append([r["prefix"], str(r["max_length"]), f"AS{r['origin_asn']}", r["ta"], allows])
     if not a.roas:
+        verdict = (
+            f"UNKNOWN ORIGIN, effectively forgeable: with no ROA no announcement of this space is ever RPKI-invalid, "
+            f"so a forged more-specific up to /{limit} passes every ROV filter and becomes the longest match"
+            if a.forgeable_more_specific
+            else f"UNKNOWN ORIGIN: no ROA, but announced at the routable cap /{limit}: a longer forged route does not "
+            f"propagate; only an exact-prefix origin contest remains"
+        )
         return AddressStory(
             a.ip,
             f"{a.prefix}  (length /{net.prefixlen})  by {origin}",
@@ -120,9 +127,8 @@ def address_story(a: AddressDerived, asn_names: dict, rpki_date: str, caps: tupl
             neighbours,
             [],
             f"none cover this prefix on {rpki_date}",
-            f"UNKNOWN ORIGIN, effectively forgeable: with no ROA no announcement of this space is ever RPKI-invalid, "
-            f"so a forged more-specific up to /{limit} passes every ROV filter and becomes the longest match",
-            True,
+            verdict,
+            a.forgeable_more_specific,
         )
     longest = max(r["max_length"] for r in a.roas)
     usable = min(longest, limit)
@@ -173,6 +179,15 @@ def address_story(a: AddressDerived, asn_names: dict, rpki_date: str, caps: tupl
     )
 
 
+def zone_lines(rec: dict) -> list[str]:
+    """One line per zone a CA's resolver depends on: 'kgns5.com  DS 0  ns ns1.kgns5.com, ns2.kgns5.com'.
+    Empty for records collected before `zones` was recorded."""
+    return [
+        f"{z['name']}  DS {len(z['ds']['records'])}  ns {', '.join(z['nameservers']) or '-'}"
+        for z in rec.get("zones", [])
+    ]
+
+
 # --------------------------------------------------------------------------- terminal
 
 
@@ -214,6 +229,7 @@ def render_text(s: Scored, rec: dict) -> str:
         ]
     else:
         L.append("  CAA           none at any label up to the TLD: every CA may issue")
+    L += [f"  zones         {z}" for z in zone_lines(rec)]
     L += [
         f"  nameservers   {', '.join(rec['nameservers']) or '-'}",
         f"  NS operators  {', '.join(s.ns_operators) or '-'}",
@@ -299,6 +315,7 @@ def render_html(s: Scored, rec: dict, r: Risk | None = None) -> str:
             ["DNSSEC", f"<b>{e(s.dnssec)}</b> — {e(DNSSEC_MEANING[s.dnssec])}"],
             ["DS records at parent / DNSKEY at apex", f"{n_ds} / {n_key}"],
             *caa_rows,
+            *([["zones", "<br>".join(e(z) for z in zone_lines(rec))]] if rec.get("zones") else []),
             ["nameservers", e(", ".join(rec["nameservers"]) or "-")],
             ["NS operators", e(", ".join(s.ns_operators) or "-")],
         ],

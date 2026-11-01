@@ -1,8 +1,9 @@
 """Raw facts per domain → data/collected/<domain>.json. Observes, never judges.
 
-For each domain: A/AAAA (with AD flag and rcode) of apex, www and every NS host; DS and DNSKEY;
-the CAA RRset at every label up to the TLD; per distinct address the announced prefix, origin
-ASNs and RIPEstat's RPKI verdict, plus every covering ROA from the local RPKI archive; AS names.
+For each domain: A/AAAA (with AD flag and rcode) of the name, www and every NS host; the zones the
+name and its CNAME targets live in (found by their SOA), with NS and DS at each zone apex; DNSKEY
+at the first; the CAA RRset at every label up to the TLD; per distinct address the announced prefix,
+origin ASNs and RIPEstat's RPKI verdict, plus every covering ROA from the local RPKI archive; AS names.
 """
 
 from __future__ import annotations
@@ -17,6 +18,8 @@ from datetime import UTC, datetime
 from itertools import count
 from pathlib import Path
 
+from publicsuffix2 import get_sld
+
 from .. import console
 from ..config import Config
 from .dns import Dns
@@ -24,32 +27,47 @@ from .resolver_check import check_resolver, passes
 from .ripestat import RipeStat
 from .rpki import RoaIndex, ensure_archive, latest_archive_day
 
+MAX_CNAME_HOPS = 8  # CNAME targets followed per name (resolvers stop around there too)
+
 
 class Collector:
     """Collects what is stale. The resolver check, the ROA day and index and the RIPEstat client are prepared
     only when at least one domain is actually collected: a run served from data/collected/ touches no network."""
 
-    def __init__(self, cfg: Config) -> None:
+    def __init__(
+        self,
+        cfg: Config,
+        *,
+        dns: Dns | None = None,
+        ripe: RipeStat | None = None,
+        resolver_check: dict | None = None,
+    ) -> None:
+        """`dns`, `ripe` and `resolver_check` let several Collectors (one per ROA day, as in `hijackscan replay`)
+        share one resolver cache, one RIPEstat client (so its concurrency limit holds across all of them) and one
+        proof that the resolver validates."""
         self.cfg = cfg
-        self.dns = Dns(cfg.resolver, cfg.dns_qps)
+        self.dns = dns or Dns(cfg.resolver, cfg.dns_qps)
+        self._shared_ripe = ripe
+        self._shared_check = resolver_check
         self._ready = False
         self._lock = threading.Lock()
 
-    def _prepare(self) -> None:
+    def prepare(self) -> None:
         """Once per Collector: prove the resolver validates, pick and load the ROA day, open RIPEstat."""
         with self._lock:
             if self._ready:
                 return
             cfg = self.cfg
-            self.resolver_check = check_resolver(self.dns)
+            self.resolver_check = self._shared_check or check_resolver(self.dns)
             if not passes(self.resolver_check):
                 console.fail("resolver does not validate DNSSEC", f"{self.dns.address}: {self.resolver_check}")
                 raise SystemExit(1)
-            console.ok(
-                "resolver validates DNSSEC",
-                f"{self.dns.address}: AD on {self.resolver_check['signed_zone']}, "
-                f"SERVFAIL on {self.resolver_check['bogus_zone']}",
-            )
+            if not self._shared_check:
+                console.ok(
+                    "resolver validates DNSSEC",
+                    f"{self.dns.address}: AD on {self.resolver_check['signed_zone']}, "
+                    f"SERVFAIL on {self.resolver_check['bogus_zone']}",
+                )
             if cfg.rpki_date == "latest":
                 day, why = latest_archive_day(cfg.data_dir / "rpki", cfg.rpki_max_age_days)
                 cfg = replace(cfg, rpki_date=day)
@@ -62,14 +80,14 @@ class Collector:
             elif not any(cfg.rpki_dir.glob("*/roas.csv.xz")):  # a synthetic day (the lab's "lab") must be on disk
                 raise SystemExit(f"no ROA archive under {cfg.rpki_dir}: use a YYYY-MM-DD day or write one there")
             self.roas = RoaIndex(cfg.rpki_dir)
-            self.ripe = RipeStat(cfg.cache_dir, cfg.ripestat_concurrency, cfg.ripestat_url)
+            self.ripe = self._shared_ripe or RipeStat(cfg.cache_dir, cfg.ripestat_concurrency, cfg.ripestat_url)
             cfg.collected_dir.mkdir(parents=True, exist_ok=True)
             self._ready = True
 
     # -- one domain --------------------------------------------------------
 
     def collect(self, domain: str) -> dict:
-        self._prepare()
+        self.prepare()
         rec: dict = {
             "domain": domain,
             "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
@@ -80,10 +98,11 @@ class Collector:
             "routable_caps": list(self.cfg.routable_caps),
             "rpki_date": self.cfg.rpki_date,
             "names": {},
-            "ds": None,
+            "zones": [],  # ordered: the zone of the name first, then the zone of each CNAME target
+            "ds": None,  # the first zone's DS (every zone's is in zones[])
             "dnskey": None,
             "caa_chain": [],
-            "nameservers": {},
+            "nameservers": {},  # merged over every zone: any of them can answer a CA's resolver
             "addresses": {},
             "asns": {},
             "errors": [],
@@ -91,15 +110,18 @@ class Collector:
         try:
             for name in (domain, f"www.{domain}"):
                 rec["names"][name] = self._addresses(name)
-            rec["ds"] = self.dns.query(domain, "DS").to_json()
-            rec["dnskey"] = self.dns.query(domain, "DNSKEY").to_json()
+            for apex in self._zones(domain, rec["names"]):
+                hosts = [ns.rstrip(".").lower() for ns in self.dns.query(apex, "NS").records]
+                rec["zones"].append({"name": apex, "ds": self.dns.query(apex, "DS").to_json(), "nameservers": hosts})
+                for ns in hosts:
+                    if ns not in rec["nameservers"]:
+                        rec["nameservers"][ns] = self._addresses(ns)
+            rec["ds"] = rec["zones"][0]["ds"]
+            rec["dnskey"] = self.dns.query(rec["zones"][0]["name"], "DNSKEY").to_json()
             labels = domain.split(".")
             for i in range(len(labels)):
                 name = ".".join(labels[i:])
                 rec["caa_chain"].append({"name": name, **self.dns.query(name, "CAA").to_json()})
-            for ns in self.dns.query(domain, "NS").records:
-                ns = ns.rstrip(".").lower()
-                rec["nameservers"][ns] = self._addresses(ns)
             ips = {
                 ip for n in list(rec["names"].values()) + list(rec["nameservers"].values()) for ip in n["A"] + n["AAAA"]
             }
@@ -119,7 +141,35 @@ class Collector:
             "AAAA": aaaa.records,
             "ad": {"A": a.ad, "AAAA": aaaa.ad},
             "rcode": {"A": a.rcode, "AAAA": aaaa.rcode},
+            "cname": (a.cnames or aaaa.cnames)[:MAX_CNAME_HOPS],
         }
+
+    def _zones(self, domain: str, names: dict) -> list[str]:
+        """The zone apexes a CA's resolver depends on for `domain`: the zone of the name itself, then the zone
+        of every CNAME target of the name and of www, in chain order, each once."""
+        zones = [self._zone_apex(domain)]
+        for entry in names.values():
+            for target in entry["cname"]:
+                apex = self._zone_apex(target)
+                if apex not in zones:
+                    zones.append(apex)
+        return zones
+
+    def _zone_apex(self, name: str) -> str:
+        """The apex of the zone holding `name`: the owner of the SOA the resolver returns for it, in the answer
+        section when the name is the apex, in the authority section when it is below one (NODATA or NXDOMAIN).
+        A CNAME owner is chased to its target, so the SOA seen is the target's: its own zone is the one holding
+        its parent name. The registrable domain is a floor in two cases: an NXDOMAIN whose SOA comes from above
+        it (the registry does not delegate the name) and a CNAME at a delegated apex both leave the name itself.
+        A NODATA SOA from above the floor is trusted (foo.github.io lives in github.io)."""
+        floor = get_sld(name, strict=False) or name
+        soa = self.dns.query(name, "SOA")
+        if soa.cnames:
+            parent = name.partition(".")[2]
+            return self._zone_apex(parent) if _within(parent, floor) else name
+        if soa.soa and _within(name, soa.soa) and (_within(soa.soa, floor) or soa.rcode != "NXDOMAIN"):
+            return soa.soa
+        return floor
 
     def _address(self, ip: str) -> dict:
         prefix, asns = self.ripe.network_info(ip)
@@ -137,6 +187,23 @@ class Collector:
     def path(self, domain: str) -> Path:
         return self.cfg.collected_dir / f"{domain}.json"
 
+    def collect_one(self, domain: str, label: str = "") -> dict:
+        """Collect one domain, store it under data/collected/ and log one line; `label` prefixes the log line."""
+        rec = self.collect(domain)
+        tmp = self.path(domain).with_suffix(".json.part")
+        tmp.write_text(json.dumps(rec, indent=1, ensure_ascii=False) + "\n")
+        tmp.replace(self.path(domain))
+        detail = (
+            f"{len(rec['names'])} names, {len(rec['zones'])} zones, {len(rec['nameservers'])} ns, "
+            f"{len(rec['addresses'])} addrs, caa on {sum(bool(c['records']) for c in rec['caa_chain'])} labels"
+        )
+        what = f"{label} {domain}".strip()
+        if rec["errors"]:
+            console.fail(what, f"{detail}, {len(rec['errors'])} errors: {rec['errors'][0]}")
+        else:
+            console.ok(what, detail)
+        return rec
+
     def fresh(self, domain: str) -> bool:
         p = self.path(domain)
         return p.exists() and (time.time() - p.stat().st_mtime) < self.cfg.max_age_hours * 3600
@@ -145,7 +212,7 @@ class Collector:
         todo = [d for d in domains if force or not self.fresh(d)]
         console.stage(f"collect  {len(todo)} of {len(domains)} domains")
         if todo:
-            self._prepare()  # before the pool: the one place the index is built
+            self.prepare()  # before the pool: the one place the index is built
         cached = len(domains) - len(todo)
         console.info("resolver", self.dns.address)
         console.info("workers", f"{self.cfg.workers}   ({cached} cached, younger than {self.cfg.max_age_hours:g} h)")
@@ -154,20 +221,9 @@ class Collector:
         failed: list[str] = []
 
         def one(domain: str) -> dict:
-            rec = self.collect(domain)
-            tmp = self.path(domain).with_suffix(".json.part")
-            tmp.write_text(json.dumps(rec, indent=1, ensure_ascii=False) + "\n")
-            tmp.replace(self.path(domain))
-            detail = (
-                f"{len(rec['names'])} names, {len(rec['nameservers'])} ns, {len(rec['addresses'])} addrs, "
-                f"caa on {sum(bool(c['records']) for c in rec['caa_chain'])} labels"
-            )
-            n = f"[{next(done)}/{len(todo)}]"
+            rec = self.collect_one(domain, label=f"[{next(done)}/{len(todo)}]")
             if rec["errors"]:
                 failed.append(domain)
-                console.fail(f"{n} {domain}", f"{detail}, {len(rec['errors'])} errors: {rec['errors'][0]}")
-            else:
-                console.ok(f"{n} {domain}", detail)
             return rec
 
         with ThreadPoolExecutor(max_workers=self.cfg.workers) as pool:
@@ -185,6 +241,11 @@ class Collector:
             days = sorted({r.get("rpki_date", "?") for r in records})
             console.info("rpki day", f"{', '.join(days)}  (from the cached records)")
         return records
+
+
+def _within(name: str, zone: str) -> bool:
+    """`name` is `zone` or below it."""
+    return name == zone or name.endswith("." + zone)
 
 
 def read_domains(arg: str) -> list[str]:

@@ -75,6 +75,7 @@ Useful variants:
 ```bash
 uv run hijackscan sample data/samples/zone.ee.part-* --n 500 --seed 2 --out data/samples/ee500.txt   # bigger / different draw
 uv run hijackscan --rpki-date 2026-08-28 zone data/samples/ee100.txt --out data/out/ee-aug28/        # ROAs of the Hetzner incident day
+uv run hijackscan replay [hetzner|mew|klayswap|celer ...] [--details]                                # the four incidents, ROAs of their day, in parallel
 uv run hijackscan collect data/samples/ee100.txt --force                                             # ignore cached records
 uv run hijackscan --resolver 127.0.0.1:53 zone ...                                                   # our own Unbound
 python -m json.tool data/collected/<domain>.json | less                                              # one raw record
@@ -106,8 +107,20 @@ from bogus. The sample's DS share against the zone's is the representativeness c
   asserts AD on a signed zone (`rnids.rs`) and SERVFAIL on `dnssec-failed.org`; the collector refuses to
   start otherwise and stores the result in every record (`resolver_check`). Every query sets the DO bit; the
   AD flag and rcode are recorded per answer, never interpreted here.
-- **Names.** A/AAAA for the apex, `www.`, and every NS host; DS and DNSKEY; CAA at every label up to and
-  including the TLD (`caa_chain`).
+- **Names.** A/AAAA for the name, `www.`, and every NS host, each with the CNAME chain the resolver followed
+  (`cname`, at most 8 targets); CAA at every label up to and including the TLD (`caa_chain`).
+- **Zones.** The input may be a zone apex (`example.ee`), a hostname inside a zone (`www.rnids.rs`) or an
+  alias (`developers.kakao.com` → `developers-ad7vqhoe.kgns5.com`). NS and DS live at a zone apex, so the
+  collector first finds the zones involved: the zone of the name itself, then the zone of every CNAME target
+  of the name and of `www.`, in chain order. A zone apex is the owner of the SOA the resolver returns for a
+  name: in the answer section when the name is the apex, in the authority section when the name is below it
+  (NODATA or NXDOMAIN). An alias is chased by the resolver, so its own zone is that of its parent name. Two
+  cases stop at the registrable domain: an NXDOMAIN answered from above it (the registry does not delegate
+  the name) and a CNAME at a delegated apex both leave the name itself as its zone; a NODATA answered from
+  above it is trusted (`foo.github.io` lives in `github.io`). `zones` is the ordered list of `{name, ds, nameservers}`; `ds`
+  and `dnskey` are the first zone's, and **`nameservers` is the union of every zone's NS hosts**: a CA's
+  resolver follows the same chain, so a forged answer from any zone on it reaches the CA. For an apex domain
+  without aliases there is exactly one zone, the domain itself.
 - **Routing, per distinct address.** The announced prefix and origin ASNs (RIPEstat `network-info`),
   RIPEstat's RPKI verdict (`rpki-validation`), whether anything more specific is already announced inside the
   prefix (`routing-status`), AS names (`as-overview`). RIPEstat is called with at most 8 in flight,
@@ -138,8 +151,9 @@ Per address, with `limit` = the routable cap (24 for IPv4, 48 for IPv6):
 
 Per domain:
 
-- `dnssec` = `unsigned` (no DS) | `secure` (DS and A/AAAA answered with AD) | `bogus` (DS but SERVFAIL or
-  no AD);
+- `dnssec` = `unsigned` (any zone on the chain has no DS: forged answers from that zone's nameservers
+  validate nowhere) | `secure` (every zone has a DS and A/AAAA answered with AD) | `bogus` (DS but SERVFAIL
+  or no AD);
 - `web_forgeable` when any web address is forgeable; `ns_forgeable` only when **every** nameserver address
   is (a CA's resolver and each MPIC perspective may ask any of them; `ns_forgeable_hosts`/`ns_hosts` record
   partial capture);
@@ -175,13 +189,22 @@ Formula, parameters, derivations and references: [design/formula.md](../design/f
 
 ## 8. Report
 
-- `hijackscan <domain>`: the risk summary and the fix that helps most; `--details` adds the calculation,
-  every path, and the raw facts per address: the announced prefix and origin, RIPEstat's verdict, announced
-  more-specifics, every covering ROA and every ROA inside the prefix that holds the address, and the verdict
-  sentence that explains why the address is or is not forgeable. `--html` writes the same as one page.
+- `hijackscan <name>`: the risk summary and the fix that helps most; `--details` adds the calculation,
+  every path, the zones on the chain with their DS count and nameservers, and the raw facts per address: the
+  announced prefix and origin, RIPEstat's verdict, announced more-specifics, every covering ROA and every ROA
+  inside the prefix that holds the address, and the verdict sentence that explains why the address is or is
+  not forgeable (an address with no ROA is *unknown origin*: *effectively forgeable* below the routable cap,
+  otherwise only an exact-prefix contest remains). `--html` writes the same as one page.
 - `hijackscan zone <list> --out DIR`: `report.json` and `report.html` (counts, what-if rows, per-operator
   table, no domain names) and `domains.jsonl` (one line per domain).
 - `hijackscan list`: filter by sample, label, severity, finding or minimum score; `--json` for machines.
+- `hijackscan replay`: the four incidents in `replay.py` (Hetzner/Virtualizor 2026-08-28, Route 53/MyEtherWallet
+  2018-04-24, KLAYswap 2022-02-03, Celer Bridge 2022-08-17), each with its verified facts and two or three scans
+  against the ROAs of its day. One Collector per ROA day shares a resolver cache and one RIPEstat client; every
+  scan runs in one thread pool and is forced (the collected cache is keyed by domain, not by day). Only the ROA
+  set is historical: DNS and routing are today's, so each incident also scans a domain still in the hijacked
+  infrastructure. Three incidents were certificate thefts; MyEtherWallet used a self-signed certificate and is
+  kept as the nameserver-path example. HTML drill-downs land in `data/out/replay/<domain>-<day>.html`.
 - Every footer names the resolver, the routing source and the ROA archive the record came from.
 
 ## 9. Results and what was checked
