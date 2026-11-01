@@ -87,7 +87,6 @@ function DomainTable({ runId, filters, sort, page }: Props) {
 const Row = memo(function Row({ row }: { row: DomainRow }) {
   const hosting = row.facts.hosting_asns[0];
   const hostingName = hosting ? (hosting.name ?? `AS${hosting.asn}`) : null;
-  const fixText = row.fix ? `${fmtOwner(row.fix.owner)} ${row.fix.action} → ${fmtScore(row.fix.score_after)}` : null;
   return (
     <tr>
       <td>
@@ -104,7 +103,7 @@ const Row = memo(function Row({ row }: { row: DomainRow }) {
       <td className="small ellipsis" title={hostingName ?? undefined}>
         {hostingName ?? <span className="muted">–</span>}
       </td>
-      <td className="small ellipsis" title={fixText ?? undefined}>
+      <td className="small">
         {row.fix ? (
           <>
             <span className="owner">{fmtOwner(row.fix.owner)}</span> {row.fix.action}{" "}
