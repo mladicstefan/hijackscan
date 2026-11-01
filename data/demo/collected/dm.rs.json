@@ -1,0 +1,427 @@
+{
+ "domain": "dm.rs",
+ "fetched_at": "2026-10-31T14:46:51+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "dm.rs": {
+   "A": [
+    "34.111.176.125"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.dm.rs": {
+   "A": [
+    "34.111.176.125"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "dm.rs",
+   "records": [
+    "0 issue \"globalsign.com\"",
+    "0 issue \"letsencrypt.org\"",
+    "0 issuewild \"pki.goog\"",
+    "0 issuewild \"amazon.com\"",
+    "0 issuemail \"swisssign.com\"",
+    "0 issuewild \"sectigo.com\"",
+    "0 issue \"digicert.com\"",
+    "0 issuewild \"letsencrypt.org\"",
+    "0 iodef \"mailto:caa@dm.de\"",
+    "0 issue \"pki.goog\"",
+    "0 issue \"sectigo.com\"",
+    "0 issue \"amazon.com\""
+   ],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "auth2.dm-drogeriemarkt.de": {
+   "A": [
+    "194.127.221.100"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.do-ex.org": {
+   "A": [
+    "194.0.182.225"
+   ],
+   "AAAA": [
+    "2a04:2b00:14ee::225"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.do-ex.net": {
+   "A": [
+    "194.50.187.225"
+   ],
+   "AAAA": [
+    "2a04:2b00:14dd::225"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.do-ex.com": {
+   "A": [
+    "193.227.117.225"
+   ],
+   "AAAA": [
+    "2a04:2b00:14cc::225"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "193.227.117.225": {
+   "prefix": "193.227.117.0/24",
+   "origin_asns": [
+    1921
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.227.117.0/24",
+     "origin_asn": 1921,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "193.227.117.0/24",
+     "origin_asn": 207021,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "193.227.117.0/24",
+     "origin_asn": 212222,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "194.0.182.225": {
+   "prefix": "194.0.182.0/24",
+   "origin_asns": [
+    1921,
+    207021
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "194.0.182.0/24",
+     "origin_asn": 1921,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "194.0.182.0/24",
+     "origin_asn": 207021,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "194.0.182.0/24",
+     "origin_asn": 212391,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "194.127.221.100": {
+   "prefix": "194.127.216.0/21",
+   "origin_asns": [
+    28979
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "194.127.216.0/21",
+     "origin_asn": 28979,
+     "max_length": 21,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "194.50.187.225": {
+   "prefix": "194.50.187.0/24",
+   "origin_asns": [
+    1921,
+    207021
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "194.50.187.0/24",
+     "origin_asn": 1921,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "194.50.187.0/24",
+     "origin_asn": 207021,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "194.50.187.0/24",
+     "origin_asn": 212390,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a04:2b00:14cc::225": {
+   "prefix": "2a04:2b00:14cc::/48",
+   "origin_asns": [
+    1921
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a04:2b00:14cc::/48",
+     "origin_asn": 1921,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a04:2b00:14cc::/48",
+     "origin_asn": 207021,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a04:2b00:14cc::/48",
+     "origin_asn": 212222,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a04:2b00:14dd::225": {
+   "prefix": "2a04:2b00:14dd::/48",
+   "origin_asns": [
+    1921,
+    207021
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a04:2b00:14dd::/48",
+     "origin_asn": 1921,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a04:2b00:14dd::/48",
+     "origin_asn": 207021,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a04:2b00:14dd::/48",
+     "origin_asn": 212390,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a04:2b00:14ee::225": {
+   "prefix": "2a04:2b00:14ee::/48",
+   "origin_asns": [
+    1921,
+    207021
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a04:2b00:14ee::/48",
+     "origin_asn": 1921,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a04:2b00:14ee::/48",
+     "origin_asn": 207021,
+     "max_length": 48,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a04:2b00:14ee::/48",
+     "origin_asn": 212391,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "34.111.176.125": {
+   "prefix": "34.108.0.0/14",
+   "origin_asns": [
+    396982
+   ],
+   "routing": {
+    "more_specifics": [
+     "34.108.0.0/20 AS396982",
+     "34.108.16.0/20 AS396982",
+     "34.108.32.0/20 AS396982",
+     "34.108.48.0/20 AS396982",
+     "34.108.64.0/20 AS396982",
+     "34.108.80.0/20 AS396982",
+     "34.108.96.0/20 AS396982",
+     "34.108.112.0/20 AS396982",
+     "34.108.128.0/20 AS396982",
+     "34.108.144.0/20 AS396982",
+     "34.108.160.0/20 AS396982",
+     "34.108.176.0/20 AS396982",
+     "34.108.192.0/20 AS396982",
+     "34.108.208.0/20 AS396982",
+     "34.108.224.0/20 AS396982",
+     "34.108.240.0/20 AS396982",
+     "34.110.16.0/20 AS396982",
+     "34.110.10.0/23 AS396982",
+     "34.110.9.0/24 AS396982"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "34.108.0.0/14",
+     "origin_asn": 396982,
+     "max_length": 14,
+     "ta": "arin"
+    },
+    {
+     "prefix": "34.96.0.0/12",
+     "origin_asn": 396982,
+     "max_length": 12,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "1921": {
+   "name": "RCODEZERO-ANYCAST-SEC1-TLD ipcom GmbH",
+   "announced": true
+  },
+  "28979": {
+   "name": "DM dm-drogerie markt GmbH + Co. KG",
+   "announced": true
+  },
+  "207021": {
+   "name": "RCODEZERO-ANYCAST-SEC2 ipcom GmbH",
+   "announced": true
+  },
+  "396982": {
+   "name": "GOOGLE-CLOUD-PLATFORM - Google LLC",
+   "announced": true
+  }
+ },
+ "errors": []
+}

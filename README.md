@@ -3,13 +3,30 @@
 How exposed are the domains of a TLD (`.ee` from its zone file, `.rs` from a list) to certificate theft through
 BGP hijacks below DNS, and how much of it does DNSSEC + CAA close? (team dogma, DNS SEC Hackathon 2026)
 
-Two parts, each documented end to end:
+## Web page
+
+Needs only [Docker Desktop](https://www.docker.com/products/docker-desktop/), running.
+
+```bash
+git clone https://github.com/mladicstefan/hijackscan.git
+cd hijackscan
+docker compose up
+```
+
+When the terminal says `hijackscan is ready`, open **http://127.0.0.1:8000**. The first start takes a few minutes
+(it builds the app), later ones a few seconds. The page shows 200 scanned domains (`.rs` top 100 and a 100-domain
+`.ee` sample, collected 2026-10-31); no scan or internet access is needed.
+
+Stop with `Ctrl+C`; `docker compose down -v` removes everything, database included.
+
+## Documentation
 
 - **[docs/scanner.md](docs/scanner.md)**: the scanner. Sample a zone, collect DNS and routing facts, derive
   an exposure class and a 0–10 risk score, report per domain and per zone.
 - **[docs/lab.md](docs/lab.md)**: the validation lab. A sealed containerlab fabric where the unmodified scanner
   scans one domain and a minimal CA then tries to issue to an attacker; every verdict is proven by the CA's
   decision and flipped by negative controls.
+- **[web/README.md](web/README.md)**: the web page. Development, the API, refreshing the demo data.
 
 Design and results: [design/formula.md](design/formula.md) (the risk formula), [design/lab.md](design/lab.md)
 (lab decisions), [lab/demo.md](lab/demo.md) (the last lab run, generated from its logs).
@@ -146,7 +163,8 @@ against the zone's is the representativeness check.
   archive day; `2026-08-28` replays the Hetzner incident day). AS names from `as-overview`. RIPEstat ≤ 8 concurrent, `sourceapp=hijackscan`, every
   response cached under `data/cache/ripestat/`.
 - Per-domain failures land in `errors[]`; the batch never aborts. Records younger than `--max-age` (7 days) are
-  reused. 8 domains in parallel, DNS capped at 50 qps.
+  reused unless they have errors: an incomplete record is always collected again. 8 domains in parallel, DNS capped
+  at 50 qps.
 
 ## Facts (`score.py`)
 
@@ -188,8 +206,8 @@ score most and the fewest actions that bring it to 0.0.
 Nobody uses `accounturi`, so no domain is None. Critical and High are hosted behind loose-maxLength ROAs (Hetzner
 `/16 → 24`, CloudFront `/16 → 24`, Yettel, Vultr) or in space with no ROA at all. What-if rows: DNSSEC alone and CAA
 alone move almost nothing; CAA + accounturi closes the web path but unsigned zones stay open through their
-nameservers; only both together reach None. Most Unknown `.rs` records are a fixed Windows cache bug: re-collect
-with `--force`.
+nameservers; only both together reach None. Most Unknown `.rs` records are a fixed Windows cache bug; the next
+`collect` or `zone` run re-collects them (records with errors are never reused).
 
 What was checked after the first numbers looked too good: (1) re-scoring against a different archive day moves
 only domains whose result hinged on one nameserver — so (2) partial nameserver capture is scored by its MPIC

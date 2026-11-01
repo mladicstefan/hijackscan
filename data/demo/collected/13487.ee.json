@@ -1,0 +1,374 @@
+{
+ "domain": "13487.ee",
+ "fetched_at": "2026-10-31T18:06:16+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "13487.ee": {
+   "A": [
+    "204.236.1.53"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.13487.ee": {
+   "A": [
+    "204.236.1.53"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "13487.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns1.dns.com": {
+   "A": [
+    "154.86.21.128",
+    "177.2.31.128"
+   ],
+   "AAAA": [
+    "2001:df2:f080:2::1:1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.dns.com": {
+   "A": [
+    "177.2.31.129",
+    "154.23.191.129"
+   ],
+   "AAAA": [
+    "2001:df2:f080:2::1:2"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "154.23.191.129": {
+   "prefix": "154.23.191.0/24",
+   "origin_asns": [
+    140227
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "154.23.176.0/20",
+     "origin_asn": 8796,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "154.23.176.0/20",
+     "origin_asn": 40115,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "154.23.176.0/20",
+     "origin_asn": 140224,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "154.23.176.0/20",
+     "origin_asn": 140227,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "154.23.176.0/20",
+     "origin_asn": 395886,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "154.86.21.128": {
+   "prefix": "154.86.21.0/24",
+   "origin_asns": [
+    140227
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 194,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "154.86.16.0/20",
+     "origin_asn": 8796,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.16.0/20",
+     "origin_asn": 40115,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.16.0/20",
+     "origin_asn": 140227,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.16.0/20",
+     "origin_asn": 153517,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.16.0/20",
+     "origin_asn": 395886,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.16.0/21",
+     "origin_asn": 153517,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.20.0/22",
+     "origin_asn": 153517,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.20.0/23",
+     "origin_asn": 140227,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.20.0/23",
+     "origin_asn": 153517,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.21.0/24",
+     "origin_asn": 40115,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.21.0/24",
+     "origin_asn": 140224,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.21.0/24",
+     "origin_asn": 140227,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "154.86.21.0/24",
+     "origin_asn": 153517,
+     "max_length": 24,
+     "ta": "afrinic"
+    }
+   ]
+  },
+  "177.2.31.128": {
+   "prefix": "177.2.31.0/24",
+   "origin_asns": [
+    140227
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "177.2.16.0/20",
+     "origin_asn": 8796,
+     "max_length": 24,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "177.2.16.0/20",
+     "origin_asn": 40115,
+     "max_length": 24,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "177.2.16.0/20",
+     "origin_asn": 140227,
+     "max_length": 24,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "177.2.16.0/20",
+     "origin_asn": 395886,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "177.2.31.129": {
+   "prefix": "177.2.31.0/24",
+   "origin_asns": [
+    140227
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "177.2.16.0/20",
+     "origin_asn": 8796,
+     "max_length": 24,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "177.2.16.0/20",
+     "origin_asn": 40115,
+     "max_length": 24,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "177.2.16.0/20",
+     "origin_asn": 140227,
+     "max_length": 24,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "177.2.16.0/20",
+     "origin_asn": 395886,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "2001:df2:f080:2::1:1": {
+   "prefix": "2001:df2:f080::/48",
+   "origin_asns": [
+    140227
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "2001:df2:f080:2::1:2": {
+   "prefix": "2001:df2:f080::/48",
+   "origin_asns": [
+    140227
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "204.236.1.53": {
+   "prefix": "204.236.1.0/24",
+   "origin_asns": [
+    201501
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "204.236.0.0/19",
+     "origin_asn": 201501,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "140227": {
+   "name": "HKCICL-AS-AP - Hong Kong Communications International Co., Limited",
+   "announced": true
+  },
+  "201501": {
+   "name": "isec-asn ISECLAYER INC",
+   "announced": true
+  }
+ },
+ "errors": []
+}

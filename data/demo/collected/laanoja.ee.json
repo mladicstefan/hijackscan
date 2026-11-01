@@ -1,0 +1,244 @@
+{
+ "domain": "laanoja.ee",
+ "fetched_at": "2026-10-31T18:05:54+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "laanoja.ee": {
+   "A": [
+    "217.146.69.9"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.laanoja.ee": {
+   "A": [
+    "217.146.69.9"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "laanoja.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns.zone.eu": {
+   "A": [
+    "217.146.66.65"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.zone.ee": {
+   "A": [
+    "85.234.242.32"
+   ],
+   "AAAA": [
+    "2a02:29e9:30:53::a"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.zonedata.net": {
+   "A": [
+    "85.234.247.50"
+   ],
+   "AAAA": [
+    "2a02:29e9:20:53::a"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "217.146.66.65": {
+   "prefix": "217.146.64.0/20",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.146.64.0/20",
+     "origin_asn": 49604,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "217.146.69.9": {
+   "prefix": "217.146.64.0/20",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.146.64.0/20",
+     "origin_asn": 49604,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a02:29e9:20:53::a": {
+   "prefix": "2a02:29e9:20::/48",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:29e9:20::/48",
+     "origin_asn": 49604,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a02:29e9:30:53::a": {
+   "prefix": "2a02:29e9:30::/48",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:29e9:30::/48",
+     "origin_asn": 49604,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "85.234.242.32": {
+   "prefix": "85.234.242.0/23",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "85.234.242.0/23",
+     "origin_asn": 49604,
+     "max_length": 23,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "85.234.247.50": {
+   "prefix": "85.234.246.0/23",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "85.234.246.0/23",
+     "origin_asn": 49604,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "49604": {
+   "name": "ZONE Zone Media OU",
+   "announced": true
+  }
+ },
+ "errors": []
+}

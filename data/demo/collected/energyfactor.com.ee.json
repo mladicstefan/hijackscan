@@ -1,0 +1,432 @@
+{
+ "domain": "energyfactor.com.ee",
+ "fetched_at": "2026-10-31T18:06:27+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "energyfactor.com.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.energyfactor.com.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NXDOMAIN",
+    "AAAA": "NXDOMAIN"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "energyfactor.com.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "com.ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2-67.akam.net": {
+   "A": [
+    "2.22.230.67"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "a1-116.akam.net": {
+   "A": [
+    "193.108.91.116"
+   ],
+   "AAAA": [
+    "2600:1401:2::74"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "a14-65.akam.net": {
+   "A": [
+    "184.26.161.65"
+   ],
+   "AAAA": [
+    "2600:1480:1800::41"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "use6.akam.net": {
+   "A": [
+    "2.16.40.65"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "a10-67.akam.net": {
+   "A": [
+    "96.7.50.67"
+   ],
+   "AAAA": [
+    "2600:1480:d000::43"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "a18-64.akam.net": {
+   "A": [
+    "95.101.36.64"
+   ],
+   "AAAA": [
+    "2600:1480:4800::40"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "184.26.161.65": {
+   "prefix": "184.26.161.0/24",
+   "origin_asns": [
+    21342
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "184.24.0.0/13",
+     "origin_asn": 20940,
+     "max_length": 13,
+     "ta": "arin"
+    },
+    {
+     "prefix": "184.26.161.0/24",
+     "origin_asn": 21342,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "193.108.91.116": {
+   "prefix": "193.108.91.0/24",
+   "origin_asns": [
+    21342
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.108.88.0/21",
+     "origin_asn": 20940,
+     "max_length": 21,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "193.108.91.0/24",
+     "origin_asn": 21342,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2.16.40.65": {
+   "prefix": "2.16.40.0/24",
+   "origin_asns": [
+    21342
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2.16.0.0/13",
+     "origin_asn": 20940,
+     "max_length": 13,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2.16.40.0/24",
+     "origin_asn": 21342,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2.22.230.67": {
+   "prefix": "2.22.230.0/24",
+   "origin_asns": [
+    21342
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2.16.0.0/13",
+     "origin_asn": 20940,
+     "max_length": 13,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2.22.230.0/24",
+     "origin_asn": 21342,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2600:1401:2::74": {
+   "prefix": "2600:1401:2::/48",
+   "origin_asns": [
+    21342
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:1400::/24",
+     "origin_asn": 20940,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:1401:2::/48",
+     "origin_asn": 21342,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:1480:1800::41": {
+   "prefix": "2600:1480:1800::/48",
+   "origin_asns": [
+    21342
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:1400::/24",
+     "origin_asn": 20940,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:1480:1800::/48",
+     "origin_asn": 21342,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:1480:4800::40": {
+   "prefix": "2600:1480:4800::/48",
+   "origin_asns": [
+    21342
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:1400::/24",
+     "origin_asn": 20940,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:1480:4800::/48",
+     "origin_asn": 21342,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2600:1480:d000::43": {
+   "prefix": "2600:1480:d000::/48",
+   "origin_asns": [
+    21342
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2600:1400::/24",
+     "origin_asn": 20940,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2600:1480:d000::/48",
+     "origin_asn": 21342,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "95.101.36.64": {
+   "prefix": "95.101.36.0/24",
+   "origin_asns": [
+    21342
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "95.100.0.0/15",
+     "origin_asn": 20940,
+     "max_length": 15,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "95.101.36.0/24",
+     "origin_asn": 21342,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "96.7.50.67": {
+   "prefix": "96.7.50.0/24",
+   "origin_asns": [
+    21342
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "96.6.0.0/15",
+     "origin_asn": 20940,
+     "max_length": 15,
+     "ta": "arin"
+    },
+    {
+     "prefix": "96.7.50.0/24",
+     "origin_asn": 21342,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "21342": {
+   "name": "AKAMAI-ASN2 Akamai International B.V.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

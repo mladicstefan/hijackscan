@@ -1,0 +1,1062 @@
+{
+ "domain": "decathlon.rs",
+ "fetched_at": "2026-10-31T14:47:05+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "decathlon.rs": {
+   "A": [
+    "104.18.24.244",
+    "104.18.25.244"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.decathlon.rs": {
+   "A": [
+    "104.18.32.191",
+    "172.64.155.65"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "decathlon.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "udns2.cscdns.uk": {
+   "A": [
+    "204.74.111.1"
+   ],
+   "AAAA": [
+    "2001:502:4612::201"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "udns1.cscdns.net": {
+   "A": [
+    "204.74.66.1"
+   ],
+   "AAAA": [
+    "2001:502:f3ff::201"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "104.18.24.244": {
+   "prefix": "104.18.16.0/20",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "104.18.16.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    }
+   ]
+  },
+  "104.18.25.244": {
+   "prefix": "104.18.16.0/20",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "104.18.16.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    }
+   ]
+  },
+  "104.18.32.191": {
+   "prefix": "104.18.32.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "104.18.32.0/19",
+     "origin_asn": 13335,
+     "max_length": 19,
+     "ta": "arin"
+    },
+    {
+     "prefix": "104.18.32.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "104.18.32.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "172.64.155.65": {
+   "prefix": "172.64.155.0/24",
+   "origin_asns": [
+    13335
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "172.64.144.0/20",
+     "origin_asn": 13335,
+     "max_length": 20,
+     "ta": "arin"
+    },
+    {
+     "prefix": "172.64.155.0/24",
+     "origin_asn": 13335,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2001:502:4612::201": {
+   "prefix": "2001:502:4612::/48",
+   "origin_asns": [
+    12008
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 12008,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 19905,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397213,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397214,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397215,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397216,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397217,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397218,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397219,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397220,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397221,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397222,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397223,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397224,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397225,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397226,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397227,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397228,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397229,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397230,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397231,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397232,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397233,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397234,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397235,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397236,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397237,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397238,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397239,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397240,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397241,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397242,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:4612::/48",
+     "origin_asn": 397243,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2001:502:f3ff::201": {
+   "prefix": "2001:502:f3ff::/48",
+   "origin_asns": [
+    12008
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 12008,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 19905,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397213,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397214,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397215,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397216,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397217,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397218,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397219,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397220,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397221,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397222,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397223,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397224,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397225,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397226,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397227,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397228,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397229,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397230,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397231,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397232,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397233,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397234,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397235,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397236,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397237,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397238,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397239,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397240,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397241,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397242,
+     "max_length": 48,
+     "ta": "arin"
+    },
+    {
+     "prefix": "2001:502:f3ff::/48",
+     "origin_asn": 397243,
+     "max_length": 48,
+     "ta": "arin"
+    }
+   ]
+  },
+  "204.74.111.1": {
+   "prefix": "204.74.111.0/24",
+   "origin_asns": [
+    12008
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 12008,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 19905,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397213,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397214,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397215,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397216,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397217,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397218,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397219,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397220,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397221,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397222,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397223,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397224,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397225,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397226,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397227,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397228,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397229,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397230,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397231,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397232,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397233,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397234,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397235,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397236,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397237,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397238,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397239,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397240,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397241,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397242,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.111.0/24",
+     "origin_asn": 397243,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "204.74.66.1": {
+   "prefix": "204.74.66.0/24",
+   "origin_asns": [
+    12008
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 12008,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 19905,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397213,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397214,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397215,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397216,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397217,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397218,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397219,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397220,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397221,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397222,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397223,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397224,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397225,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397226,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397227,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397228,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397229,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397230,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397231,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397232,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397233,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397234,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397235,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397236,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397237,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397238,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397239,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397240,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397241,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397242,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "204.74.66.0/24",
+     "origin_asn": 397243,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "12008": {
+   "name": "VERCARA - Vercara, LLC",
+   "announced": true
+  },
+  "13335": {
+   "name": "CLOUDFLARENET - Cloudflare, Inc.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

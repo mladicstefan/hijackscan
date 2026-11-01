@@ -1,0 +1,36 @@
+{
+  "name": "hijackscan-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Web page for hijackscan results: runs, domains, filters, providers (reads the hijackscan API)",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b",
+    "lint": "eslint . --max-warnings 0",
+    "check": "tsc -b && eslint . --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.80.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^10.14.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^16.0.0",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^7.0.0"
+  }
+}

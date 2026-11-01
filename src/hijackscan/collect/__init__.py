@@ -205,8 +205,14 @@ class Collector:
         return rec
 
     def fresh(self, domain: str) -> bool:
+        """Young enough to reuse, and complete: a record with errors is always collected again."""
         p = self.path(domain)
-        return p.exists() and (time.time() - p.stat().st_mtime) < self.cfg.max_age_hours * 3600
+        if not p.exists() or (time.time() - p.stat().st_mtime) >= self.cfg.max_age_hours * 3600:
+            return False
+        try:
+            return not json.loads(p.read_text(encoding="utf-8")).get("errors")
+        except (OSError, ValueError):
+            return False  # unreadable or half-written: collect again
 
     def run(self, domains: list[str], *, force: bool = False) -> list[dict]:
         todo = [d for d in domains if force or not self.fresh(d)]

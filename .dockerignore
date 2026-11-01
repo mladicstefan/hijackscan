@@ -1,0 +1,15 @@
+# What `docker compose up` does NOT send to the image build: faster builds, smaller images, no local state.
+.git
+.venv
+**/node_modules
+**/__pycache__
+**/*.pyc
+.ruff_cache
+.claude
+.skills
+.superpowers
+web/dist
+lab
+data/*
+!data/samples
+!data/demo

@@ -1,0 +1,376 @@
+{
+ "domain": "telegraf.rs",
+ "fetched_at": "2026-10-31T14:40:33+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "telegraf.rs": {
+   "A": [
+    "109.94.103.253",
+    "109.94.103.248",
+    "109.94.103.250",
+    "109.94.103.249"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.telegraf.rs": {
+   "A": [
+    "109.94.103.250",
+    "109.94.103.249",
+    "109.94.103.248",
+    "109.94.103.253"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "telegraf.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns04.comtradecloud.com": {
+   "A": [
+    "185.56.223.10"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns03.comtradecloud.com": {
+   "A": [
+    "185.56.221.225"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns01.comtradecloud.com": {
+   "A": [
+    "109.94.102.0"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns02.comtradecloud.com": {
+   "A": [
+    "109.94.102.1"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "109.94.102.0": {
+   "prefix": "109.94.102.0/24",
+   "origin_asns": [
+    213306
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "109.94.102.0/23",
+     "origin_asn": 213306,
+     "max_length": 23,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.102.0/24",
+     "origin_asn": 19905,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.102.0/24",
+     "origin_asn": 213306,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "109.94.102.1": {
+   "prefix": "109.94.102.0/24",
+   "origin_asns": [
+    213306
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "109.94.102.0/23",
+     "origin_asn": 213306,
+     "max_length": 23,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.102.0/24",
+     "origin_asn": 19905,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.102.0/24",
+     "origin_asn": 213306,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "109.94.103.248": {
+   "prefix": "109.94.103.0/24",
+   "origin_asns": [
+    213306
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "109.94.102.0/23",
+     "origin_asn": 213306,
+     "max_length": 23,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.103.0/24",
+     "origin_asn": 19905,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.103.0/24",
+     "origin_asn": 213306,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "109.94.103.249": {
+   "prefix": "109.94.103.0/24",
+   "origin_asns": [
+    213306
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "109.94.102.0/23",
+     "origin_asn": 213306,
+     "max_length": 23,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.103.0/24",
+     "origin_asn": 19905,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.103.0/24",
+     "origin_asn": 213306,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "109.94.103.250": {
+   "prefix": "109.94.103.0/24",
+   "origin_asns": [
+    213306
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "109.94.102.0/23",
+     "origin_asn": 213306,
+     "max_length": 23,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.103.0/24",
+     "origin_asn": 19905,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.103.0/24",
+     "origin_asn": 213306,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "109.94.103.253": {
+   "prefix": "109.94.103.0/24",
+   "origin_asns": [
+    213306
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "109.94.102.0/23",
+     "origin_asn": 213306,
+     "max_length": 23,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.103.0/24",
+     "origin_asn": 19905,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "109.94.103.0/24",
+     "origin_asn": 213306,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "185.56.221.225": {
+   "prefix": "185.56.221.0/24",
+   "origin_asns": [
+    49402
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.56.221.0/24",
+     "origin_asn": 49402,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "185.56.223.10": {
+   "prefix": "185.56.223.0/24",
+   "origin_asns": [
+    213306
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.56.223.0/24",
+     "origin_asn": 213306,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "49402": {
+   "name": "COMTRADE-AS Comtrade nepremicnine d.o.o.",
+   "announced": true
+  },
+  "213306": {
+   "name": "CTSI Comtrade System Integration doo Belgrade Serbia",
+   "announced": true
+  }
+ },
+ "errors": []
+}

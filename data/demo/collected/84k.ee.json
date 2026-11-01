@@ -1,0 +1,117 @@
+{
+ "domain": "84k.ee",
+ "fetched_at": "2026-10-31T18:05:31+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "84k.ee": {
+   "A": [
+    "43.230.171.227"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.84k.ee": {
+   "A": [
+    "43.230.171.229"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "84k.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {},
+ "addresses": {
+  "43.230.171.227": {
+   "prefix": "43.230.168.0/22",
+   "origin_asns": [
+    132839
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "43.230.168.0/22",
+     "origin_asn": 132839,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "43.230.171.229": {
+   "prefix": "43.230.168.0/22",
+   "origin_asns": [
+    132839
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "43.230.168.0/22",
+     "origin_asn": 132839,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "132839": {
+   "name": "POWERLINE-AS-AP - POWER LINE DATACENTER",
+   "announced": true
+  }
+ },
+ "errors": []
+}

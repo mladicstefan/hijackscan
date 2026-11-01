@@ -1,0 +1,268 @@
+{
+ "domain": "disconnect.ee",
+ "fetched_at": "2026-10-31T18:07:07+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "disconnect.ee": {
+   "A": [
+    "64.190.63.222"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.disconnect.ee": {
+   "A": [
+    "64.190.63.111"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "disconnect.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.sedoparking.com": {
+   "A": [
+    "91.195.240.8",
+    "34.211.188.210"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.sedoparking.com": {
+   "A": [
+    "3.130.216.63",
+    "91.195.241.8"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "3.130.216.63": {
+   "prefix": "3.130.0.0/16",
+   "origin_asns": [
+    16509
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "3.128.0.0/10",
+     "origin_asn": 16509,
+     "max_length": 10,
+     "ta": "arin"
+    },
+    {
+     "prefix": "3.130.0.0/16",
+     "origin_asn": 16509,
+     "max_length": 16,
+     "ta": "arin"
+    }
+   ]
+  },
+  "34.211.188.210": {
+   "prefix": "34.208.0.0/12",
+   "origin_asns": [
+    16509
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "34.192.0.0/10",
+     "origin_asn": 16509,
+     "max_length": 10,
+     "ta": "arin"
+    },
+    {
+     "prefix": "34.208.0.0/12",
+     "origin_asn": 16509,
+     "max_length": 12,
+     "ta": "arin"
+    }
+   ]
+  },
+  "64.190.63.111": {
+   "prefix": "64.190.62.0/23",
+   "origin_asns": [
+    47846
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "64.190.62.0/23",
+     "origin_asn": 8560,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "64.190.62.0/23",
+     "origin_asn": 47846,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "64.190.63.222": {
+   "prefix": "64.190.62.0/23",
+   "origin_asns": [
+    47846
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "64.190.62.0/23",
+     "origin_asn": 8560,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "64.190.62.0/23",
+     "origin_asn": 47846,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "91.195.240.8": {
+   "prefix": "91.195.240.0/23",
+   "origin_asns": [
+    47846
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "91.195.240.0/23",
+     "origin_asn": 8560,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "91.195.240.0/23",
+     "origin_asn": 47846,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "91.195.241.8": {
+   "prefix": "91.195.240.0/23",
+   "origin_asns": [
+    47846
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "91.195.240.0/23",
+     "origin_asn": 8560,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "91.195.240.0/23",
+     "origin_asn": 47846,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "16509": {
+   "name": "AMAZON-02 - Amazon.com, Inc.",
+   "announced": true
+  },
+  "47846": {
+   "name": "SEDO-AS SEDO GmbH",
+   "announced": true
+  }
+ },
+ "errors": []
+}

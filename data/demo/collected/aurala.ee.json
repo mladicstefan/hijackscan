@@ -1,0 +1,160 @@
+{
+ "domain": "aurala.ee",
+ "fetched_at": "2026-10-31T18:05:31+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "aurala.ee": {
+   "A": [
+    "185.17.40.74"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.aurala.ee": {
+   "A": [
+    "185.17.40.74"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "aurala.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns1.uphost.pro": {
+   "A": [
+    "176.119.57.206"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.uphost.pro": {
+   "A": [
+    "37.139.7.76"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "176.119.57.206": {
+   "prefix": "176.119.32.0/19",
+   "origin_asns": [
+    42503
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "185.17.40.74": {
+   "prefix": "185.17.40.0/24",
+   "origin_asns": [
+    197155
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "37.139.7.76": {
+   "prefix": "37.139.0.0/19",
+   "origin_asns": [
+    14061
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "37.139.0.0/19",
+     "origin_asn": 14061,
+     "max_length": 22,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "14061": {
+   "name": "DIGITALOCEAN-ASN - DigitalOcean, LLC",
+   "announced": true
+  },
+  "42503": {
+   "name": "PL-OKTAWAVE-AS Oktawave S.A.",
+   "announced": true
+  },
+  "197155": {
+   "name": "ARTNET Artnet Sp. z o.o.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

@@ -1,0 +1,200 @@
+{
+ "domain": "eulerhermes.ee",
+ "fetched_at": "2026-10-31T18:06:30+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "eulerhermes.ee": {
+   "A": [
+    "193.29.52.172"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.eulerhermes.ee": {
+   "A": [
+    "193.29.52.152"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "eulerhermes.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.eulerhermes.com": {
+   "A": [
+    "193.29.52.220"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.eulerhermes.com": {
+   "A": [
+    "193.29.52.220"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.eulerhermes.com": {
+   "A": [
+    "193.29.52.177"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "193.29.52.152": {
+   "prefix": "193.29.52.0/24",
+   "origin_asns": [
+    15580
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.29.52.0/24",
+     "origin_asn": 15580,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "193.29.52.172": {
+   "prefix": "193.29.52.0/24",
+   "origin_asns": [
+    15580
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.29.52.0/24",
+     "origin_asn": 15580,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "193.29.52.177": {
+   "prefix": "193.29.52.0/24",
+   "origin_asns": [
+    15580
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.29.52.0/24",
+     "origin_asn": 15580,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "193.29.52.220": {
+   "prefix": "193.29.52.0/24",
+   "origin_asns": [
+    15580
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.29.52.0/24",
+     "origin_asn": 15580,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "15580": {
+   "name": "Allianz Technology SE",
+   "announced": true
+  }
+ },
+ "errors": []
+}
