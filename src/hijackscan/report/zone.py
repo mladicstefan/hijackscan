@@ -19,8 +19,8 @@ from ..config import Config
 from ..risk import COMPLEXITY_STEP, LABELS, SEVERITIES, SEVERITY_BANDS, Risk, assess
 from ..score import Scored, score
 from . import html
-from .domain import routing_source, rpki_source
 from .browse import browse
+from .domain import routing_source, rpki_source
 
 SCHEMA_VERSION = 2
 SEVERE = ("High", "Critical")

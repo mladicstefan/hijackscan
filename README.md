@@ -38,6 +38,12 @@ uv run hijackscan list data/samples/ee100.txt --severity High,Critical
 uv run hijackscan list --label ns-partial --details
 uv run hijackscan list --finding NO_CAA,UNSIGNED --min-score 4 --json
 uv run hijackscan browse data/out/ee/domains.jsonl      # (re)build domains.html from a domains.jsonl
+
+# lab (containerlab, docker and clab_admins groups or sudo, the lab image: docs/lab.md §4)
+uv run lab/labctl.py matrix        # every row: render, deploy, scan, attack, CA (about 4 min); evidence in lab/logs/<timestamp>-matrix/, latest-matrix links to the newest run
+uv run lab/labctl.py controls      # negative controls: every verdict flips when its mechanism is removed
+uv run lab/labctl.py check         # containment: no route off the box, private ASNs, RFC 5737 only
+uv run lab/labctl.py destroy
 ```
 
 Every domain gets a risk score 0–10 with the CVSS severity scale (None / Low / Medium / High / Critical, plus
