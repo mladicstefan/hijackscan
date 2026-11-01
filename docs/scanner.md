@@ -64,7 +64,8 @@ uv run hijackscan list --finding NO_CAA,UNSIGNED --min-score 4 --json
 
 Steps 1 and 2 are optional: any plain list of domains works (one per line, `#` comments), and `zone` and the
 drill-down collect what is missing. Global flags go before the subcommand: `--resolver host[:port]` (853 =
-DoT, 53 = plain), `--rpki-date YYYY-MM-DD` (default: the newest archive day), `--ripestat-url` (a
+DoT, 53 = plain), `--rpki-date YYYY-MM-DD` (default `latest`: the newest complete day under `data/rpki/` when
+it is at most `--rpki-max-age` days old, default 3, else the newest day the RIPE archive has published), `--ripestat-url` (a
 RIPEstat-shaped feed, used by the lab), `--routable-cap-v4/-v6` (default 24/48), `--max-age HOURS` (default
 168), `--workers N`, `--data-dir DIR`, `-v`. Exit codes of `hijackscan <domain>`: 0 None, 1 Low / Medium,
 2 High / Critical, 3 Unknown.
@@ -112,7 +113,8 @@ from bogus. The sample's DS share against the zone's is the representativeness c
   prefix (`routing-status`), AS names (`as-overview`). RIPEstat is called with at most 8 in flight,
   `sourceapp=hijackscan`, every response cached under `data/cache/ripestat/`.
 - **ROAs, per distinct address, from the local archive** (`data/rpki/<date>/<ta>/roas.csv.xz`, five trust
-  anchors, about one million ROAs, downloaded once with a sha256 check). Two lookups: `roas`, every ROA
+  anchors, about one million ROAs, downloaded once with a sha256 check, parsed once into
+  `data/rpki/<date>/index.marshal`, which is rebuilt whenever the CSVs' sha256 changes). Two lookups: `roas`, every ROA
   covering the announced prefix (the prefix and its supernets), and `roas_within`, every ROA for a strict
   subnet of it. The second one matters: a tight covering ROA does not protect an address when a ROA for a
   routable subnet that holds it exists, because a forged announcement of that subnet is RPKI-valid
@@ -212,5 +214,5 @@ are looked at, not only the ones covering it; (6) a mixed CAA set (one pinned CA
 | `data/samples/dev100.txt` | the 100 `.rs` domains (top `.rs` names of Tranco list 746VX, 2026-10-30) |
 | `data/collected/` | raw record per domain (git-ignored) |
 | `data/cache/ripestat/` | RIPEstat responses (git-ignored) |
-| `data/rpki/<date>/` | RPKI archive CSVs, about 15 MB per day (git-ignored) |
+| `data/rpki/<date>/` | RPKI archive CSVs, about 15 MB per day, plus the parsed `index.marshal`, about 60 MB (git-ignored) |
 | `data/out/` | zone reports (git-ignored) |

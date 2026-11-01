@@ -20,7 +20,7 @@ import console
 import labctl
 from console import log
 from render import SCENARIOS
-from render.topology import FRR_IMAGE, LAB, LAB_IMAGE, NODES
+from render.topology import FRR_IMAGE, LAB, LAB_IMAGE
 
 from hijackscan.collect.resolver_check import passes
 
@@ -99,20 +99,6 @@ def decision(account: str, log_to: Path | None = None, show: bool = False) -> tu
     return (m.group(2), m.group(1), hosts) if m else ("?", "", hosts)
 
 
-def deployed(build: Path) -> str | None:
-    """The scenario name the running lab was rendered from, or None when the build or any container is missing."""
-    f = build / "scenario.json"
-    if not f.exists():
-        return None
-    for name in NODES:
-        r = subprocess.run(
-            ["docker", "inspect", "-f", "{{.State.Status}}", f"clab-{LAB}-{name}"], capture_output=True, text=True
-        )
-        if r.stdout.strip() != "running":
-            return None
-    return json.loads(f.read_text())["name"]
-
-
 def selected(rows: list[str] | None) -> list[Row]:
     """`--rows x` keeps the rows named x: a scenario, `scenario/mode` or `scenario-mode`."""
     if not rows:
@@ -146,7 +132,7 @@ def run_matrix(build: Path, rows: list[str] | None = None) -> int:
     logs = labctl.run_dir("matrix")  # outside build/, which every render wipes
     results = []
     check_bad: list[str] = []
-    applied = deployed(build) if rows else None
+    applied = labctl.deployed(build) if rows else None
     sc = labctl.current_scenario(build) if applied else None
     if applied:
         console.note(f"reusing the deployed scenario {applied} (containers up): no apply for its rows")

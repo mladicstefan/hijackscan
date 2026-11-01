@@ -8,44 +8,68 @@ ASNs and RIPEstat's RPKI verdict, plus every covering ROA from the local RPKI ar
 from __future__ import annotations
 
 import json
-import logging
 import re
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from datetime import UTC, datetime
+from itertools import count
 from pathlib import Path
 
+from .. import console
 from ..config import Config
 from .dns import Dns
 from .resolver_check import check_resolver, passes
 from .ripestat import RipeStat
 from .rpki import RoaIndex, ensure_archive, latest_archive_day
 
-log = logging.getLogger(__name__)
-
 
 class Collector:
+    """Collects what is stale. The resolver check, the ROA day and index and the RIPEstat client are prepared
+    only when at least one domain is actually collected: a run served from data/collected/ touches no network."""
+
     def __init__(self, cfg: Config) -> None:
         self.cfg = cfg
         self.dns = Dns(cfg.resolver, cfg.dns_qps)
-        self.resolver_check = check_resolver(self.dns)
-        if not passes(self.resolver_check):
-            raise SystemExit(f"resolver {self.dns.address} does not validate DNSSEC: {self.resolver_check}")
-        if cfg.rpki_date == "latest":
-            cfg = replace(cfg, rpki_date=latest_archive_day())
-            self.cfg = cfg
-        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", cfg.rpki_date):
-            ensure_archive(cfg.rpki_dir, cfg.rpki_date)
-        elif not any(cfg.rpki_dir.glob("*/roas.csv.xz")):  # a synthetic day (the lab's "lab") must be on disk
-            raise SystemExit(f"no ROA archive under {cfg.rpki_dir}: use a YYYY-MM-DD day or write one there")
-        self.roas = RoaIndex(cfg.rpki_dir)
-        self.ripe = RipeStat(cfg.cache_dir, cfg.ripestat_concurrency, cfg.ripestat_url)
-        cfg.collected_dir.mkdir(parents=True, exist_ok=True)
+        self._ready = False
+        self._lock = threading.Lock()
+
+    def _prepare(self) -> None:
+        """Once per Collector: prove the resolver validates, pick and load the ROA day, open RIPEstat."""
+        with self._lock:
+            if self._ready:
+                return
+            cfg = self.cfg
+            self.resolver_check = check_resolver(self.dns)
+            if not passes(self.resolver_check):
+                console.fail("resolver does not validate DNSSEC", f"{self.dns.address}: {self.resolver_check}")
+                raise SystemExit(1)
+            console.ok(
+                "resolver validates DNSSEC",
+                f"{self.dns.address}: AD on {self.resolver_check['signed_zone']}, "
+                f"SERVFAIL on {self.resolver_check['bogus_zone']}",
+            )
+            if cfg.rpki_date == "latest":
+                day, why = latest_archive_day(cfg.data_dir / "rpki", cfg.rpki_max_age_days)
+                cfg = replace(cfg, rpki_date=day)
+                self.cfg = cfg
+            else:
+                why = "given"
+            console.info("rpki day", f"{cfg.rpki_date}  ({why})")
+            if re.fullmatch(r"\d{4}-\d{2}-\d{2}", cfg.rpki_date):
+                ensure_archive(cfg.rpki_dir, cfg.rpki_date)
+            elif not any(cfg.rpki_dir.glob("*/roas.csv.xz")):  # a synthetic day (the lab's "lab") must be on disk
+                raise SystemExit(f"no ROA archive under {cfg.rpki_dir}: use a YYYY-MM-DD day or write one there")
+            self.roas = RoaIndex(cfg.rpki_dir)
+            self.ripe = RipeStat(cfg.cache_dir, cfg.ripestat_concurrency, cfg.ripestat_url)
+            cfg.collected_dir.mkdir(parents=True, exist_ok=True)
+            self._ready = True
 
     # -- one domain --------------------------------------------------------
 
     def collect(self, domain: str) -> dict:
+        self._prepare()
         rec: dict = {
             "domain": domain,
             "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
@@ -84,7 +108,7 @@ class Collector:
             for asn in sorted({a for v in rec["addresses"].values() for a in v["origin_asns"]}):
                 rec["asns"][str(asn)] = self.ripe.as_overview(asn)
         except Exception as e:  # noqa: BLE001 - the batch must never abort
-            log.error("%s: %s", domain, e)
+            console.fail(domain, str(e))
             rec["errors"].append(f"{type(e).__name__}: {e}")
         return rec
 
@@ -125,36 +149,48 @@ class Collector:
 
     def run(self, domains: list[str], *, force: bool = False) -> list[dict]:
         todo = [d for d in domains if force or not self.fresh(d)]
-        log.info(
-            "%d domains, %d to collect (resolver %s, rpki %s, %d workers)",
-            len(domains),
-            len(todo),
-            self.dns.address,
-            self.cfg.rpki_date,
-            self.cfg.workers,
-        )
+        console.stage(f"collect  {len(todo)} of {len(domains)} domains")
+        if todo:
+            self._prepare()  # before the pool: the one place the index is built
+        cached = len(domains) - len(todo)
+        console.info("resolver", self.dns.address)
+        console.info("workers", f"{self.cfg.workers}   ({cached} cached, younger than {self.cfg.max_age_hours:g} h)")
         t0 = time.monotonic()
+        done = count(1)
+        failed: list[str] = []
 
         def one(domain: str) -> dict:
             rec = self.collect(domain)
             tmp = self.path(domain).with_suffix(".json.part")
             tmp.write_text(json.dumps(rec, indent=1, ensure_ascii=False) + "\n")
             tmp.replace(self.path(domain))
-            log.info(
-                "%s: %d names, %d ns, %d addrs, caa labels with records=%d, errors=%d",
-                domain,
-                len(rec["names"]),
-                len(rec["nameservers"]),
-                len(rec["addresses"]),
-                sum(bool(c["records"]) for c in rec["caa_chain"]),
-                len(rec["errors"]),
+            detail = (
+                f"{len(rec['names'])} names, {len(rec['nameservers'])} ns, {len(rec['addresses'])} addrs, "
+                f"caa on {sum(bool(c['records']) for c in rec['caa_chain'])} labels"
             )
+            n = f"[{next(done)}/{len(todo)}]"
+            if rec["errors"]:
+                failed.append(domain)
+                console.fail(f"{n} {domain}", f"{detail}, {len(rec['errors'])} errors: {rec['errors'][0]}")
+            else:
+                console.ok(f"{n} {domain}", detail)
             return rec
 
         with ThreadPoolExecutor(max_workers=self.cfg.workers) as pool:
             list(pool.map(one, todo))
-        log.info("collected %d in %.0fs", len(todo), time.monotonic() - t0)
-        return [json.loads(self.path(d).read_text()) for d in domains if self.path(d).exists()]
+        took = f"{len(todo)} collected in {time.monotonic() - t0:.0f}s"
+        if failed:
+            console.note(
+                f"{took}, {len(failed)} with errors (rerun with --force to retry): {', '.join(failed[:5])}"
+                + (" …" if len(failed) > 5 else "")
+            )
+        else:
+            console.ok(took)
+        records = [json.loads(self.path(d).read_text()) for d in domains if self.path(d).exists()]
+        if not todo:  # nothing resolved a day: the records carry the one they were collected against
+            days = sorted({r.get("rpki_date", "?") for r in records})
+            console.info("rpki day", f"{', '.join(days)}  (from the cached records)")
+        return records
 
 
 def read_domains(arg: str) -> list[str]:

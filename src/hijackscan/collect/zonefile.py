@@ -6,7 +6,6 @@ a DS at the parent. Everything else (addresses, CAA, DNSKEY, validation) is stil
 
 from __future__ import annotations
 
-import logging
 import random
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
@@ -14,7 +13,7 @@ from pathlib import Path
 
 from publicsuffix2 import get_sld
 
-log = logging.getLogger(__name__)
+from .. import console
 
 TOP_OPERATORS = 20
 
@@ -48,7 +47,7 @@ def read_zone(parts: list[Path]) -> Zone:
     """Parse the dig axfr output across `parts` in the given order. Only NS, DS and SOA records are looked at."""
     z = Zone(source=parts)
     for part in parts:
-        log.info("zone: reading %s", part)
+        console.info("reading", str(part))
         with part.open(errors="replace") as fh:
             for line in fh:
                 if not line or line[0] == ";":
@@ -68,7 +67,7 @@ def read_zone(parts: list[Path]) -> Zone:
                 elif rtype == "DS":
                     z.ds.add(owner)
     z.ds &= z.delegated
-    log.info("zone %s serial %s: %d delegations, %d with DS", z.apex, z.soa_serial, len(z.delegated), len(z.ds))
+    console.ok(f"zone {z.apex}", f"serial {z.soa_serial}: {len(z.delegated):,} delegations, {len(z.ds):,} with DS")
     return z
 
 
@@ -96,7 +95,7 @@ def write_sample(z: Zone, names: list[str], seed: int, out: Path) -> None:
     lines += [f"# ns_operator={op} delegations={d} ds={s}" for op, d, s in z.operator_counts()[:TOP_OPERATORS]]
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(lines + names) + "\n")
-    log.info("wrote %d domains to %s", len(names), out)
+    console.ok(f"wrote {len(names)} domains", str(out))
 
 
 def read_meta(path: Path) -> dict | None:

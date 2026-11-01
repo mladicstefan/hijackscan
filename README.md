@@ -31,10 +31,31 @@ Three parts, each documented end to end (the web page: [web/README.md](web/READM
 Design and results: [design/formula.md](design/formula.md) (the risk formula), [design/lab.md](design/lab.md)
 (lab decisions), [lab/demo.md](lab/demo.md) (the last lab run, generated from its logs).
 
+## Requirements
+
+| what | needed for | notes |
+|---|---|---|
+| Python ≥ 3.11 and [uv](https://docs.astral.sh/uv/) | everything | `uv sync` installs the Python dependencies (dnspython, httpx, rich, publicsuffix2) |
+| Network access to a DNSSEC-validating resolver | the scanner | default Quad9 over DoT (`9.9.9.9:853`); `scripts/check_resolver.py` proves it validates |
+| **[containerlab](https://containerlab.dev/)** + Docker | the validation lab only | system packages, not installed by `uv`; the scanner runs without them |
+| `ldns` (`ldns-keygen`, `ldns-signzone`) | the validation lab only | signs the lab zones on the host |
+
+The lab needs containerlab (installed with `curl -sL https://containerlab.dev/setup | sudo -E bash -s "install-containerlab"`),
+Docker, membership of the `docker` and `clab_admins` groups, `ldns` on the host and the lab image
+(`docker build -t hijackscan-lab:latest lab/image`, again whenever `lab/image/Dockerfile` changes).
+Log out and back in after joining the groups. Step by step: [docs/lab.md §4](docs/lab.md).
+
+Run the lab as your user, not with `sudo`: root-owned files in `lab/build` and `lab/logs` break later runs.
+A VPN with DNS-leak protection (Mullvad and others) blocks port 53 to the lab resolver, and the scanner then
+fails its self-test with `resolver does not validate DNSSEC`. Disconnect it, including lockdown / kill-switch
+mode, while the lab runs.
+
 ## Quick start
 
 ```bash
 uv sync                                                  # once
+uv run demo        # everything below in one go: the scanner steps, then the lab (matrix, controls, containment),
+                   # two progress bars, one log in data/out/, a scoreboard at the end (about 1.5 min with the lab)
 
 # scanner
 uv run scripts/check_resolver.py                         # the resolver must validate DNSSEC
@@ -55,7 +76,17 @@ uv run hijackscan list data/samples/ee100.txt --severity High,Critical
 uv run hijackscan list --label ns-partial --details
 uv run hijackscan list --finding NO_CAA,UNSIGNED --min-score 4 --json
 uv run hijackscan browse data/out/ee/domains.jsonl      # (re)build domains.html from a domains.jsonl
+
+# lab (containerlab, docker and clab_admins groups or sudo, the lab image: docs/lab.md §4)
+uv run lab/labctl.py matrix        # every row: render, deploy, scan, attack, CA (about 1 min); evidence in lab/logs/<timestamp>-matrix/, latest-matrix links to the newest run
+uv run lab/labctl.py controls      # negative controls: every verdict flips when its mechanism is removed
+uv run lab/labctl.py check         # containment: no route off the box, private ASNs, RFC 5737 only
+uv run lab/labctl.py destroy
 ```
+
+`uv run demo` runs every command as it is written here and prints each one before running it. Without
+containerlab or Docker reachable it runs the scanner steps, shows the newest recorded lab run from `lab/logs/`
+and exits 3; on a machine where only root can reach Docker, run `sudo uv run demo`.
 
 Every domain gets a risk score 0–10 with the CVSS severity scale (None / Low / Medium / High / Critical, plus
 Unknown when the record is incomplete). Formula, parameters and references: [design/formula.md](design/formula.md).
@@ -86,7 +117,7 @@ print(assess(r, s).summary()['severity'], assess(r, s, ov={'signed': True, 'pinn
 ```
 
 Global flags go before the subcommand: `--resolver host[:port]` (853 = DoT, 53 = plain), `--rpki-date YYYY-MM-DD`
-(default: newest archive day), `--max-age HOURS` (default 168), `--workers N`, `--data-dir DIR`, `-v`.
+(default `latest`: the newest local day at most 3 days old, else the newest published day), `--max-age HOURS` (default 168), `--workers N`, `--data-dir DIR`, `-v`.
 
 ## Layering
 

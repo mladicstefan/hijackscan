@@ -19,6 +19,7 @@ dependencies = [
 
 [project.scripts]
 hijackscan = "hijackscan:main"
+demo = "hijackscan.demo:main"
 
 [build-system]
 requires = ["uv_build>=0.13.6,<0.14.0"]

@@ -9,6 +9,7 @@ second (collect/resolver_check.py).
 from __future__ import annotations
 
 import hashlib
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -23,6 +24,7 @@ from hijackscan.collect.resolver_check import BOGUS_ZONE, SIGNED_ZONE
 from .topology import RESOLVER_IP
 
 TTL = 5  # seconds: scenario rows change zone content, the resolver must not serve the previous row
+CONTROL_SOCKET = "/run/unbound.ctl"  # unbound-control socket inside the resolver container (labctl.flush_resolver)
 NS_NAME = "ns.lab."  # the in-root name of the resolver's own authoritative side
 SOA = f"@ {TTL} IN SOA {NS_NAME} hostmaster.lab. {{serial}} 300 60 86400 {TTL}"
 # Signature validity is a fixed window, not "now + 30 days": two renders of one scenario must differ only in
@@ -95,6 +97,12 @@ def _write_zone(d: Path, origin: str, records: list[str], keybase: Path | None, 
 
 
 def render_dns(sc: dict, build: Path) -> None:
+    for tool in ("ldns-keygen", "ldns-signzone"):
+        if not shutil.which(tool):
+            raise SystemExit(
+                f"{tool} not found: install the ldns tools "
+                "(Debian/Ubuntu: sudo apt install ldnsutils; Arch: pacman -S ldns)"
+            )
     keys = build / "dns" / "keys"
     keys.mkdir(parents=True, exist_ok=True)
     zones = build / "resolver" / "zones"
@@ -192,6 +200,12 @@ server:
   serve-expired: no
   harden-dnssec-stripped: yes
   qname-minimisation: no
+# labctl flushes the cache between steps (flush_zone, flush_bogus) instead of waiting out TTLs: Unbound keeps a
+# key it could not fetch for BOGUS_KEY_TTL (60 s, validator.h, not val-bogus-ttl). Unix socket, no certificates.
+remote-control:
+  control-enable: yes
+  control-interface: "{CONTROL_SOCKET}"
+  control-use-cert: no
 auth-zone:
   name: "."
   zonefile: "/lab/zones/root.zone"

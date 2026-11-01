@@ -13,11 +13,11 @@ hijackscan serve [--port 8000] [--reload]                read-only API over Mong
 from __future__ import annotations
 
 import argparse
-import logging
 import sys
 from dataclasses import replace
 from pathlib import Path
 
+from . import console
 from .config import Config
 
 
@@ -25,6 +25,11 @@ def parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="hijackscan", description=__doc__.splitlines()[0])
     p.add_argument("--resolver", help=f"validating resolver host[:port] (default {Config.resolver})")
     p.add_argument("--rpki-date", help=f"RPKI archive day for ROAs (default {Config.rpki_date})")
+    p.add_argument(
+        "--rpki-max-age",
+        type=int,
+        help=f"days a local archive day still counts as latest (default {Config.rpki_max_age_days})",
+    )
     p.add_argument(
         "--max-age", type=float, help=f"hours a collected record stays fresh (default {Config.max_age_hours})"
     )
@@ -90,17 +95,12 @@ def main() -> None:
     ):
         argv = ["domain", *argv]  # `hijackscan blic.rs`
     a = parser().parse_args(argv)
-    logging.basicConfig(
-        stream=sys.stderr,
-        level=logging.DEBUG if a.verbose else logging.INFO,
-        format="%(asctime)s %(levelname)s %(message)s",
-        datefmt="%H:%M:%S",
-    )
-    logging.getLogger("httpx").setLevel(logging.WARNING)
+    console.setup(a.verbose)
     cfg = Config()
     for field, value in (
         ("resolver", a.resolver),
         ("rpki_date", a.rpki_date),
+        ("rpki_max_age_days", a.rpki_max_age),
         ("max_age_hours", a.max_age),
         ("workers", a.workers),
         ("data_dir", a.data_dir),
@@ -137,7 +137,7 @@ def main() -> None:
 
         if not a.jsonl.is_file():
             raise SystemExit(f"no such file: {a.jsonl}")
-        print(f"wrote {browse(a.jsonl, a.out)}")
+        console.ok("wrote", str(browse(a.jsonl, a.out)))
         return
     if a.cmd == "list":
         from .report.listing import listing

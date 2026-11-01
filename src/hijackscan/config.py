@@ -29,6 +29,9 @@ class Config:
     workers: int = 8
     ripestat_concurrency: int = 8  # the proposal's limit
     rpki_date: str = "latest"  # RIPE NCC RPKI archive day for ROAs: "latest" or YYYY-MM-DD (2026-08-28 = the replay)
+    # "latest" means the newest complete day under data/rpki/ when it is at most this old (no network call);
+    # older than that, the archive is asked for its newest published day.
+    rpki_max_age_days: int = 3
     max_age_hours: float = 24 * 7  # re-use data/collected/<domain>.json younger than this
     data_dir: Path = DATA_DIR
     # Longest prefix the Internet routes (RFC 7454 filtering): a forged more-specific longer than this does not

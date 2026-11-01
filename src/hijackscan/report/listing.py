@@ -10,6 +10,9 @@ from __future__ import annotations
 import argparse
 import json
 
+from rich.markup import escape
+
+from .. import console
 from ..collect import read_domains
 from ..config import Config
 from ..risk import SEVERITIES, Risk, assess
@@ -62,14 +65,17 @@ def listing(cfg: Config, a: argparse.Namespace) -> int:
         return 0
     if a.details:
         for r in hits:
-            print("\n".join(risk_view.summary_text(r) + risk_view.details_text(r)))
-            print("\n" + "─" * 100 + "\n")
+            console.show(risk_view.summary_text(r) + risk_view.details_text(r))
+            console.out.print("\n" + "─" * 100 + "\n", style="dim")
     else:
-        print(f"{'SCORE':>5}  {'SEVERITY':<8}  {'LABEL':<15} {'DOMAIN':<24} FIX FIRST")
+        console.out.print(f"{'SCORE':>5}  {'SEVERITY':<8}  {'LABEL':<15} {'DOMAIN':<24} FIX FIRST", style="heading")
         for r in hits:
             s = "    -" if r.score is None else f"{r.score:5.1f}"
             fix = f"{r.fix.owner}: {r.fix.action} → {r.fix.score_after:.1f}" if r.fix else "-"
-            print(f"{s}  {r.severity:<8}  {r.label:<15} {r.domain:<24} {fix}")
-    print(f"\n{len(hits)} of {len(risks)} collected domains match", end="")
-    print("" if a.details else "   (--details for the calculation and evidence, --json for machine output)")
+            console.out.print(
+                f"{console.sev(r.severity, f'{s}  {r.severity:<8}')}  {escape(f'{r.label:<15} {r.domain:<24}')} [dim]{escape(fix)}[/]",
+                soft_wrap=True,
+            )
+    hint = "" if a.details else "   (--details for the calculation and evidence, --json for machine output)"
+    console.out.print(f"\n{len(hits)} of {len(risks)} collected domains match[dim]{hint}[/]", soft_wrap=True)
     return 0

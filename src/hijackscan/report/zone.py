@@ -14,13 +14,14 @@ from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 
+from .. import console
 from ..collect import Collector
 from ..config import Config
 from ..risk import COMPLEXITY_STEP, LABELS, SEVERITIES, SEVERITY_BANDS, Risk, assess
 from ..score import Scored, score
 from . import html
-from .domain import routing_source, rpki_source
 from .browse import browse
+from .domain import routing_source, rpki_source
 
 SCHEMA_VERSION = 2
 SEVERE = ("High", "Critical")
@@ -66,8 +67,13 @@ def zone_report(cfg: Config, domains: list[str], out: Path, *, meta: dict | None
             f.write(json.dumps(r.to_json(), ensure_ascii=False) + "\n")
     browse(out / "domains.jsonl")
     sev = report["severity"]
-    print(f"{len(risks)} domains: " + ", ".join(f"{c} {sev[c]['domains']}" for c in SEVERITIES))
-    print(f"wrote {out / 'report.json'}, {out / 'report.html'}, {out / 'domains.jsonl'} and {out / 'domains.html'}")
+    console.stage(f"zone report  {len(risks)} domains")
+    for c in SEVERITIES:
+        n = sev[c]["domains"]
+        console.out.print(f"  {console.sev(c, f'{c:<8}')} {n:>4}  [dim]{'█' * round(40 * n / max(len(risks), 1))}[/]")
+    console.ok(
+        "wrote", f"{out / 'report.json'}, {out / 'report.html'}, {out / 'domains.jsonl'}, {out / 'domains.html'}"
+    )
     return 0
 
 
@@ -158,13 +164,13 @@ def build(records: list[dict], scored: list[Scored], risks: list[Risk], cfg: Con
         "schema_version": SCHEMA_VERSION,
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "scope": {
-        "domains": n,
-        "tld": _tld(records),
-        "resolver": records[0]["resolver"] if records else None,
-        "routing_source": records[0].get("routing_source") if records else None,
-        "rpki_source": records[0].get("rpki_source") if records else None,
-        "rpki_date": records[0]["rpki_date"] if records else cfg.rpki_date,
-        "population": population,
+            "domains": n,
+            "tld": _tld(records),
+            "resolver": records[0]["resolver"] if records else None,
+            "routing_source": records[0].get("routing_source") if records else None,
+            "rpki_source": records[0].get("rpki_source") if records else None,
+            "rpki_date": records[0]["rpki_date"] if records else cfg.rpki_date,
+            "population": population,
         },
         "model": {
             "formula": "design/formula.md",
@@ -393,9 +399,9 @@ def render_html(r: dict) -> str:
         )
     body += html.table(["scenario", *SEVERITIES, "mean score", "reads as"], rows, set(range(1, len(SEVERITIES) + 2)))
     body += (
-    f"<p class=muted>Resolver {e(scope['resolver'])}; routing from {e(routing_source(scope))}; "
-    f"ROAs from {e(rpki_source(scope))}, {e(scope['rpki_date'])}; "
-    f"generated {e(r['generated_at'])}. No domain names are listed.</p>"
+        f"<p class=muted>Resolver {e(scope['resolver'])}; routing from {e(routing_source(scope))}; "
+        f"ROAs from {e(rpki_source(scope))}, {e(scope['rpki_date'])}; "
+        f"generated {e(r['generated_at'])}. No domain names are listed.</p>"
     )
     return html.page(
         f"hijackscan zone report - {n} {e(zone_name)} domains"
