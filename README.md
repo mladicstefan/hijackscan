@@ -37,6 +37,8 @@ mode, while the lab runs.
 
 ```bash
 uv sync                                                  # once
+uv run demo        # everything below in one go: the scanner steps, then the lab (matrix, controls, containment),
+                   # two progress bars, one log in data/out/, a scoreboard at the end (about 10 min with the lab)
 
 # scanner
 uv run scripts/check_resolver.py                         # the resolver must validate DNSSEC
@@ -64,6 +66,10 @@ uv run lab/labctl.py controls      # negative controls: every verdict flips when
 uv run lab/labctl.py check         # containment: no route off the box, private ASNs, RFC 5737 only
 uv run lab/labctl.py destroy
 ```
+
+`uv run demo` runs every command as it is written here and prints each one before running it. Without
+containerlab or Docker reachable it runs the scanner steps, shows the newest recorded lab run from `lab/logs/`
+and exits 3; on a machine where only root can reach Docker, run `sudo uv run demo`.
 
 Every domain gets a risk score 0–10 with the CVSS severity scale (None / Low / Medium / High / Critical, plus
 Unknown when the record is incomplete). Formula, parameters and references: [design/formula.md](design/formula.md).
