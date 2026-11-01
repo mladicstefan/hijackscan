@@ -1,0 +1,166 @@
+{
+ "domain": "nic.rs",
+ "fetched_at": "2026-10-31T14:40:51+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "nic.rs": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.nic.rs": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NXDOMAIN",
+    "AAAA": "NXDOMAIN"
+   }
+  }
+ },
+ "ds": {
+  "records": [
+   "16700 13 2 79ff2f78de081c38558a06ed4ee6f5e612726f62fd814d5cc0600eff8c2c4385"
+  ],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [
+   "257 3 13 0HMx9rT4tgHeyfCCQ3A37WajuG5XieBw NdXO/tKcocUPojWa5XucaZmsoFaitj7N 2Jqess957mH0aXTomLObBA==",
+   "256 3 13 wnXuXb7z2KWkortoJr7xLp5RaCnQceZW 3coWpiLDHCu4oOZGi//8xwHusdUvNFJM Q3Tes9IWtAwUDEa2ElGSKg=="
+  ],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "nic.rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "l.nic.rs": {
+   "A": [
+    "194.146.106.114"
+   ],
+   "AAAA": [
+    "2001:67c:1010:29::53"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "a.nic.rs": {
+   "A": [
+    "91.199.17.59"
+   ],
+   "AAAA": [
+    "2001:67c:69c::59"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "c.nic.rs": {
+   "A": [
+    "45.142.220.81"
+   ],
+   "AAAA": [
+    "2a0e:dbc0:2::81"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "h.nic.rs": {
+   "A": [
+    "91.199.17.60"
+   ],
+   "AAAA": [
+    "2001:67c:69c::60"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "194.146.106.114": {
+   "prefix": "194.146.106.0/24",
+   "origin_asns": [
+    8674
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "194.146.106.0/23",
+     "origin_asn": 8674,
+     "max_length": 24,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "194.146.106.0/24",
+     "origin_asn": 8674,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {},
+ "errors": [
+  "OSError: [Errno 22] Invalid argument: 'C:\\\\Users\\\\Lenovo\\\\Desktop\\\\DNS\\\\hijackscan\\\\data\\\\cache\\\\ripestat\\\\network-info_resource=2001:67c:1010:29::53.json.1392.part'"
+ ]
+}

@@ -1,0 +1,193 @@
+{
+ "domain": "beotel.rs",
+ "fetched_at": "2026-10-31T14:45:35+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "beotel.rs": {
+   "A": [
+    "194.106.180.18"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.beotel.rs": {
+   "A": [
+    "194.106.180.18"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "beotel.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns.beotel.net": {
+   "A": [
+    "194.106.162.2"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.beotel.rs": {
+   "A": [
+    "194.106.162.3"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "194.106.162.2": {
+   "prefix": "194.106.160.0/19",
+   "origin_asns": [
+    6700
+   ],
+   "routing": {
+    "more_specifics": [
+     "194.106.166.0/24 AS6700",
+     "194.106.170.0/24 AS6700"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "194.106.160.0/19",
+     "origin_asn": 6700,
+     "max_length": 19,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "194.106.160.0/19",
+     "origin_asn": 8400,
+     "max_length": 19,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "194.106.162.3": {
+   "prefix": "194.106.160.0/19",
+   "origin_asns": [
+    6700
+   ],
+   "routing": {
+    "more_specifics": [
+     "194.106.166.0/24 AS6700",
+     "194.106.170.0/24 AS6700"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "194.106.160.0/19",
+     "origin_asn": 6700,
+     "max_length": 19,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "194.106.160.0/19",
+     "origin_asn": 8400,
+     "max_length": 19,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "194.106.180.18": {
+   "prefix": "194.106.160.0/19",
+   "origin_asns": [
+    6700
+   ],
+   "routing": {
+    "more_specifics": [
+     "194.106.166.0/24 AS6700",
+     "194.106.170.0/24 AS6700"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "194.106.160.0/19",
+     "origin_asn": 6700,
+     "max_length": 19,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "194.106.160.0/19",
+     "origin_asn": 8400,
+     "max_length": 19,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "6700": {
+   "name": "BEOTEL-AS TELEKOM SRBIJA a.d.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

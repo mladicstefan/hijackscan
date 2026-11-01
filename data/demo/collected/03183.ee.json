@@ -1,0 +1,141 @@
+{
+ "domain": "03183.ee",
+ "fetched_at": "2026-10-31T18:06:06+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "03183.ee": {
+   "A": [
+    "137.220.156.154"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.03183.ee": {
+   "A": [
+    "137.220.156.182"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "03183.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {},
+ "addresses": {
+  "137.220.156.154": {
+   "prefix": "137.220.156.0/24",
+   "origin_asns": [
+    4907
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 318,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "137.220.128.0/17",
+     "origin_asn": 64050,
+     "max_length": 24,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "137.220.128.0/17",
+     "origin_asn": 152194,
+     "max_length": 24,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "137.220.156.0/24",
+     "origin_asn": 4907,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "137.220.156.182": {
+   "prefix": "137.220.156.0/24",
+   "origin_asns": [
+    4907
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 318,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "137.220.128.0/17",
+     "origin_asn": 64050,
+     "max_length": 24,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "137.220.128.0/17",
+     "origin_asn": 152194,
+     "max_length": 24,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "137.220.156.0/24",
+     "origin_asn": 4907,
+     "max_length": 24,
+     "ta": "apnic"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "4907": {
+   "name": "BGPNETPTELTD-AS-AP - BGPNET PTE. LTD.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

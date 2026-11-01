@@ -1,0 +1,238 @@
+{
+ "domain": "cpanelhosting.rs",
+ "fetched_at": "2026-10-31T14:40:58+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "cpanelhosting.rs": {
+   "A": [
+    "217.26.215.148"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.cpanelhosting.rs": {
+   "A": [
+    "217.26.215.148"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "cpanelhosting.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "dns4.sbb.rs": {
+   "A": [
+    "89.216.1.2"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "dns3.sbb.rs": {
+   "A": [
+    "82.117.194.3"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "dns1.sbb.rs": {
+   "A": [
+    "82.117.194.2"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "dns2.sbb.rs": {
+   "A": [
+    "89.216.1.1"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "217.26.215.148": {
+   "prefix": "217.26.208.0/21",
+   "origin_asns": [
+    31042
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.26.208.0/21",
+     "origin_asn": 31042,
+     "max_length": 21,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "82.117.194.2": {
+   "prefix": "82.117.192.0/19",
+   "origin_asns": [
+    31042
+   ],
+   "routing": {
+    "more_specifics": [
+     "82.117.195.0/24 AS31042"
+    ],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "82.117.192.0/19",
+     "origin_asn": 31042,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "82.117.194.3": {
+   "prefix": "82.117.192.0/19",
+   "origin_asns": [
+    31042
+   ],
+   "routing": {
+    "more_specifics": [
+     "82.117.195.0/24 AS31042"
+    ],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "82.117.192.0/19",
+     "origin_asn": 31042,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "89.216.1.1": {
+   "prefix": "89.216.0.0/17",
+   "origin_asns": [
+    31042
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "89.216.0.0/16",
+     "origin_asn": 31042,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "89.216.1.2": {
+   "prefix": "89.216.0.0/17",
+   "origin_asns": [
+    31042
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "89.216.0.0/16",
+     "origin_asn": 31042,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "31042": {
+   "name": "YETTEL-AS Yettel d.o.o.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

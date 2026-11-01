@@ -1,0 +1,401 @@
+{
+ "domain": "ubbws.ee",
+ "fetched_at": "2026-10-31T18:07:32+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "ubbws.ee": {
+   "A": [
+    "23.141.4.93"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.ubbws.ee": {
+   "A": [
+    "23.141.4.93"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "ubbws.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "n2.xundns.com": {
+   "A": [
+    "169.197.142.81",
+    "61.163.30.181",
+    "122.114.39.7"
+   ],
+   "AAAA": [
+    "2408:8621:0:42:e401:813:0:25",
+    "2408:8722:1801:10:4:611:6303:181",
+    "2604:86c0:6001:8::a9c5:8e51"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "n1.xundns.com": {
+   "A": [
+    "111.6.96.27",
+    "38.89.70.107",
+    "42.240.163.163"
+   ],
+   "AAAA": [
+    "2604:86c0:5001:11::2659:466b",
+    "2409:8c44:1b00:601:1:1110:609:6027"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "111.6.96.27": {
+   "prefix": "111.6.96.0/21",
+   "origin_asns": [
+    9808
+   ],
+   "routing": {
+    "more_specifics": [
+     "111.6.102.0/24 AS9808"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "111.6.0.0/16",
+     "origin_asn": 24445,
+     "max_length": 16,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "111.6.96.0/21",
+     "origin_asn": 9808,
+     "max_length": 21,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "122.114.39.7": {
+   "prefix": "122.114.0.0/16",
+   "origin_asns": [
+    4837
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "122.114.0.0/16",
+     "origin_asn": 4837,
+     "max_length": 16,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "169.197.142.81": {
+   "prefix": "169.197.142.0/24",
+   "origin_asns": [
+    63023
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "23.141.4.93": {
+   "prefix": "23.141.4.0/24",
+   "origin_asns": [
+    36002
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "23.141.4.0/24",
+     "origin_asn": 36002,
+     "max_length": 24,
+     "ta": "arin"
+    },
+    {
+     "prefix": "23.141.4.0/24",
+     "origin_asn": 399870,
+     "max_length": 24,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2408:8621:0:42:e401:813:0:25": {
+   "prefix": "2408:8621::/32",
+   "origin_asns": [
+    4837
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 305,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2408:8621::/32",
+     "origin_asn": 4837,
+     "max_length": 32,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "2408:8722:1801:10:4:611:6303:181": {
+   "prefix": "2408:8722::/32",
+   "origin_asns": [
+    4837
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 305,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2408:8722::/32",
+     "origin_asn": 4837,
+     "max_length": 32,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "2409:8c44:1b00:601:1:1110:609:6027": {
+   "prefix": "2409:8c44:1b00::/48",
+   "origin_asns": [
+    9808
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2409:8c44:1b00::/48",
+     "origin_asn": 9808,
+     "max_length": 48,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "2409:8c44::/32",
+     "origin_asn": 24445,
+     "max_length": 32,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "2604:86c0:5001:11::2659:466b": {
+   "prefix": "2604:86c0:5000::/36",
+   "origin_asns": [
+    63023
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2604:86c0:5000::/36",
+     "origin_asn": 63023,
+     "max_length": 36,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2604:86c0:6001:8::a9c5:8e51": {
+   "prefix": "2604:86c0:6000::/36",
+   "origin_asns": [
+    63023
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2604:86c0:6000::/36",
+     "origin_asn": 63023,
+     "max_length": 36,
+     "ta": "arin"
+    }
+   ]
+  },
+  "38.89.70.107": {
+   "prefix": "38.89.70.0/24",
+   "origin_asns": [
+    63023
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "42.240.163.163": {
+   "prefix": "42.240.160.0/20",
+   "origin_asns": [
+    58466,
+    136958
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "42.240.160.0/20",
+     "origin_asn": 58466,
+     "max_length": 20,
+     "ta": "apnic"
+    },
+    {
+     "prefix": "42.240.160.0/20",
+     "origin_asn": 136958,
+     "max_length": 20,
+     "ta": "apnic"
+    }
+   ]
+  },
+  "61.163.30.181": {
+   "prefix": "61.163.0.0/16",
+   "origin_asns": [
+    4837
+   ],
+   "routing": {
+    "more_specifics": [
+     "61.163.126.0/23 AS4837",
+     "61.163.182.0/23 AS4837",
+     "61.163.26.0/24 AS4837",
+     "61.163.60.0/24 AS4837",
+     "61.163.78.0/24 AS4837",
+     "61.163.79.0/24 AS4837",
+     "61.163.95.0/24 AS4837",
+     "61.163.210.0/24 AS4837",
+     "61.163.238.0/24 AS4837",
+     "61.163.252.0/24 AS4837"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "61.163.0.0/16",
+     "origin_asn": 4837,
+     "max_length": 16,
+     "ta": "apnic"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "4837": {
+   "name": "CHINA169-Backbone - CHINA UNICOM China169 Backbone",
+   "announced": true
+  },
+  "9808": {
+   "name": "CHINAMOBILE-CN - China Mobile Communications Group Co., Ltd.",
+   "announced": true
+  },
+  "36002": {
+   "name": "GOMAMI - GoMami Networks",
+   "announced": true
+  },
+  "58466": {
+   "name": "CT-Guangzhou-IDC - CHINANET Guangdong province network",
+   "announced": true
+  },
+  "63023": {
+   "name": "AS-GLOBALTELEHOST - GTHost",
+   "announced": true
+  },
+  "136958": {
+   "name": "UNICOM-GuangZhou-IDC - China Unicom Guangdong IP network",
+   "announced": true
+  }
+ },
+ "errors": []
+}

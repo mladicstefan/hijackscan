@@ -1,0 +1,166 @@
+{
+ "domain": "fernonorden.ee",
+ "fetched_at": "2026-10-31T18:07:25+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "fernonorden.ee": {
+   "A": [
+    "46.226.10.71"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.fernonorden.ee": {
+   "A": [
+    "46.226.10.71"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "fernonorden.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.datacenter.no": {
+   "A": [
+    "91.192.220.132"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.datacenter.no": {
+   "A": [
+    "185.7.60.115"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "185.7.60.115": {
+   "prefix": "185.7.60.0/22",
+   "origin_asns": [
+    39783
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "185.7.60.0/22",
+     "origin_asn": 39783,
+     "max_length": 22,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "46.226.10.71": {
+   "prefix": "46.226.8.0/21",
+   "origin_asns": [
+    39783
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "46.226.8.0/21",
+     "origin_asn": 39783,
+     "max_length": 21,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "91.192.220.132": {
+   "prefix": "91.192.220.0/22",
+   "origin_asns": [
+    39783
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "91.192.220.0/22",
+     "origin_asn": 39783,
+     "max_length": 22,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "39783": {
+   "name": "WEBHUSET-AS Webhuset AS",
+   "announced": true
+  }
+ },
+ "errors": []
+}

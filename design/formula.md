@@ -249,7 +249,8 @@ High partial captures do exist behind a worse web path: the fix re-scores show t
 Critical domain to 8.0 High because 2 of 3 nameserver addresses are capturable).
 
 The 13 collection errors were a Windows file-name bug (IPv6 colons in RIPEstat cache file names), fixed in
-`collect/ripestat.py`; re-collecting those domains with `--force` should score most of them.
+`collect/ripestat.py`. Records with errors are never reused from the cache, so the next `collect` or `zone` run
+fetches those domains again, which should score most of them.
 
 ## 10. Limitations
 

@@ -1,0 +1,389 @@
+{
+ "domain": "4451.ee",
+ "fetched_at": "2026-10-31T18:07:23+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "4451.ee": {
+   "A": [
+    "156.234.67.112",
+    "156.234.67.111",
+    "156.234.67.113",
+    "156.234.67.114"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.4451.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NXDOMAIN",
+    "AAAA": "NXDOMAIN"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "4451.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.netsto.net": {
+   "A": [
+    "92.223.77.53",
+    "92.223.77.153"
+   ],
+   "AAAA": [
+    "2a03:90c0:9990::2053"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.netsto.net": {
+   "A": [
+    "92.223.100.53",
+    "92.223.100.153"
+   ],
+   "AAAA": [
+    "2a03:90c0:9990::1053"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "156.234.67.111": {
+   "prefix": "156.234.67.0/24",
+   "origin_asns": [
+    138415
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 958,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 64013,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 138195,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 138415,
+     "max_length": 24,
+     "ta": "afrinic"
+    }
+   ]
+  },
+  "156.234.67.112": {
+   "prefix": "156.234.67.0/24",
+   "origin_asns": [
+    138415
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 958,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 64013,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 138195,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 138415,
+     "max_length": 24,
+     "ta": "afrinic"
+    }
+   ]
+  },
+  "156.234.67.113": {
+   "prefix": "156.234.67.0/24",
+   "origin_asns": [
+    138415
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 958,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 64013,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 138195,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 138415,
+     "max_length": 24,
+     "ta": "afrinic"
+    }
+   ]
+  },
+  "156.234.67.114": {
+   "prefix": "156.234.67.0/24",
+   "origin_asns": [
+    138415
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 958,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 64013,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 138195,
+     "max_length": 24,
+     "ta": "afrinic"
+    },
+    {
+     "prefix": "156.234.0.0/16",
+     "origin_asn": 138415,
+     "max_length": 24,
+     "ta": "afrinic"
+    }
+   ]
+  },
+  "2a03:90c0:9990::1053": {
+   "prefix": "2a03:90c0:9990::/48",
+   "origin_asns": [
+    199524
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a03:90c0:9990::/48",
+     "origin_asn": 199524,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a03:90c0:9990::2053": {
+   "prefix": "2a03:90c0:9990::/48",
+   "origin_asns": [
+    199524
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a03:90c0:9990::/48",
+     "origin_asn": 199524,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "92.223.100.153": {
+   "prefix": "92.223.100.0/24",
+   "origin_asns": [
+    199524
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "92.223.100.0/24",
+     "origin_asn": 199524,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "92.223.100.53": {
+   "prefix": "92.223.100.0/24",
+   "origin_asns": [
+    199524
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "92.223.100.0/24",
+     "origin_asn": 199524,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "92.223.77.153": {
+   "prefix": "92.223.77.0/24",
+   "origin_asns": [
+    199524
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "92.223.77.0/24",
+     "origin_asn": 199524,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "92.223.77.53": {
+   "prefix": "92.223.77.0/24",
+   "origin_asns": [
+    199524
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "92.223.77.0/24",
+     "origin_asn": 199524,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "138415": {
+   "name": "YANCYLIMITED-AS-HK - Yancy Limited",
+   "announced": true
+  },
+  "199524": {
+   "name": "GCORE G-Core Labs S.A.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

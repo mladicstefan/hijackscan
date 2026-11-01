@@ -1,0 +1,214 @@
+{
+ "domain": "ei.ee",
+ "fetched_at": "2026-10-31T18:05:47+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "ei.ee": {
+   "A": [
+    "52.20.84.62"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.ei.ee": {
+   "A": [
+    "52.20.84.62"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "ei.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.atom.com": {
+   "A": [
+    "50.19.240.86"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.atom.com": {
+   "A": [
+    "44.219.81.145"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "44.219.81.145": {
+   "prefix": "44.192.0.0/11",
+   "origin_asns": [
+    14618
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "44.192.0.0/10",
+     "origin_asn": 16509,
+     "max_length": 10,
+     "ta": "arin"
+    },
+    {
+     "prefix": "44.192.0.0/11",
+     "origin_asn": 14618,
+     "max_length": 11,
+     "ta": "arin"
+    },
+    {
+     "prefix": "44.192.0.0/11",
+     "origin_asn": 16509,
+     "max_length": 11,
+     "ta": "arin"
+    }
+   ]
+  },
+  "50.19.240.86": {
+   "prefix": "50.19.128.0/17",
+   "origin_asns": [
+    14618
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "50.16.0.0/14",
+     "origin_asn": 16509,
+     "max_length": 14,
+     "ta": "arin"
+    },
+    {
+     "prefix": "50.19.0.0/16",
+     "origin_asn": 14618,
+     "max_length": 16,
+     "ta": "arin"
+    },
+    {
+     "prefix": "50.19.0.0/16",
+     "origin_asn": 16509,
+     "max_length": 16,
+     "ta": "arin"
+    },
+    {
+     "prefix": "50.19.128.0/17",
+     "origin_asn": 14618,
+     "max_length": 17,
+     "ta": "arin"
+    },
+    {
+     "prefix": "50.19.128.0/17",
+     "origin_asn": 16509,
+     "max_length": 17,
+     "ta": "arin"
+    }
+   ]
+  },
+  "52.20.84.62": {
+   "prefix": "52.20.0.0/14",
+   "origin_asns": [
+    14618
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "52.0.0.0/11",
+     "origin_asn": 16509,
+     "max_length": 11,
+     "ta": "arin"
+    },
+    {
+     "prefix": "52.20.0.0/14",
+     "origin_asn": 14618,
+     "max_length": 14,
+     "ta": "arin"
+    },
+    {
+     "prefix": "52.20.0.0/14",
+     "origin_asn": 16509,
+     "max_length": 14,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "14618": {
+   "name": "AMAZON-AES - Amazon.com, Inc.",
+   "announced": true
+  }
+ },
+ "errors": []
+}

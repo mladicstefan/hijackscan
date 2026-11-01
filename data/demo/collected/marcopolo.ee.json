@@ -1,0 +1,224 @@
+{
+ "domain": "marcopolo.ee",
+ "fetched_at": "2026-10-31T18:05:54+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "marcopolo.ee": {
+   "A": [
+    "38.242.211.29"
+   ],
+   "AAAA": [
+    "2a02:c206:2079:8143::1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.marcopolo.ee": {
+   "A": [
+    "38.242.211.29"
+   ],
+   "AAAA": [
+    "2a02:c206:2079:8143::1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "marcopolo.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.platinum.co.hu": {
+   "A": [
+    "149.102.130.129"
+   ],
+   "AAAA": [
+    "2a02:c204:2102:4740::1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.platinum.co.hu": {
+   "A": [
+    "38.242.211.29"
+   ],
+   "AAAA": [
+    "2a02:c206:2079:8143::1"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.platinum.co.hu": {
+   "A": [
+    "195.70.60.72"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "149.102.130.129": {
+   "prefix": "149.102.128.0/21",
+   "origin_asns": [
+    51167
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "195.70.60.72": {
+   "prefix": "195.70.32.0/19",
+   "origin_asns": [
+    5483
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "195.70.32.0/19",
+     "origin_asn": 5483,
+     "max_length": 19,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "195.70.32.0/19",
+     "origin_asn": 5588,
+     "max_length": 19,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a02:c204:2102:4740::1": {
+   "prefix": "2a02:c204::/32",
+   "origin_asns": [
+    51167
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:c204::/32",
+     "origin_asn": 51167,
+     "max_length": 128,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a02:c206:2079:8143::1": {
+   "prefix": "2a02:c206::/32",
+   "origin_asns": [
+    51167
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:c206::/32",
+     "origin_asn": 51167,
+     "max_length": 128,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "38.242.211.29": {
+   "prefix": "38.242.192.0/19",
+   "origin_asns": [
+    51167
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  }
+ },
+ "asns": {
+  "5483": {
+   "name": "MAGYAR-TELEKOM-MAIN-AS Magyar Telekom Plc.",
+   "announced": true
+  },
+  "51167": {
+   "name": "CONTABO Contabo GmbH",
+   "announced": true
+  }
+ },
+ "errors": []
+}

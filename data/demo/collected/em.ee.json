@@ -1,0 +1,270 @@
+{
+ "domain": "em.ee",
+ "fetched_at": "2026-10-31T18:06:34+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "em.ee": {
+   "A": [
+    "217.146.69.7",
+    "217.146.70.51"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.em.ee": {
+   "A": [
+    "217.146.70.51"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [
+   "41077 8 2 aade31a56de2abd5dad9253a9f457034629145a16625259ab80ff5d4899ddba2"
+  ],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [
+   "256 3 8 AwEAAap/OPnN3G4YyYbx7HmZ+KoMKtUf nAjX1nMkyHDJ8AvSguvdfKOG052s8BtE 3DCxoxjYYOZz9ErxrLi63ctqV5S8ezbs QCoTQXdz2/6J9435IpC/TjPW80iwM1AN TCYYsKfvpg0ZMdsGAkKIzwu8CVO4sNbF BBvJ2ezn/lR9oKjxZxpWpX1ckUI/ohWe Qp6tdeIdktKZFcSRiTXAzDDbVzrmyk6x tKy9unavQx1nwvKURx+Qt1cyZNpdk3NM DAPvUscygLc6qF7mbY/0YLkWYS/e+vUZ W0TT+rH1Di/e4Ss9HyrHYkSHW5eFiups 37J1TFQYkEpmIL33YKyeQjGFF60=",
+   "257 3 8 AwEAAbY4eXtRaeqYpjs7AqWoksDVIY1s Q1u1kjFfTYb2aM5pq1j5wFdL4v1eaQCe o4nh/ZhoNiw2gCYhZonQ/ddO5/xfZRtJ Vxs7kJZpjRwoU5VsS44Vc3BWXuaxejcY ZGnxABWxNyPH+PXedFzwURcLRKIpU1bS RSTr7ycuUS/HkYBx2VxhNjtdl+QdXBCe HbLTgTk0gWznR8ri+TnHayAwgmZaiv/o B5B+AMfuaspeQiInFtY4KIJcqp++1HeJ zBj3r5a+MxiYAKunTfOkGm5M5wslVC+u hauX7NN9AjbcTp9GdUO9+DUruA86yMtH WBEw3ri+B7ILqNfZPFopPFpwwtM="
+  ],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "em.ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.zone.ee": {
+   "A": [
+    "85.234.242.32"
+   ],
+   "AAAA": [
+    "2a02:29e9:30:53::a"
+   ],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.zonedata.net": {
+   "A": [
+    "85.234.247.50"
+   ],
+   "AAAA": [
+    "2a02:29e9:20:53::a"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.zone.eu": {
+   "A": [
+    "217.146.66.65"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": true,
+    "AAAA": true
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "217.146.66.65": {
+   "prefix": "217.146.64.0/20",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.146.64.0/20",
+     "origin_asn": 49604,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "217.146.69.7": {
+   "prefix": "217.146.64.0/20",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.146.64.0/20",
+     "origin_asn": 49604,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "217.146.70.51": {
+   "prefix": "217.146.64.0/20",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 322,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "217.146.64.0/20",
+     "origin_asn": 49604,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a02:29e9:20:53::a": {
+   "prefix": "2a02:29e9:20::/48",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:29e9:20::/48",
+     "origin_asn": 49604,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2a02:29e9:30:53::a": {
+   "prefix": "2a02:29e9:30::/48",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a02:29e9:30::/48",
+     "origin_asn": 49604,
+     "max_length": 48,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "85.234.242.32": {
+   "prefix": "85.234.242.0/23",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "85.234.242.0/23",
+     "origin_asn": 49604,
+     "max_length": 23,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "85.234.247.50": {
+   "prefix": "85.234.246.0/23",
+   "origin_asns": [
+    49604
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "85.234.246.0/23",
+     "origin_asn": 49604,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "49604": {
+   "name": "ZONE Zone Media OU",
+   "announced": true
+  }
+ },
+ "errors": []
+}

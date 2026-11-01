@@ -6,6 +6,8 @@ hijackscan zone <domains.txt> --out dir/                 zone report (report.jso
 hijackscan <domain> [--details] [--html file]            one domain: risk summary; --details for everything
 hijackscan list [domains.txt|domain] [filters]           filter and sort collected domains by risk (no network)
 hijackscan browse <domains.jsonl> [--out file]           one HTML page of every domain, details on click
+hijackscan load <domains.txt> [--name NAME]              score collected records, save them to MongoDB as a run
+hijackscan serve [--port 8000] [--reload]                read-only API over MongoDB, docs at /docs
 """
 
 from __future__ import annotations
@@ -73,6 +75,14 @@ def parser() -> argparse.ArgumentParser:
     li.add_argument("--sort", choices=("score", "domain", "label"), default="score")
     li.add_argument("--details", action="store_true", help="print the full details of every match")
     li.add_argument("--json", action="store_true", help="one JSON object per line (summary, or full with --details)")
+    lo = sub.add_parser("load", help="score collected records (no network) and save them to MongoDB as a new run")
+    lo.add_argument("domains", help="file with one domain per line (the same list as for `zone`)")
+    lo.add_argument("--name", help="a name for the run shown on the web page (default: the file name)")
+    lo.add_argument("--skip-existing", action="store_true", help="do nothing if a run with this name is loaded")
+    se = sub.add_parser("serve", help="start the read-only API over MongoDB (docs at http://127.0.0.1:8000/docs)")
+    se.add_argument("--host", default="127.0.0.1", help="address to listen on (default: this computer only)")
+    se.add_argument("--port", type=int, default=8000)
+    se.add_argument("--reload", action="store_true", help="restart automatically when the code changes")
     return p
 
 
@@ -81,7 +91,7 @@ def main() -> None:
     if (
         argv
         and not argv[0].startswith("-")
-        and argv[0] not in ("sample", "collect", "zone", "domain", "list", "browse")
+        and argv[0] not in ("sample", "collect", "zone", "domain", "list", "browse", "load", "serve")
     ):
         argv = ["domain", *argv]  # `hijackscan blic.rs`
     a = parser().parse_args(argv)
@@ -133,5 +143,20 @@ def main() -> None:
         from .report.listing import listing
 
         sys.exit(listing(cfg, a))
+    if a.cmd == "load":
+        from .store import load
+
+        domains, meta = read_list(a.domains)
+        r = load(cfg, domains, meta, source=a.domains, name=a.name, skip_existing=a.skip_existing)
+        if r["skipped"]:
+            print(f"run '{r['name']}' is already loaded: skipped")
+        else:
+            print(f"run {r['run_id']} '{r['name']}': {r['domains']} domains saved, {r['missing']} not collected ({r['db']})")
+        return
+    if a.cmd == "serve":
+        import uvicorn
+
+        uvicorn.run("hijackscan.api:app", host=a.host, port=a.port, reload=a.reload)
+        return
     parser().print_help()
     sys.exit(2)

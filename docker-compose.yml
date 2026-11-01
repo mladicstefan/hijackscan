@@ -1,0 +1,38 @@
+# hijackscan demo: the database and the app (web page + API).
+#   docker compose up            build if needed, start both, then open http://127.0.0.1:8000
+#   docker compose down          stop (the database is kept)
+#   docker compose down -v       stop and delete the database (the demo data is loaded again on the next up)
+#   docker compose up -d mongo   only the database, for development with `uv run hijackscan serve`
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: hijackscan-mongo
+    command: ["--quiet"]          # no log line per connection (the health check connects every 5 s)
+    attach: false                 # keep `docker compose up` readable; see it with `docker compose logs mongo`
+    ports:
+      - "127.0.0.1:27017:27017"   # only this computer can connect
+    volumes:
+      - mongo-data:/data/db       # the data survives when the container is deleted
+    restart: unless-stopped
+    healthcheck:                  # "healthy" once MongoDB answers a ping; the app waits for that
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  app:
+    build: .                      # the Dockerfile in this folder
+    image: hijackscan-app
+    container_name: hijackscan-app
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      HIJACKSCAN_MONGO_URL: mongodb://mongo:27017   # "mongo" = the service above, on the compose network
+    ports:
+      - "127.0.0.1:8000:8000"     # the page and the API, this computer only
+    restart: unless-stopped
+
+volumes:
+  mongo-data:

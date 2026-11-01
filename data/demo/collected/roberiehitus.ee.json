@@ -1,0 +1,234 @@
+{
+ "domain": "roberiehitus.ee",
+ "fetched_at": "2026-10-31T18:07:17+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "roberiehitus.ee": {
+   "A": [
+    "95.217.193.147"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.roberiehitus.ee": {
+   "A": [
+    "95.217.193.147"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "roberiehitus.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.elkdata.ee": {
+   "A": [
+    "194.106.101.163"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.elkdata.net": {
+   "A": [
+    "195.222.17.113"
+   ],
+   "AAAA": [
+    "2001:ad0:105:189:195:222:17:113"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns.elkdata.ee": {
+   "A": [
+    "194.106.101.162"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "194.106.101.162": {
+   "prefix": "194.106.96.0/19",
+   "origin_asns": [
+    3249
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "194.106.96.0/19",
+     "origin_asn": 3249,
+     "max_length": 19,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "194.106.101.163": {
+   "prefix": "194.106.96.0/19",
+   "origin_asns": [
+    3249
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "194.106.96.0/19",
+     "origin_asn": 3249,
+     "max_length": 19,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "195.222.17.113": {
+   "prefix": "195.222.0.0/19",
+   "origin_asns": [
+    3327
+   ],
+   "routing": {
+    "more_specifics": [
+     "195.222.16.0/24 AS3327"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "195.222.0.0/19",
+     "origin_asn": 3327,
+     "max_length": 19,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2001:ad0:105:189:195:222:17:113": {
+   "prefix": "2001:ad0::/32",
+   "origin_asns": [
+    3327
+   ],
+   "routing": {
+    "more_specifics": [
+     "2001:ad0:5000::/40 AS3327"
+    ],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2001:ad0::/32",
+     "origin_asn": 3327,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "95.217.193.147": {
+   "prefix": "95.217.0.0/16",
+   "origin_asns": [
+    24940
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "95.217.0.0/16",
+     "origin_asn": 24940,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "3249": {
+   "name": "ESTPAK Telia Eesti AS",
+   "announced": true
+  },
+  "3327": {
+   "name": "CITIC CITIC Telecom CPC Netherlands B.V.",
+   "announced": true
+  },
+  "24940": {
+   "name": "HETZNER-AS Hetzner Online GmbH",
+   "announced": true
+  }
+ },
+ "errors": []
+}

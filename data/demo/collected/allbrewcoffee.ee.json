@@ -1,0 +1,268 @@
+{
+ "domain": "allbrewcoffee.ee",
+ "fetched_at": "2026-10-31T18:05:47+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "allbrewcoffee.ee": {
+   "A": [],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.allbrewcoffee.ee": {
+   "A": [
+    "193.70.18.233"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "allbrewcoffee.ee",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "ee",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns2.iptwins.net": {
+   "A": [
+    "193.70.18.204"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns3.iptwins.com": {
+   "A": [
+    "144.217.70.141"
+   ],
+   "AAAA": [
+    "2607:5300:203:28d::"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns4.iptwins.com": {
+   "A": [
+    "161.202.174.147"
+   ],
+   "AAAA": [
+    "2401:c900:1101:496::3"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.iptwins.net": {
+   "A": [
+    "188.165.162.43"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "144.217.70.141": {
+   "prefix": "144.217.0.0/16",
+   "origin_asns": [
+    16276
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "144.217.0.0/16",
+     "origin_asn": 16276,
+     "max_length": 16,
+     "ta": "arin"
+    }
+   ]
+  },
+  "161.202.174.147": {
+   "prefix": "161.202.160.0/19",
+   "origin_asns": [
+    36351
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 321,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "188.165.162.43": {
+   "prefix": "188.165.0.0/16",
+   "origin_asns": [
+    16276
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "188.165.0.0/16",
+     "origin_asn": 16276,
+     "max_length": 16,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "193.70.18.204": {
+   "prefix": "193.70.0.0/17",
+   "origin_asns": [
+    16276
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.70.0.0/17",
+     "origin_asn": 16276,
+     "max_length": 17,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "193.70.18.233": {
+   "prefix": "193.70.0.0/17",
+   "origin_asns": [
+    16276
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "193.70.0.0/17",
+     "origin_asn": 16276,
+     "max_length": 17,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "2401:c900:1101:496::3": {
+   "prefix": "2401:c900:1100::/40",
+   "origin_asns": [
+    36351
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 311,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "unknown",
+   "roas": []
+  },
+  "2607:5300:203:28d::": {
+   "prefix": "2607:5300::/32",
+   "origin_asns": [
+    16276
+   ],
+   "routing": {
+    "more_specifics": [
+     "2607:5300:603::/48 AS16276"
+    ],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2607:5300::/32",
+     "origin_asn": 16276,
+     "max_length": 32,
+     "ta": "arin"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "16276": {
+   "name": "OVH OVH SAS",
+   "announced": true
+  },
+  "36351": {
+   "name": "SOFTLAYER - IBM Cloud",
+   "announced": true
+  }
+ },
+ "errors": []
+}

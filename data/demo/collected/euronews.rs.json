@@ -1,0 +1,438 @@
+{
+ "domain": "euronews.rs",
+ "fetched_at": "2026-10-31T14:45:59+00:00",
+ "resolver": "9.9.9.9:853 (DoT)",
+ "resolver_check": {
+  "resolver": "9.9.9.9:853 (DoT)",
+  "signed_zone": "rnids.rs",
+  "signed_ok": true,
+  "bogus_zone": "dnssec-failed.org",
+  "bogus_servfail": true
+ },
+ "rpki_date": "2026-10-31",
+ "names": {
+  "euronews.rs": {
+   "A": [
+    "88.99.254.102"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "www.euronews.rs": {
+   "A": [
+    "88.99.254.102"
+   ],
+   "AAAA": [],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "ds": {
+  "records": [],
+  "ad": true,
+  "rcode": "NOERROR"
+ },
+ "dnskey": {
+  "records": [],
+  "ad": false,
+  "rcode": "NOERROR"
+ },
+ "caa_chain": [
+  {
+   "name": "euronews.rs",
+   "records": [],
+   "ad": false,
+   "rcode": "NOERROR"
+  },
+  {
+   "name": "rs",
+   "records": [],
+   "ad": true,
+   "rcode": "NOERROR"
+  }
+ ],
+ "nameservers": {
+  "ns3.bdm.microsoftonline.com": {
+   "A": [
+    "204.14.183.208"
+   ],
+   "AAAA": [
+    "2a01:111:4000:700::d0"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns1.bdm.microsoftonline.com": {
+   "A": [
+    "13.107.236.208"
+   ],
+   "AAAA": [
+    "2603:1061:0:700::d0"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns4.bdm.microsoftonline.com": {
+   "A": [
+    "208.84.5.208"
+   ],
+   "AAAA": [
+    "2620:1ec:bda:700::d0"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  },
+  "ns2.bdm.microsoftonline.com": {
+   "A": [
+    "150.171.21.208"
+   ],
+   "AAAA": [
+    "2620:1ec:8ec:700::d0"
+   ],
+   "ad": {
+    "A": false,
+    "AAAA": false
+   },
+   "rcode": {
+    "A": "NOERROR",
+    "AAAA": "NOERROR"
+   }
+  }
+ },
+ "addresses": {
+  "13.107.236.208": {
+   "prefix": "13.104.0.0/14",
+   "origin_asns": [
+    8075
+   ],
+   "routing": {
+    "more_specifics": [
+     "13.104.82.0/24 AS8069",
+     "13.107.3.0/24 AS8068",
+     "13.107.4.0/24 AS8068",
+     "13.107.5.0/24 AS8068",
+     "13.107.6.0/24 AS8068",
+     "13.107.7.0/24 AS8068",
+     "13.107.9.0/24 AS8068",
+     "13.107.12.0/24 AS8068",
+     "13.107.13.0/24 AS8068",
+     "13.107.14.0/24 AS8075",
+     "13.107.15.0/24 AS8068",
+     "13.107.16.0/24 AS8068",
+     "13.107.18.0/24 AS8068",
+     "13.107.19.0/24 AS8068",
+     "13.107.21.0/24 AS8068",
+     "13.107.22.0/24 AS8068",
+     "13.107.39.0/24 AS8068",
+     "13.107.40.0/24 AS8068",
+     "13.107.42.0/24 AS8068",
+     "13.107.43.0/24 AS8068",
+     "13.107.48.0/24 AS8068",
+     "13.107.49.0/24 AS8068",
+     "13.107.50.0/24 AS8068",
+     "13.107.51.0/24 AS8068",
+     "13.107.52.0/24 AS8068",
+     "13.107.54.0/24 AS8068",
+     "13.107.56.0/24 AS8068",
+     "13.107.128.0/24 AS8068",
+     "13.107.129.0/24 AS8068",
+     "13.107.140.0/24 AS8068",
+     "13.107.254.0/24 AS8068"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "13.104.0.0/14",
+     "origin_asn": 8075,
+     "max_length": 14,
+     "ta": "arin"
+    }
+   ]
+  },
+  "150.171.21.208": {
+   "prefix": "150.171.0.0/16",
+   "origin_asns": [
+    8075
+   ],
+   "routing": {
+    "more_specifics": [
+     "150.171.0.0/24 AS8075",
+     "150.171.32.0/24 AS8068",
+     "150.171.44.0/24 AS8068",
+     "150.171.254.0/24 AS8075"
+    ],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "150.171.0.0/16",
+     "origin_asn": 8075,
+     "max_length": 16,
+     "ta": "arin"
+    }
+   ]
+  },
+  "204.14.183.208": {
+   "prefix": "204.14.180.0/22",
+   "origin_asns": [
+    8075
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "204.14.180.0/22",
+     "origin_asn": 8075,
+     "max_length": 22,
+     "ta": "arin"
+    }
+   ]
+  },
+  "208.84.5.208": {
+   "prefix": "208.84.0.0/21",
+   "origin_asns": [
+    8075
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "208.84.0.0/21",
+     "origin_asn": 8075,
+     "max_length": 21,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2603:1061:0:700::d0": {
+   "prefix": "2603:1000::/25",
+   "origin_asns": [
+    8075
+   ],
+   "routing": {
+    "more_specifics": [
+     "2603:1063:7c00::/38 AS8070",
+     "2603:1063:300::/40 AS8070",
+     "2603:1063:2100::/40 AS8070",
+     "2603:1061:6::/48 AS8075",
+     "2603:1062:3::/48 AS8075",
+     "2603:1062:4::/48 AS8075"
+    ],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2603:1000::/25",
+     "origin_asn": 8075,
+     "max_length": 25,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2620:1ec:8ec:700::d0": {
+   "prefix": "2620:1ec::/36",
+   "origin_asns": [
+    8075
+   ],
+   "routing": {
+    "more_specifics": [
+     "2620:1ec:4::/48 AS8068",
+     "2620:1ec:5::/48 AS8068",
+     "2620:1ec:6::/48 AS8068",
+     "2620:1ec:7::/48 AS8068",
+     "2620:1ec:9::/48 AS8075",
+     "2620:1ec:a::/48 AS8068",
+     "2620:1ec:b::/48 AS8068",
+     "2620:1ec:c::/48 AS8068",
+     "2620:1ec:d::/48 AS8068",
+     "2620:1ec:12::/48 AS8068",
+     "2620:1ec:13::/48 AS8068",
+     "2620:1ec:1d::/48 AS8068",
+     "2620:1ec:21::/48 AS8068",
+     "2620:1ec:22::/48 AS8068",
+     "2620:1ec:23::/48 AS8068",
+     "2620:1ec:24::/48 AS8068",
+     "2620:1ec:25::/48 AS8075",
+     "2620:1ec:28::/48 AS8068",
+     "2620:1ec:34::/48 AS8068",
+     "2620:1ec:42::/48 AS8068",
+     "2620:1ec:43::/48 AS8068",
+     "2620:1ec:44::/48 AS8068",
+     "2620:1ec:45::/48 AS8068",
+     "2620:1ec:8f0::/48 AS8068",
+     "2620:1ec:8fc::/48 AS8068",
+     "2620:1ec:900::/48 AS8068",
+     "2620:1ec:90c::/48 AS8068",
+     "2620:1ec:a92::/48 AS8068",
+     "2620:1ec:c11::/48 AS8068"
+    ],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2620:1ec::/36",
+     "origin_asn": 8075,
+     "max_length": 36,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2620:1ec:bda:700::d0": {
+   "prefix": "2620:1ec::/36",
+   "origin_asns": [
+    8075
+   ],
+   "routing": {
+    "more_specifics": [
+     "2620:1ec:4::/48 AS8068",
+     "2620:1ec:5::/48 AS8068",
+     "2620:1ec:6::/48 AS8068",
+     "2620:1ec:7::/48 AS8068",
+     "2620:1ec:9::/48 AS8075",
+     "2620:1ec:a::/48 AS8068",
+     "2620:1ec:b::/48 AS8068",
+     "2620:1ec:c::/48 AS8068",
+     "2620:1ec:d::/48 AS8068",
+     "2620:1ec:12::/48 AS8068",
+     "2620:1ec:13::/48 AS8068",
+     "2620:1ec:1d::/48 AS8068",
+     "2620:1ec:21::/48 AS8068",
+     "2620:1ec:22::/48 AS8068",
+     "2620:1ec:23::/48 AS8068",
+     "2620:1ec:24::/48 AS8068",
+     "2620:1ec:25::/48 AS8075",
+     "2620:1ec:28::/48 AS8068",
+     "2620:1ec:34::/48 AS8068",
+     "2620:1ec:42::/48 AS8068",
+     "2620:1ec:43::/48 AS8068",
+     "2620:1ec:44::/48 AS8068",
+     "2620:1ec:45::/48 AS8068",
+     "2620:1ec:8f0::/48 AS8068",
+     "2620:1ec:8fc::/48 AS8068",
+     "2620:1ec:900::/48 AS8068",
+     "2620:1ec:90c::/48 AS8068",
+     "2620:1ec:a92::/48 AS8068",
+     "2620:1ec:c11::/48 AS8068"
+    ],
+    "ris_peers_seeing": 313,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2620:1ec::/36",
+     "origin_asn": 8075,
+     "max_length": 36,
+     "ta": "arin"
+    }
+   ]
+  },
+  "2a01:111:4000:700::d0": {
+   "prefix": "2a01:111:4000::/36",
+   "origin_asns": [
+    8075
+   ],
+   "routing": {
+    "more_specifics": [
+     "2a01:111:4004::/48 AS8075"
+    ],
+    "ris_peers_seeing": 312,
+    "ris_peers_total": 313
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "2a01:111:4000::/36",
+     "origin_asn": 8075,
+     "max_length": 36,
+     "ta": "ripencc"
+    },
+    {
+     "prefix": "2a01:111::/32",
+     "origin_asn": 8075,
+     "max_length": 32,
+     "ta": "ripencc"
+    }
+   ]
+  },
+  "88.99.254.102": {
+   "prefix": "88.99.0.0/16",
+   "origin_asns": [
+    24940
+   ],
+   "routing": {
+    "more_specifics": [],
+    "ris_peers_seeing": 323,
+    "ris_peers_total": 323
+   },
+   "rpki_state": "valid",
+   "roas": [
+    {
+     "prefix": "88.99.0.0/16",
+     "origin_asn": 24940,
+     "max_length": 24,
+     "ta": "ripencc"
+    }
+   ]
+  }
+ },
+ "asns": {
+  "8075": {
+   "name": "MICROSOFT-CORP-MSN-AS-BLOCK - Microsoft Corporation",
+   "announced": true
+  },
+  "24940": {
+   "name": "HETZNER-AS Hetzner Online GmbH",
+   "announced": true
+  }
+ },
+ "errors": []
+}

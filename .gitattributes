@@ -1,0 +1,6 @@
+# Line endings, the same for everyone whatever git they use (Windows, WSL, Mac, Linux).
+# Text files are stored with LF in the repository; on Windows they may appear with CRLF in the folder.
+* text=auto
+
+# Shell scripts run inside Linux containers: always LF, also in a Windows folder.
+*.sh text eol=lf
