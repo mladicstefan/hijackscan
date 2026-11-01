@@ -121,7 +121,7 @@ def _sample(runner: Runner) -> int | None:
 
 def _collect(runner: Runner) -> tuple[int, int, int] | None:
     """(collected live, from cache, with errors), or None after a failure."""
-    runner.step("collect", inner_total=None, expect="about 40 s even from cache: the ROA set loads first")
+    runner.step("collect", inner_total=None, expect="about 1 s from cache; a live collect loads the ROA index first")
     facts: dict[str, str] = {}
 
     def on_line(line: str, r: Runner) -> None:

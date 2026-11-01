@@ -138,7 +138,7 @@ def run_lab(runner: Runner) -> LabSummary:
         containment="not checked",
         timestamp="",
     )
-    runner.step("lab matrix", inner_total=MATRIX_ROWS, expect="about 4 min")
+    runner.step("lab matrix", inner_total=MATRIX_ROWS, expect="about 1 min")
     try:
         matrix = _Matrix(lab)
         res = runner.run("matrix", [*LABCTL, "matrix"], matrix)

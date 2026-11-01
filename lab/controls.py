@@ -7,7 +7,8 @@ D. baseline              the scanner's verdict follows the ROA day it is given.
 
 Each control: expected state, remove the mechanism, expected flip, restore, expected state again. Every step is
 logged to lab/logs/<timestamp>-controls/controls.log (latest-controls links to the newest) with the CA transcript it
-rests on. Exit 1 if any expected flip is missing.
+rests on. Exit 1 if any expected flip is missing. A lab already running the scenario a control needs (the matrix
+leaves caa-signed deployed) is reused, reset with `attack off`; every wait polls for its condition, no fixed sleeps.
 """
 
 from __future__ import annotations
@@ -25,6 +26,7 @@ import console
 import labctl
 from console import log
 from render import SCENARIOS
+from render.dns import SIGNED_ZONE
 from render.topology import EXTRA_ADDRESSES, FEED_PORT, LINKS, NODES
 
 VALIDATING = 'module-config: "validator iterator"'
@@ -50,11 +52,14 @@ def feed(call: str, resource: str) -> dict:
 class Controls:
     def __init__(self, build: Path, log: Path) -> None:
         self.build, self.log = build, log
-        self.applied: str | None = None
-        self.sc: dict = {}
+        self.applied: str | None = labctl.deployed(build)
+        self.sc: dict = labctl.current_scenario(build) if self.applied else {}
         self.misses: list[str] = []
         log.parent.mkdir(exist_ok=True)
         log.write_text("")
+        if self.applied:
+            console.note(f"reusing the deployed scenario {self.applied} (containers up): no apply for its controls")
+            self.say(f"  -- lab already running scenario {self.applied}: reused, reset with attack off", show=False)
 
     def say(self, line: str, show: bool = True) -> None:
         if show:
@@ -108,19 +113,28 @@ class Controls:
         assert VALIDATING in text, f"{conf} has no {VALIDATING}"
         self.say(f"  -- {NOT_VALIDATING} in {conf.name}, kill -HUP unbound")
         conf.write_text(text.replace(VALIDATING, NOT_VALIDATING))
-        self.reload_resolver()
+        self.reload_resolver(validating=False)
         d, _ = self.decision()
         self.expect("A2 validation off: ISSUED", d.startswith("ISSUED"), d)
         self.say("  -- validator restored")
         conf.write_text(text)
-        self.reload_resolver()
+        self.reload_resolver(validating=True)
         d, _ = self.decision()
         self.expect("A3 validating again: REFUSED", d.startswith("REFUSED") and "reachable but bogus" in d, d)
         labctl.attack("off", sc)
 
-    def reload_resolver(self) -> None:
+    def reload_resolver(self, validating: bool) -> None:
+        """SIGHUP Unbound (re-reads unbound.conf, drops the cache), then wait until its answer for the signed
+        control zone shows the validator state just configured: AD set when validating, clear when not."""
         labctl.dexec("resolver", "kill", "-HUP", "1")
-        time.sleep(3)
+        want = "NOERROR ad" if validating else "NOERROR"
+        t = labctl.wait_for(
+            f"resolver {want} for {SIGNED_ZONE}", lambda: labctl.resolver_state(SIGNED_ZONE) == want, 15, 0.2
+        )
+        self.say(
+            f"  -- resolver reloaded, answers {SIGNED_ZONE} with {labctl.resolver_state(SIGNED_ZONE)}"
+            + (f" after {t:.1f}s" if t is not None else " (timeout)")
+        )
 
     def control_b(self) -> None:
         self.stage("B. tight-maxlength / web: the REFUSED rests on ROV at the transits")
@@ -155,7 +169,23 @@ class Controls:
                 f"{'' if on else 'no '}neighbor {link_ip(node, peer)} route-map ROV in",
             )
         labctl.vtysh("origin2", "clear bgp ipv4 unicast * soft out")
-        time.sleep(8)
+        ms, web = self.sc["attacker"]["more_specifics"]["web"], self.sc["victim"]["web"]
+
+        def dropped(node: str) -> bool:
+            return "Network not in table" in labctl.vtysh(node, f"show bgp ipv4 unicast {ms}")
+
+        def table_settled() -> bool:  # ROV on: both transits drop the /28 again; off: transit1 carries it as invalid
+            if on:
+                return dropped("transit2") and dropped("transit1")
+            return "rpki validation-state: invalid" in labctl.vtysh("transit1", f"show bgp ipv4 unicast {ms}")
+
+        t = labctl.wait_for(f"transit tables with ROV {'on' if on else 'off'}", table_settled, 20, 0.5)
+        host = "victim" if on else "attacker"  # and the data plane the CA's primary perspective sees, behind transit1
+        t2 = labctl.wait_for(f"{web} answered by {host}", lambda: labctl.who_serves_web(web) == host, 15, 0.5)
+        state = "on" if on else "off"
+        self.say(
+            f"  -- ROV {state}: transit tables settled after {took(t)}, {web} answered by '{host}' after {took(t2)}"
+        )
 
     def control_c(self) -> None:
         self.stage("C. baseline / web: the ISSUED rests on the attacker serving; the feed reads the live table")
@@ -175,7 +205,9 @@ class Controls:
         d, out = self.decision()
         self.expect("C3 attacker silent: REFUSED, unreachable", d.startswith("REFUSED") and "unreachable" in out, d)
         labctl.dexec("attacker", "ip", "addr", "add", addr, "dev", dev)
-        time.sleep(2)
+        labctl.wait_for(
+            f"{web} answered by the attacker again", lambda: labctl.who_serves_web(web) == "attacker", 15, 0.5
+        )
         d, _ = self.decision()
         self.expect("C4 address restored: ISSUED", d.startswith("ISSUED"), d)
         labctl.attack("off", sc)
@@ -194,6 +226,10 @@ class Controls:
         roas.write_bytes(original)
         label = self.scan_label()
         self.expect("D3 ROA day restored: open-web", label.startswith("open-web"), label)
+
+
+def took(seconds: float | None) -> str:
+    return "timeout" if seconds is None else f"{seconds:.1f}s"
 
 
 def tightened(roas_csv_xz: bytes) -> bytes:

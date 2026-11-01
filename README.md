@@ -38,7 +38,7 @@ mode, while the lab runs.
 ```bash
 uv sync                                                  # once
 uv run demo        # everything below in one go: the scanner steps, then the lab (matrix, controls, containment),
-                   # two progress bars, one log in data/out/, a scoreboard at the end (about 10 min with the lab)
+                   # two progress bars, one log in data/out/, a scoreboard at the end (about 1.5 min with the lab)
 
 # scanner
 uv run scripts/check_resolver.py                         # the resolver must validate DNSSEC
@@ -61,7 +61,7 @@ uv run hijackscan list --finding NO_CAA,UNSIGNED --min-score 4 --json
 uv run hijackscan browse data/out/ee/domains.jsonl      # (re)build domains.html from a domains.jsonl
 
 # lab (containerlab, docker and clab_admins groups or sudo, the lab image: docs/lab.md §4)
-uv run lab/labctl.py matrix        # every row: render, deploy, scan, attack, CA (about 4 min); evidence in lab/logs/<timestamp>-matrix/, latest-matrix links to the newest run
+uv run lab/labctl.py matrix        # every row: render, deploy, scan, attack, CA (about 1 min); evidence in lab/logs/<timestamp>-matrix/, latest-matrix links to the newest run
 uv run lab/labctl.py controls      # negative controls: every verdict flips when its mechanism is removed
 uv run lab/labctl.py check         # containment: no route off the box, private ASNs, RFC 5737 only
 uv run lab/labctl.py destroy
@@ -100,7 +100,7 @@ print(assess(r, s).summary()['severity'], assess(r, s, ov={'signed': True, 'pinn
 ```
 
 Global flags go before the subcommand: `--resolver host[:port]` (853 = DoT, 53 = plain), `--rpki-date YYYY-MM-DD`
-(default: newest archive day), `--max-age HOURS` (default 168), `--workers N`, `--data-dir DIR`, `-v`.
+(default `latest`: the newest local day at most 3 days old, else the newest published day), `--max-age HOURS` (default 168), `--workers N`, `--data-dir DIR`, `-v`.
 
 ## Layering
 

@@ -85,8 +85,9 @@ uv run lab/labctl.py check                               # containment, exit 1 o
 uv run lab/labctl.py scan [--details]                    # the scanner, pre-attack state
 uv run lab/labctl.py attack web|web+ns|off               # origin2 announces or withdraws the forged routes
 uv run lab/labctl.py ca attacker|legit                   # the CA tries to issue for that account
-uv run lab/labctl.py matrix [--rows ROW ...]             # every row (about 4 min), evidence in lab/logs/<timestamp>-matrix/ (latest-matrix links to the newest run)
-uv run lab/labctl.py controls                            # the negative controls (about 5 min)
+uv run lab/labctl.py matrix [--rows ROW ...]             # every row (about 1 min), evidence in lab/logs/<timestamp>-matrix/ (latest-matrix links to the newest run)
+uv run lab/labctl.py controls                            # the negative controls (about 30 s; reuses the lab the matrix left running)
+uv run lab/labctl.py --measure-lockout matrix            # same, but `attack off` first times the resolver's bogus lockout (adds up to 60 s per signed row)
 uv run lab/labctl.py destroy
 ```
 
@@ -111,17 +112,22 @@ alone; for a dry render use `--build <other dir>`.
    record is opened to confirm the facts the label rests on: no `errors`, the web address seen in the
    victim's prefix, RPKI state `valid`, a covering ROA with the scenario's maxLength, the resolver check
    passing. A scanner that printed the right label from a dead feed fails here.
-4. **Attack** (`web` or `web+ns`). `attack()` shows the forged routes at the collector and then asks, from
-   the resolver's position, which host answers at the web address (`X-Lab-Host` header) and at the
-   nameserver address (`hostname.bind`). The row states the expected data plane explicitly and fails if the
-   observed one differs.
+4. **Attack** (`web` or `web+ns`). `attack()` polls the collector's table until it holds the expected number
+   of paths for each forged route (three when it passes ROV, one when the transits drop it, none when withdrawn),
+   then asks, from the resolver's position, which host answers at the web address (`X-Lab-Host` header) and at
+   the nameserver address (`hostname.bind`). It then flushes the resolver's cache (`unbound-control flush_zone
+   victim.rs` + `flush_bogus`, over the unix socket rendered into `unbound.conf`; `kill -HUP` if that fails) and
+   polls until the resolver's answer for `victim.rs` agrees with the data plane (SERVFAIL when the signed zone's
+   nameserver is the forged one, AD otherwise). The row states the expected data plane explicitly and fails if
+   the observed one differs; every wait is a bounded poll and its duration is in the attack transcript.
 5. **CA for the attacker's account.** `ca.py` walks CAA from `victim.rs` up to the root through the
    validating resolver, applies `issue`/`accounturi`/`validationmethods`, resolves the A record, then runs
    HTTP-01 from the primary and four remote perspectives, each bound to its own source address and routed
    out of its own link, and applies the quorum. The matrix matches the decision line against the row's
    expected reason (for example `reachable but bogus`, `accounturi pins …`, `domain control not
    demonstrated`) and the host that answered each perspective against the expected set.
-6. **Attack off**, wait until the resolver validates the domain again, then **CA for the owner's account**:
+6. **Attack off** (same polls and flush; with `--measure-lockout` it first times how long the resolver stays
+   bogus, see design/lab.md §2.10), then **CA for the owner's account**:
    must be ISSUED and every perspective must have reached the victim.
 
 Every run gets its own `lab/logs/<UTC timestamp>-matrix/`, with `lab/logs/latest-matrix` linked to the newest, so no
@@ -143,7 +149,7 @@ missing.
 
 | control | mechanism removed | expected flip |
 |---|---|---|
-| A `caa-signed`, `web+ns` | Unbound's validator module (`module-config: "iterator"`, HUP) | REFUSED (reachable but bogus) → ISSUED → REFUSED |
+| A `caa-signed`, `web+ns` | Unbound's validator module (`module-config: "iterator"`, HUP, then poll until `rnids.rs` loses or regains AD) | REFUSED (reachable but bogus) → ISSUED → REFUSED |
 | B `tight-maxlength`, `web` | `route-map ROV in` on both transits, soft-out from origin2 | the /28 absent from transit2 → present on transit1 as `rpki validation-state: invalid`; REFUSED → ISSUED → REFUSED |
 | C `baseline`, `web` | the attacker's address on its interface (hijack still announced) | the feed shows the forged /28 with origin 65000; ISSUED → REFUSED (unreachable) → ISSUED |
 | D `baseline` | the ROA day: every maxLength set to the prefix length | scanner `open-web` → `contested` → `open-web` |
@@ -166,6 +172,9 @@ missing.
 - A node has no interfaces or can reach the Internet: the containment check names it; see design/lab.md §2.9.
 - `BGP sessions not established` or `RTR cache not connected` after 90 s: `docker logs clab-hijackscan-rpki`
   and `vtysh -c "show rpki cache-connection"` on a transit.
+- `unbound-control ... failed ...: falling back to kill -HUP 1` in an attack transcript: the resolver's control
+  socket (`remote-control:` in the rendered `unbound.conf`, `/run/unbound.ctl`) is not answering; the step still
+  completes through a reload, which also drops the cache. Rebuild the lab image if `unbound-control` is missing.
 - A `--rows` run keeps the deployed lab if it already runs that scenario, so a state made by hand (an
   address removed, the feed killed) survives into the row: that is how the matrix's own negative runs are
   made.
