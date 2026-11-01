@@ -71,7 +71,7 @@ answers at the web and nameserver addresses, seen from the resolver's position).
 four things, all read from captured output: the scanner's label plus a check of the facts it collected (prefix,
 RPKI state, ROA maxLength, resolver AD), the data-plane state (who answers the web and nameserver
 addresses), the CA's decision line matched against the expected reason, and the host each HTTP-01 perspective
-reached. Per-row transcripts live in `lab/logs/`, the environment in `lab/logs/manifest.json`.
+reached. Per-row transcripts live in `lab/logs/<timestamp>-matrix/` (`lab/logs/latest-matrix` points at the newest), the environment in its `manifest.json`.
 
 | scenario | attack | data plane | scanner | evidence | CA → attacker | HTTP-01 hosts | CA → legit (attack off) | expected | ok |
 |---|---|---|---|---|---|---|---|---|---|
@@ -84,7 +84,7 @@ reached. Per-row transcripts live in `lab/logs/`, the environment in `lab/logs/m
 ## 5. Reading the CA log
 
 Every check the CA makes prints one line. The baseline, attacker's request, during the web hijack
-(`lab/logs/baseline-web-attacker.log`):
+(`lab/logs/latest-matrix/baseline-web-attacker.log`):
 
 ```
 [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
@@ -113,7 +113,7 @@ Every check the CA makes prints one line. The baseline, attacker's request, duri
   Four of five positions were captured, so the quorum is met and the certificate is issued. The baseline's
   "yes" therefore rests on exactly one tolerated dissent (design/lab.md §2.4).
 
-### Row 2: tight maxLength (`lab/logs/tight-maxlength-web-attacker.log`)
+### Row 2: tight maxLength (`lab/logs/latest-matrix/tight-maxlength-web-attacker.log`)
 
 ```
 [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
@@ -139,7 +139,7 @@ the real host, which does not know the attacker's token: refused.
 ### Row 3 and 4: CAA with accounturi, zone unsigned
 
 With only the web address hijacked, the real nameserver still serves the CAA record and the account pin
-refuses the attacker (`lab/logs/caa-unsigned-web-attacker.log`):
+refuses the attacker (`lab/logs/latest-matrix/caa-unsigned-web-attacker.log`):
 
 ```
 [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
@@ -150,7 +150,7 @@ refuses the attacker (`lab/logs/caa-unsigned-web-attacker.log`):
 ```
 
 With the nameserver hijacked as well, the forged zone answers "no CAA" and nothing stops issuance. This is
-the scanner's `caa-erasable` class (`lab/logs/caa-unsigned-web+ns-attacker.log`):
+the scanner's `caa-erasable` class (`lab/logs/latest-matrix/caa-unsigned-web+ns-attacker.log`):
 
 ```
 [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
@@ -169,7 +169,7 @@ the scanner's `caa-erasable` class (`lab/logs/caa-unsigned-web+ns-attacker.log`)
 [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker
 ```
 
-### Row 5: CAA with accounturi, zone signed (`lab/logs/caa-signed-web+ns-attacker.log`)
+### Row 5: CAA with accounturi, zone signed (`lab/logs/latest-matrix/caa-signed-web+ns-attacker.log`)
 
 ```
 [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
@@ -188,19 +188,19 @@ Collateral worth knowing: a validating resolver keeps the bogus verdict for its 
 default), so the legitimate owner is also refused for that long after the hijack ends. `attack off` waits it
 out before the control run.
 
-## 6. Containment (`lab/logs/baseline-check.log`)
+## 6. Containment (`lab/logs/latest-matrix/baseline-check.log`)
 
 ```
 containment: OK
 ```
 
-## 7. Negative controls (`lab/logs/controls.log`)
+## 7. Negative controls (`lab/logs/latest-controls/controls.log`)
 
 `uv run lab/labctl.py controls` removes, one at a time, the mechanism each matrix verdict rests on and checks
 that the verdict flips, then restores it and checks that it flips back. Exit 1 if any expected flip is missing.
 
 ```
-negative controls, 2026-10-31T23:45:42+0100
+negative controls, 2026-11-01T00:39:50+0100
 ######## A. caa-signed / web+ns: the REFUSED rests on the resolver validating
     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
     [dns      ] victim.rs CAA: SERVFAIL ad=0

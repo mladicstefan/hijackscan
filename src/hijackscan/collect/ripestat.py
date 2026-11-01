@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 import threading
 import time
@@ -11,9 +10,9 @@ from pathlib import Path
 
 import httpx
 
+from .. import console
 from ..config import SOURCEAPP, USER_AGENT
 
-log = logging.getLogger(__name__)
 URL = "https://stat.ripe.net/data/{call}/data.json"
 
 
@@ -45,7 +44,7 @@ class RipeStat:
                 return data["data"]
             except (httpx.HTTPError, KeyError, ValueError) as e:
                 last = e
-                log.warning("ripestat %s %s: %s (attempt %d)", call, params, e, attempt + 1)
+                console.note(f"ripestat {call} {params}: {e} (attempt {attempt + 1})")
                 time.sleep(2**attempt)
         raise RuntimeError(f"ripestat {call} {params}: {last}")
 

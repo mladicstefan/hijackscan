@@ -11,11 +11,11 @@ hijackscan browse <domains.jsonl> [--out file]           one HTML page of every 
 from __future__ import annotations
 
 import argparse
-import logging
 import sys
 from dataclasses import replace
 from pathlib import Path
 
+from . import console
 from .config import Config
 
 
@@ -80,13 +80,7 @@ def main() -> None:
     ):
         argv = ["domain", *argv]  # `hijackscan blic.rs`
     a = parser().parse_args(argv)
-    logging.basicConfig(
-        stream=sys.stderr,
-        level=logging.DEBUG if a.verbose else logging.INFO,
-        format="%(asctime)s %(levelname)s %(message)s",
-        datefmt="%H:%M:%S",
-    )
-    logging.getLogger("httpx").setLevel(logging.WARNING)
+    console.setup(a.verbose)
     cfg = Config()
     for field, value in (
         ("resolver", a.resolver),
@@ -127,7 +121,7 @@ def main() -> None:
 
         if not a.jsonl.is_file():
             raise SystemExit(f"no such file: {a.jsonl}")
-        print(f"wrote {browse(a.jsonl, a.out)}")
+        console.ok("wrote", str(browse(a.jsonl, a.out)))
         return
     if a.cmd == "list":
         from .report.listing import listing
