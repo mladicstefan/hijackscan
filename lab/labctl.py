@@ -184,7 +184,7 @@ def attack(mode: str, sc: dict) -> dict:
     lines: list[str] = []
 
     def say(msg: str) -> None:
-        (console.note if "UNEXPECTED" in msg else log.info)(msg)
+        console.transcript(msg, indent="")  # host 'attacker' red, 'victim' green, UNEXPECTED yellow
         lines.append(msg)
 
     ms = sc["attacker"]["more_specifics"]

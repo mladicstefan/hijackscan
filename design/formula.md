@@ -120,7 +120,7 @@ only a fully blocked domain scores 0.0 (None).
 | Level | Shown by default | Content |
 |---|---|---|
 | Summary | yes | domain, score, severity, label, one-sentence headline, **fix first** (the single action that lowers the score most), **to close** (the fewest actions that reach 0.0) |
-| Details | `--details`, collapsed `<details>` in HTML, `details` key in JSON | the calculation with every input, all paths (including blocked ones and why), findings with evidence, the re-score of every fix, CVSS 3.1 and 4.0 vectors, ATT&CK techniques, references |
+| Details | `--details`, collapsed `<details>` in HTML, `details` key in JSON | the calculation with every input, all paths (including blocked ones and why), findings with evidence, the re-score of every fix, CVSS 3.1 and 4.0 vectors, ATT&CK techniques; the JSON also carries the numbered references (not printed: they read the same for every domain) |
 
 Reading a domain: *"nbs.rs CRITICAL 10.0 open-web — fix first: publish CAA with accounturi → 8.0 High; to close:
 CAA with accounturi + DNSSEC → 0.0 None."* The details then show why CAA alone only reaches 8.0: 2 of 3 nameserver
@@ -289,7 +289,7 @@ fetches those domains again, which should score most of them.
 
 ```bash
 hijackscan blic.rs                                  # summary: score, severity, headline, fix first, to close
-hijackscan blic.rs --details --html blic.html       # + calculation, paths, findings, vectors, ATT&CK, references
+hijackscan blic.rs --details --html blic.html       # + calculation, paths, findings, fixes, vectors, ATT&CK, raw facts
 hijackscan list --severity High,Critical            # filter collected records (no network)
 hijackscan list --label ns-partial --details
 hijackscan list --finding NO_CAA,UNSIGNED --min-score 4 --json

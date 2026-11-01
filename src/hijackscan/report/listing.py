@@ -73,7 +73,8 @@ def listing(cfg: Config, a: argparse.Namespace) -> int:
             s = "    -" if r.score is None else f"{r.score:5.1f}"
             fix = f"{r.fix.owner}: {r.fix.action} → {r.fix.score_after:.1f}" if r.fix else "-"
             console.out.print(
-                f"{console.sev(r.severity, f'{s}  {r.severity:<8}')}  {escape(f'{r.label:<15} {r.domain:<24}')} [dim]{escape(fix)}[/]",
+                f"{console.sev(r.severity, f'{s}  {r.severity:<8}')}  [class]{escape(f'{r.label:<15}')}[/] "
+                f"[name]{escape(f'{r.domain:<24}')}[/] [dim]{escape(fix)}[/]",
                 soft_wrap=True,
             )
     hint = "" if a.details else "   (--details for the calculation and evidence, --json for machine output)"

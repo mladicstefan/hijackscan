@@ -1,7 +1,8 @@
 """Risk rendering shared by `hijackscan <domain>`, `hijackscan list` and the zone report.
 
 Two levels: the summary (score, severity, one sentence, what to fix) is always shown; the details
-(calculation, every path, finding, fix, vector, technique and reference) only on request.
+(calculation, every path, finding, fix, CVSS vector and ATT&CK technique) only on request. The numbered
+references stay in the JSON (`Risk.details()`) but are not printed: they read the same for every domain.
 """
 
 from __future__ import annotations
@@ -66,12 +67,10 @@ def details_text(r: Risk) -> list[str]:
             "VECTORS",
             f"  {r.cvss31_vector}   base {r.cvss31_base}  (CVSS alone: same for every domain on this path)",
             f"  {r.cvss40_vector}",
-            "",
-            "MITRE ATT&CK",
         ]
+    if r.attack_techniques:
+        out += ["", "MITRE ATT&CK"]
         out += [f"  {t['id']:<10} {t['name']}" for t in r.attack_techniques]
-    refs = r.details()["references"]
-    out += ["", "REFERENCES"] + [f"  [{x['n']}] {x['title']}  {x['url']}" for x in refs]
     return out
 
 

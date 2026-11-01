@@ -5,7 +5,11 @@ and then lets a minimal certificate authority try to issue a certificate to an a
 domain's address space. The scanner's verdict must predict the CA's decision in every row of a matrix, and
 every verdict must flip when the mechanism it rests on is removed. This page is the whole process; the
 reasoning behind each decision is in [design/lab.md](../design/lab.md), the generated walk-through with the
-last run's transcripts is [lab/demo.md](../lab/demo.md).
+last run's transcripts is [lab/demo.md](../lab/demo.md). Its section 4 is the key to the transcripts: what
+each `[dns]`, `[caa]`, `[http-01]`, `[quorum]` and `[decision]` line of the CA says, how the attack lines and
+the controls log are laid out, and which lines decide each row. On a terminal the same lines are coloured
+(`host 'attacker'` red, `'victim'` green, `SERVFAIL` yellow), and `matrix` and `controls` print that key once
+before their first row.
 
 ## 1. What is being proven
 
