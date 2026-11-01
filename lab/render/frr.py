@@ -68,9 +68,13 @@ def render_router(node: str, sc: dict) -> str:
             rm_in = "ROV"
             lines += [
                 "rpki",
-                f" rpki cache tcp {NODES['rpki'].mgmt} {RTR_PORT} preference 1",
+                # Timers first: the first `rpki cache` line starts rtrlib at once with whatever intervals are set
+                # at that moment, and later timer lines only take effect on the next `rpki reset`. With the cache
+                # line first a transit whose first connect loses the race against StayRTR sleeps the default
+                # retry_interval (600 s) before trying again.
                 " rpki retry_interval 5",
                 " rpki polling_period 30",
+                f" rpki cache tcp {NODES['rpki'].mgmt} {RTR_PORT} preference 1",
                 "exit",
                 "!",
                 "route-map ROV deny 10",
