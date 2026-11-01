@@ -9,7 +9,7 @@ import { useMemo, useSyncExternalStore } from "react";
 
 import { SEVERITIES, type FilterSet, type Severity, type SortKey } from "../api/types";
 
-export const PER_PAGE = 50;
+export const PER_PAGE = 20;
 
 export interface View {
   run: string | null; // null: the newest run

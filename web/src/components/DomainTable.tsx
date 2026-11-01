@@ -86,6 +86,8 @@ function DomainTable({ runId, filters, sort, page }: Props) {
 /** A row only re-renders when its own data changes: `row` is the cached object, stable across renders. */
 const Row = memo(function Row({ row }: { row: DomainRow }) {
   const hosting = row.facts.hosting_asns[0];
+  const hostingName = hosting ? (hosting.name ?? `AS${hosting.asn}`) : null;
+  const fixText = row.fix ? `${fmtOwner(row.fix.owner)} ${row.fix.action} → ${fmtScore(row.fix.score_after)}` : null;
   return (
     <tr>
       <td>
@@ -93,14 +95,16 @@ const Row = memo(function Row({ row }: { row: DomainRow }) {
       </td>
       <td>
         <button type="button" className="domain-link" onClick={() => openDomain(row.domain)} title={row.headline}>
-          {row.domain}
+          <DomainLabel domain={row.domain} />
         </button>
       </td>
       <td>
         <code>{row.label}</code>
       </td>
-      <td className="small">{hosting ? (hosting.name ?? `AS${hosting.asn}`) : <span className="muted">–</span>}</td>
-      <td className="small">
+      <td className="small ellipsis" title={hostingName ?? undefined}>
+        {hostingName ?? <span className="muted">–</span>}
+      </td>
+      <td className="small ellipsis" title={fixText ?? undefined}>
         {row.fix ? (
           <>
             <span className="owner">{fmtOwner(row.fix.owner)}</span> {row.fix.action}{" "}
@@ -113,6 +117,25 @@ const Row = memo(function Row({ row }: { row: DomainRow }) {
     </tr>
   );
 });
+
+/** Breaks only after a label's dot, never mid-label, so long domains wrap cleanly instead of mid-word. */
+function DomainLabel({ domain }: { domain: string }) {
+  const parts = domain.split(".");
+  return (
+    <>
+      {parts.map((part, i) => (
+        <span key={i}>
+          {part}
+          {i < parts.length - 1 ? (
+            <>
+              .<wbr />
+            </>
+          ) : null}
+        </span>
+      ))}
+    </>
+  );
+}
 
 // memo: props are a run id and URL-derived objects that keep their identity, so re-renders of the page skip this section
 export default memo(DomainTable);

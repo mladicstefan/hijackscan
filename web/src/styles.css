@@ -136,7 +136,7 @@ input {
 }
 .domain-link {
   font-weight: 600;
-  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 /* ------------------------------------------------------------------ layout */
@@ -299,12 +299,13 @@ footer {
 }
 
 .tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.6rem;
   margin: 0.8rem 0;
 }
 .tile {
+  flex: 1 1 140px;
   background: var(--chip);
   border-radius: 8px;
   padding: 0.6rem 0.8rem;
@@ -340,8 +341,52 @@ th {
 .table-scroll {
   overflow-x: auto;
 }
+.ellipsis {
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.domains {
+  table-layout: fixed;
+  min-width: 46rem;
+}
+.domains th:nth-child(1),
+.domains td:nth-child(1) {
+  width: 6.5rem;
+}
+.domains th:nth-child(2),
+.domains td:nth-child(2) {
+  width: 22%;
+}
+.domains th:nth-child(3),
+.domains td:nth-child(3) {
+  width: 5.5rem;
+}
+.domains th:nth-child(4),
+.domains td:nth-child(4) {
+  width: 20%;
+}
+.domains th:nth-child(5),
 .domains td:nth-child(5) {
-  min-width: 16rem;
+  width: auto;
+}
+.whatif {
+  table-layout: fixed;
+}
+.whatif th:nth-child(1),
+.whatif td:nth-child(1) {
+  width: auto;
+}
+.whatif th:nth-child(2),
+.whatif td:nth-child(2) {
+  width: 13rem;
+}
+.whatif th:nth-child(3),
+.whatif td:nth-child(3),
+.whatif th:nth-child(4),
+.whatif td:nth-child(4) {
+  width: 6rem;
 }
 .whatif tr.baseline td {
   background: var(--chip);
