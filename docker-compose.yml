@@ -8,6 +8,7 @@ services:
     image: mongo:8.0
     container_name: hijackscan-mongo
     command: ["--quiet"]          # no log line per connection (the health check connects every 5 s)
+    attach: false                 # keep `docker compose up` readable; see it with `docker compose logs mongo`
     ports:
       - "127.0.0.1:27017:27017"   # only this computer can connect
     volumes:
