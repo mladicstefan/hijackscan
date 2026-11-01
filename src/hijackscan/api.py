@@ -14,8 +14,10 @@ from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from . import store
+from .config import project_root
 
 app = FastAPI(
     title="hijackscan API",
@@ -25,9 +27,17 @@ app = FastAPI(
 
 
 @lru_cache(maxsize=1)
-def db():
-    """One MongoDB connection for the whole server, opened on the first request."""
+def _connect():
     return store.connect()
+
+
+def db():
+    """One MongoDB connection for the whole server, opened on the first request.
+    If MongoDB is down, the request gets a 503 and the next one tries again (a failure is not cached)."""
+    try:
+        return _connect()
+    except SystemExit as e:  # store.connect() exits with a readable message, which must not stop the server
+        raise HTTPException(503, str(e)) from None
 
 
 def _csv(value: str | None) -> list[str]:
@@ -63,11 +73,6 @@ def filters(
 
 
 Filters = Annotated[dict, Depends(filters)]
-
-
-@app.get("/", include_in_schema=False)
-def root():
-    return RedirectResponse("/docs")  # until the web page exists
 
 
 @app.get("/api/runs", summary="Every run, newest first")
@@ -114,3 +119,18 @@ def domain_history(domain: str):
     if not rows:
         raise HTTPException(404, f"{domain} is in no run")
     return rows
+
+
+# --------------------------------------------------------------------------- the web page
+
+# `npm run build` in web/ writes the page to web/dist; when it is there, this server delivers it at "/".
+# Mounted last, so every /api and /docs route above wins. Without a build, "/" points to the API docs.
+WEB_DIST = project_root() / "web" / "dist"
+
+if (WEB_DIST / "index.html").is_file():
+    app.mount("/", StaticFiles(directory=WEB_DIST, html=True), name="web")
+else:
+
+    @app.get("/", include_in_schema=False)
+    def root():
+        return RedirectResponse("/docs")
