@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
@@ -25,32 +26,50 @@ from .rpki import RoaIndex, ensure_archive, latest_archive_day
 
 
 class Collector:
+    """Collects what is stale. The resolver check, the ROA day and index and the RIPEstat client are prepared
+    only when at least one domain is actually collected: a run served from data/collected/ touches no network."""
+
     def __init__(self, cfg: Config) -> None:
         self.cfg = cfg
         self.dns = Dns(cfg.resolver, cfg.dns_qps)
-        self.resolver_check = check_resolver(self.dns)
-        if not passes(self.resolver_check):
-            console.fail("resolver does not validate DNSSEC", f"{self.dns.address}: {self.resolver_check}")
-            raise SystemExit(1)
-        console.ok(
-            "resolver validates DNSSEC",
-            f"{self.dns.address}: AD on {self.resolver_check['signed_zone']}, "
-            f"SERVFAIL on {self.resolver_check['bogus_zone']}",
-        )
-        if cfg.rpki_date == "latest":
-            cfg = replace(cfg, rpki_date=latest_archive_day())
-            self.cfg = cfg
-        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", cfg.rpki_date):
-            ensure_archive(cfg.rpki_dir, cfg.rpki_date)
-        elif not any(cfg.rpki_dir.glob("*/roas.csv.xz")):  # a synthetic day (the lab's "lab") must be on disk
-            raise SystemExit(f"no ROA archive under {cfg.rpki_dir}: use a YYYY-MM-DD day or write one there")
-        self.roas = RoaIndex(cfg.rpki_dir)
-        self.ripe = RipeStat(cfg.cache_dir, cfg.ripestat_concurrency, cfg.ripestat_url)
-        cfg.collected_dir.mkdir(parents=True, exist_ok=True)
+        self._ready = False
+        self._lock = threading.Lock()
+
+    def _prepare(self) -> None:
+        """Once per Collector: prove the resolver validates, pick and load the ROA day, open RIPEstat."""
+        with self._lock:
+            if self._ready:
+                return
+            cfg = self.cfg
+            self.resolver_check = check_resolver(self.dns)
+            if not passes(self.resolver_check):
+                console.fail("resolver does not validate DNSSEC", f"{self.dns.address}: {self.resolver_check}")
+                raise SystemExit(1)
+            console.ok(
+                "resolver validates DNSSEC",
+                f"{self.dns.address}: AD on {self.resolver_check['signed_zone']}, "
+                f"SERVFAIL on {self.resolver_check['bogus_zone']}",
+            )
+            if cfg.rpki_date == "latest":
+                day, why = latest_archive_day(cfg.data_dir / "rpki", cfg.rpki_max_age_days)
+                cfg = replace(cfg, rpki_date=day)
+                self.cfg = cfg
+            else:
+                why = "given"
+            console.info("rpki day", f"{cfg.rpki_date}  ({why})")
+            if re.fullmatch(r"\d{4}-\d{2}-\d{2}", cfg.rpki_date):
+                ensure_archive(cfg.rpki_dir, cfg.rpki_date)
+            elif not any(cfg.rpki_dir.glob("*/roas.csv.xz")):  # a synthetic day (the lab's "lab") must be on disk
+                raise SystemExit(f"no ROA archive under {cfg.rpki_dir}: use a YYYY-MM-DD day or write one there")
+            self.roas = RoaIndex(cfg.rpki_dir)
+            self.ripe = RipeStat(cfg.cache_dir, cfg.ripestat_concurrency, cfg.ripestat_url)
+            cfg.collected_dir.mkdir(parents=True, exist_ok=True)
+            self._ready = True
 
     # -- one domain --------------------------------------------------------
 
     def collect(self, domain: str) -> dict:
+        self._prepare()
         rec: dict = {
             "domain": domain,
             "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
@@ -125,9 +144,10 @@ class Collector:
     def run(self, domains: list[str], *, force: bool = False) -> list[dict]:
         todo = [d for d in domains if force or not self.fresh(d)]
         console.stage(f"collect  {len(todo)} of {len(domains)} domains")
-        console.info("resolver", self.dns.address)
-        console.info("rpki day", self.cfg.rpki_date)
+        if todo:
+            self._prepare()  # before the pool: the one place the index is built
         cached = len(domains) - len(todo)
+        console.info("resolver", self.dns.address)
         console.info("workers", f"{self.cfg.workers}   ({cached} cached, younger than {self.cfg.max_age_hours:g} h)")
         t0 = time.monotonic()
         done = count(1)
@@ -160,7 +180,11 @@ class Collector:
             )
         else:
             console.ok(took)
-        return [json.loads(self.path(d).read_text()) for d in domains if self.path(d).exists()]
+        records = [json.loads(self.path(d).read_text()) for d in domains if self.path(d).exists()]
+        if not todo:  # nothing resolved a day: the records carry the one they were collected against
+            days = sorted({r.get("rpki_date", "?") for r in records})
+            console.info("rpki day", f"{', '.join(days)}  (from the cached records)")
+        return records
 
 
 def read_domains(arg: str) -> list[str]:

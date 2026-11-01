@@ -24,6 +24,11 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--resolver", help=f"validating resolver host[:port] (default {Config.resolver})")
     p.add_argument("--rpki-date", help=f"RPKI archive day for ROAs (default {Config.rpki_date})")
     p.add_argument(
+        "--rpki-max-age",
+        type=int,
+        help=f"days a local archive day still counts as latest (default {Config.rpki_max_age_days})",
+    )
+    p.add_argument(
         "--max-age", type=float, help=f"hours a collected record stays fresh (default {Config.max_age_hours})"
     )
     p.add_argument("--workers", type=int)
@@ -85,6 +90,7 @@ def main() -> None:
     for field, value in (
         ("resolver", a.resolver),
         ("rpki_date", a.rpki_date),
+        ("rpki_max_age_days", a.rpki_max_age),
         ("max_age_hours", a.max_age),
         ("workers", a.workers),
         ("data_dir", a.data_dir),

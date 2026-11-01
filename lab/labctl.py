@@ -9,6 +9,10 @@ uv run lab/labctl.py scan [--details]          the real scanner against the lab 
 uv run lab/labctl.py ca legit|attacker         the CA tries to issue for that account
 uv run lab/labctl.py matrix [--rows ROW ...]   every row of the validation matrix, with expected results
 uv run lab/labctl.py controls                  negative controls: each verdict flips when its mechanism is removed
+
+Every wait is a condition poll with a timeout, never a fixed sleep; a timeout is logged, never hidden. Between
+steps the resolver's cache is flushed over unbound-control (see flush_resolver). `--measure-lockout` (or
+LAB_MEASURE_LOCKOUT=1) makes `attack off` first time how long the resolver keeps the bogus verdict before flushing.
 """
 
 from __future__ import annotations
@@ -16,10 +20,13 @@ from __future__ import annotations
 import argparse
 import ipaddress
 import json
+import os
+import re
 import shutil
 import subprocess
 import sys
 import time
+from collections.abc import Callable
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -27,12 +34,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import console  # noqa: E402
 from console import log  # noqa: E402
 from render import SCENARIOS, load_scenario, render_all  # noqa: E402
-from render.dns import TTL  # noqa: E402
+from render.dns import SIGNED_ZONE  # noqa: E402
 from render.topology import FEED_PORT, LAB, LAB_IMAGE, NODES  # noqa: E402
 
 LAB_DIR = Path(__file__).resolve().parent
 ROOT = LAB_DIR.parent
 BUILD = LAB_DIR / "build"
+# `attack off` times the resolver's bogus lockout (up to 90 s) before flushing; off by default (--measure-lockout)
+MEASURE_LOCKOUT = os.environ.get("LAB_MEASURE_LOCKOUT") == "1"
 
 
 def sh(*cmd: str, check: bool = True, quiet: bool = False) -> subprocess.CompletedProcess:
@@ -76,18 +85,39 @@ def deploy(build: Path) -> None:
     console.stage("deploy: containerlab up")
     sh("containerlab", "deploy", "-t", str(build / "lab.clab.yml"), "--reconfigure")
     console.stage("deploy: waiting for BGP sessions and RTR caches")
-    wait_bgp(rov_routers(current_scenario(build)))
+    sc = current_scenario(build)
+    wait_bgp(rov_routers(sc), sc["victim"]["prefix"])
 
 
 def destroy(build: Path) -> None:
     sh("containerlab", "destroy", "-t", str(build / "lab.clab.yml"), "--cleanup", check=False)
 
 
-def wait_bgp(rov_routers: list[str] = (), timeout: float = 90) -> None:
+def wait_for(what: str, pred: Callable[[], bool], timeout: float, interval: float) -> float | None:
+    """Poll `pred` every `interval` s until it holds; the seconds it took, or None after `timeout` (logged, so a
+    wait that ran out is visible in the transcript rather than hidden in a sleep)."""
+    t0 = time.time()
+    while True:
+        if pred():
+            return time.time() - t0
+        if time.time() - t0 >= timeout:
+            console.note(f"timeout: {what} not seen within {timeout:.0f}s")
+            return None
+        time.sleep(interval)
+
+
+def collector_paths(prefix: str) -> list[dict]:
+    """The paths the collector holds for `prefix` (empty when withdrawn or not yet learnt)."""
+    return json.loads(vtysh("collector", f"show bgp ipv4 unicast {prefix} json") or "{}").get("paths", [])
+
+
+def wait_bgp(rov_routers: list[str] = (), prefix: str | None = None, timeout: float = 90) -> None:
     """Every BGP session Established and, on the ROV transits, the RTR cache connected (ROV without a cache lets
-    every route through as `notfound`, which would pass the forged more-specific unchecked)."""
+    every route through as `notfound`, which would pass the forged more-specific unchecked). Then, with `prefix`,
+    until the collector holds it from every one of its peers: the last UPDATEs have propagated."""
     routers = [n for n, v in NODES.items() if v.role == "router"]
     t0 = last = time.time()
+    n_collector_peers = 0
     while time.time() - t0 < timeout:
         pending = []
         for r in rov_routers:
@@ -99,6 +129,8 @@ def wait_bgp(rov_routers: list[str] = (), timeout: float = 90) -> None:
                 pending.append(f"{r}: vtysh gave no output (is FRR running? docker logs clab-{LAB}-{r})")
                 continue
             peers = json.loads(raw).get("ipv4Unicast", {}).get("peers", {})
+            if r == "collector":
+                n_collector_peers = len(peers)
             pending += [f"{r}->{p}" for p, i in peers.items() if i.get("state") != "Established"]
             if not peers:
                 pending.append(f"{r}: no peers yet")
@@ -109,11 +141,23 @@ def wait_bgp(rov_routers: list[str] = (), timeout: float = 90) -> None:
             )
         if not pending:
             console.ok(f"all BGP sessions established and RTR caches connected after {time.time() - t0:.0f}s")
-            time.sleep(3)  # let the last UPDATEs propagate
+            if prefix:
+                wait_collector(prefix, n_collector_peers)
             return
         time.sleep(2)
     console.fail(f"BGP sessions not established within {timeout}s", ", ".join(pending))
     raise SystemExit(1)
+
+
+def wait_collector(prefix: str, n_peers: int) -> None:
+    took = wait_for(
+        f"{prefix} at the collector from all {n_peers} peers",
+        lambda: len(collector_paths(prefix)) >= n_peers,
+        timeout=30,
+        interval=1,
+    )
+    if took is not None:
+        log.info(f"collector holds {prefix} from all {n_peers} peers after {took:.1f}s")
 
 
 def rov_routers(sc: dict) -> list[str]:
@@ -142,37 +186,60 @@ def attack(mode: str, sc: dict) -> dict:
         + " the forged more-specific(s)"
     )
     vtysh("origin2", *cmds)
-    time.sleep(2)
+    # control plane: the collector peers with origin2 and with both transits, so a forged route that passes ROV
+    # reaches it three times (65010, 65003 65010, 65002 65003 65010) and one the transits drop once; withdrawn: none.
+    passes = {k: not sc["rov"] or rpki_valid(sc, ms[k]) for k in ("web", "ns")}
+    want_paths = {k: (3 if passes[k] else 1) if k in on else 0 for k in ("web", "ns")}
+    took = wait_for(
+        f"collector paths web={want_paths['web']} ns={want_paths['ns']}",
+        lambda: all(len(collector_paths(ms[k])) == want_paths[k] for k in ("web", "ns")),
+        timeout=10,
+        interval=0.2,
+    )
     paths: dict[str, list[str]] = {}
     for k in ("web", "ns"):
-        seen = json.loads(vtysh("collector", f"show bgp ipv4 unicast {ms[k]} json") or "{}")
-        found = seen.get("paths", [])
+        found = collector_paths(ms[k])
         via = [f"{p.get('aspath', {}).get('string', '?')} via {p.get('peer', {}).get('peerId', '?')}" for p in found]
         paths[k] = via
         state = f"{len(found)} path(s) at the collector: " + "; ".join(via) if found else "withdrawn"
-        say(f"attack {mode}: {ms[k]} ({k}) {state}")
+        flag = "" if len(found) == want_paths[k] else f" (UNEXPECTED: {want_paths[k]} expected within 10s)"
+        say(f"attack {mode}: {ms[k]} ({k}) {state}{flag}")
+    if took is not None:
+        say(f"attack {mode}: collector table converged after {took:.1f}s")
     # data plane, seen from the resolver's position: who answers at the web and nameserver addresses now?
     # The resolver sits behind a validating transit: the attacker wins only where its route is RPKI-valid.
-    wins = {k: k in on and (not sc["rov"] or rpki_valid(sc, ms[k])) for k in ("web", "ns")}
+    wins = {k: k in on and passes[k] for k in ("web", "ns")}
     want = {k: ("attacker" if wins[k] else "victim") for k in ("web", "ns")}
-    got = {}
-    for _ in range(15):
+    got: dict[str, str] = {}
+
+    def plane_settled() -> bool:
+        nonlocal got
         got = {"web": who_serves_web(sc["victim"]["web"]), "ns": who_serves_ns(sc["victim"]["ns"])}
-        if got == want:
-            break
-        time.sleep(1)
+        return got == want
+
+    wait_for(f"data plane {want}", plane_settled, timeout=15, interval=0.5)
     for k in ("web", "ns"):
         flag = "" if got[k] == want[k] else " (UNEXPECTED)"
         say(f"attack {mode}: {sc['victim'][k]} ({k}) is answered by host '{got[k]}'{flag}")
-    if mode == "off":
-        # A validating resolver keeps a bogus verdict for a while after the hijack ends (val-bogus-ttl, 60 s by
-        # default; 5 s here, but Unbound's key cache held the bogus key up to 60 s): the legitimate owner stays
-        # unreachable through that resolver for that long. Wait it out before the control run.
-        t0 = time.time()
-        while time.time() - t0 < 90 and not resolver_ok(sc["domain"]):
-            time.sleep(1)
-        say(f"attack off: resolver validates {sc['domain']} again after {time.time() - t0:.0f}s")
-    time.sleep(TTL + 1)  # the resolver's cache (zone TTL) must not carry the previous state into the next check
+    domain = sc["domain"]
+    if mode == "off" and MEASURE_LOCKOUT:
+        # For the narrative only: after a hijack of a signed zone's nameserver, Unbound holds the key it could not
+        # fetch for BOGUS_KEY_TTL (60 s, hard-coded in validator.h; val-bogus-ttl does not shorten it), so the
+        # legitimate owner stays locked out through that resolver for that long after the hijack ends.
+        if resolver_state(domain) == "SERVFAIL":
+            t = wait_for(f"resolver validating {domain} again", lambda: resolver_state(domain) != "SERVFAIL", 90, 1)
+            secs = f"{t:.0f}s" if t is not None else ">90s"
+            say(f"attack off: lockout measured: resolver validates {domain} again after {secs} (BOGUS_KEY_TTL)")
+        else:
+            say(f"attack off: lockout measured: resolver was not bogus for {domain}, nothing to wait out")
+    # The resolver's cache must not carry the previous state (zone data within TTL, a bogus key for 60 s) into the
+    # next check: flush it, then wait until its answer agrees with the data plane just observed.
+    say(f"attack {mode}: resolver cache flushed: {flush_resolver(domain)}")
+    expect = expected_resolver_state(sc, got)
+    t = wait_for(f"resolver {expect} for {domain}", lambda: resolver_state(domain) == expect, timeout=15, interval=0.2)
+    seen = resolver_state(domain)
+    flag = "" if seen == expect else f" (UNEXPECTED: {expect} expected)"
+    say(f"attack {mode}: resolver answers {domain} A with {seen}{flag}" + (f" after {t:.1f}s" if t is not None else ""))
     return {"want": want, "got": got, "paths": paths, "text": "".join(f"{ln}\n" for ln in lines)}
 
 
@@ -198,9 +265,62 @@ def rpki_valid(sc: dict, prefix: str) -> bool:
     return False
 
 
-def resolver_ok(domain: str) -> bool:
-    out = dexec("resolver", "dig", "@127.0.0.1", domain, "CAA", "+noall", "+comments", "+time=2", "+tries=1")
-    return "status: NOERROR" in out
+def resolver_state(name: str) -> str:
+    """What the lab resolver answers for `name` A: 'NOERROR ad' (validated), 'NOERROR', 'SERVFAIL' (bogus or
+    unreachable), another rcode, or '?' when it does not answer."""
+    out = dexec("resolver", "dig", "@127.0.0.1", name, "A", "+noall", "+comments", "+adflag", "+time=2", "+tries=1")
+    status = re.search(r"status: (\w+)", out)
+    flags = re.search(r"flags: ([^;]*);", out)
+    if not status:
+        return "?"
+    ad = flags and "ad" in flags.group(1).split()
+    return status.group(1) + (" ad" if ad else "")
+
+
+def expected_resolver_state(sc: dict, plane: dict[str, str]) -> str:
+    """The answer a validating resolver must give for the victim's A given who serves its nameserver address:
+    bogus (SERVFAIL) when the zone is signed and the attacker's unsigned copy answers, validated when signed and
+    the victim answers, plain NOERROR when the zone is unsigned."""
+    if not sc["dns"]["signed"]:
+        return "NOERROR"
+    return "SERVFAIL" if plane.get("ns") == "attacker" else "NOERROR ad"
+
+
+def flush_resolver(domain: str) -> str:
+    """Empty the resolver's cache of the victim's names and of every bogus entry (rrsets, messages and the key
+    cache, where Unbound keeps a missing DNSKEY for BOGUS_KEY_TTL = 60 s) over unbound-control on the unix socket
+    rendered into unbound.conf. Falls back to SIGHUP (a full reload, which drops the cache) when the control
+    channel fails, and waits until the resolver answers again. Returns one line saying what was done."""
+    done = []
+    for cmd in (("flush_zone", domain), ("flush_bogus",)):
+        r = sh(
+            "docker", "exec", f"clab-{LAB}-resolver", "unbound-control", "-c", "/lab/unbound.conf", *cmd,
+            check=False, quiet=True,
+        )  # fmt: skip
+        if r.returncode != 0:
+            why = (r.stderr or r.stdout).strip().splitlines()
+            console.note(
+                f"unbound-control {' '.join(cmd)} failed ({why[-1] if why else f'exit {r.returncode}'}): "
+                "falling back to kill -HUP 1 (reload drops the cache)"
+            )
+            dexec("resolver", "kill", "-HUP", "1")
+            t = wait_for("resolver answering after HUP", lambda: resolver_state(SIGNED_ZONE) != "?", 15, 0.2)
+            after = "timeout" if t is None else f"{t:.1f}s"
+            return f"unbound-control failed, kill -HUP 1 instead; answering again after {after}"
+        done.append(f"{' '.join(cmd)} -> {' '.join(r.stdout.split()) or 'ok'}")
+    return "unbound-control " + "; ".join(done)
+
+
+def deployed(build: Path) -> str | None:
+    """The scenario name the running lab was rendered from, or None when the build or any container is missing."""
+    f = build / "scenario.json"
+    if not f.exists():
+        return None
+    for name in NODES:
+        r = sh("docker", "inspect", "-f", "{{.State.Status}}", f"clab-{LAB}-{name}", check=False, quiet=True)
+        if r.stdout.strip() != "running":
+            return None
+    return json.loads(f.read_text())["name"]
 
 
 def who_serves_web(ip: str) -> str:
@@ -260,6 +380,12 @@ def check() -> int:
 def parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="labctl", description=__doc__.splitlines()[0])
     p.add_argument("--build", type=Path, default=BUILD)
+    p.add_argument(
+        "--measure-lockout",
+        action="store_true",
+        default=MEASURE_LOCKOUT,
+        help="before flushing the resolver in `attack off`, time how long it keeps the bogus verdict (up to 90 s)",
+    )
     sub = p.add_subparsers(dest="cmd", required=True)
     for name in ("render", "apply"):
         s = sub.add_parser(name)
@@ -282,8 +408,10 @@ def current_scenario(build: Path) -> dict:
 
 
 def main() -> int:
+    global MEASURE_LOCKOUT
     a = parser().parse_args()
     console.setup()
+    MEASURE_LOCKOUT = a.measure_lockout
     if a.cmd == "render":
         render(a.scenario, a.build)
     elif a.cmd == "apply":

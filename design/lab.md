@@ -177,12 +177,38 @@ every neighbour address is in RFC 5737 space; no container has a default route e
 next hop; the management network reports `enable_ip_masquerade: false`; and an egress probe
 (`wget http://1.1.1.1`, 3 s) from one router and one host fails.
 
+### 2.10 Waits are condition polls; the resolver cache is flushed between steps
+
+Every wait in `labctl` polls for the condition the next step needs, bounded by a timeout, and the time it took
+(or the timeout) goes into the transcript: after `attack`, the collector's table must hold the expected number
+of paths (three for a forged route that passes ROV, one for a route the transits drop, none when withdrawn),
+then the data plane must answer from the expected host; after `deploy`, every session Established, every RTR
+cache connected, then the victim prefix at the collector from every peer; in controls B, transit1 must carry
+the /28 as `rpki validation-state: invalid` (ROV off) or both transits must drop it (ROV on); after a HUP of
+Unbound, `rnids.rs` must lose or regain AD. The first lab version used fixed sleeps (2 s after the BGP change,
+`TTL + 1` after every attack, 8 s per ROV toggle); they cost about 120 s of the 235 s matrix run of
+2026-11-01 and said nothing about what they waited for.
+
+Between steps the resolver's cache is flushed instead of waiting out TTLs (`labctl.flush_resolver`:
+`unbound-control -c /lab/unbound.conf flush_zone victim.rs`, then `flush_bogus`, over a unix socket without
+certificates, `remote-control:` in the rendered `unbound.conf`; if the control channel fails the step falls back
+to `kill -HUP 1`, a reload that also drops the cache, and waits until the resolver answers). The reason is a
+measured 63 s wait after the `caa-signed / web+ns` row: when the forged, unsigned nameserver answers the
+DNSKEY query, Unbound caches the missing key as bad for `BOGUS_KEY_TTL`, 60 s hard-coded in
+`validator/validator.h`, and `val-bogus-ttl: 5` does not shorten it; `flush_bogus` is the documented way to
+remove it ("remove all bogus data from the cache", key cache included). The flush is a lab convenience, not part
+of the claim: in the real world the legitimate owner stays locked out of every validating resolver that saw the
+forgery for that long after the hijack ends, which is worth saying in the demo. `labctl --measure-lockout`
+(or `LAB_MEASURE_LOCKOUT=1`) makes `attack off` time that lockout before flushing, so the number can be
+reproduced on demand without paying for it in every run.
+
 ## 3. Files
 
     lab/scenarios/{baseline,tight-maxlength,caa-unsigned,caa-signed}.yml
     lab/labctl.py            render | apply | deploy | destroy | check | attack | scan | ca | matrix
     lab/matrix.py            the validation matrix with its expected results (logs in lab/logs/<timestamp>-matrix/)
     lab/check.py             containment (§2.9)
+    lab/matrix.py  lab/controls.py  the validation matrix and the negative controls (§2.4, §2.10)
     lab/render/              generator: topology.py (constants), frr.py, rpki.py, dns.py, hosts.py, clab.py
     lab/image/               Dockerfile (Alpine + unbound, nsd, python3, stayrtr), web.py, entry scripts
     lab/ca.py  lab/feed.py   copied / bind-mounted into the ca and collector containers

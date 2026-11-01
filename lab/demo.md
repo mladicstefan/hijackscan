@@ -184,9 +184,11 @@ SERVFAIL. The CA asks once more with the CD bit: an answer now means the zone is
 (an unreachable or lame zone fails both ways), and it fails closed either way. This is the project's central
 claim: CAA account pinning in a signed zone closes the exposure, and the scanner's `closed` verdict predicted it.
 
-Collateral worth knowing: a validating resolver keeps the bogus verdict for its `val-bogus-ttl` (60 s by
-default), so the legitimate owner is also refused for that long after the hijack ends. `attack off` waits it
-out before the control run.
+Collateral worth knowing: a validating resolver keeps the bogus verdict after the hijack ends, so the legitimate
+owner is also refused through that resolver for a while. In Unbound the DNSKEY it could not fetch from the forged
+nameserver is held for `BOGUS_KEY_TTL`, 60 s hard-coded in `validator/validator.h`; `val-bogus-ttl` does not shorten
+it (measured: 63 s). The lab flushes the resolver's cache between steps instead of waiting (`unbound-control
+flush_zone`/`flush_bogus`, logged in each `*-attack.log`); `labctl --measure-lockout matrix` times the lockout first.
 
 ## 6. Containment (`lab/logs/latest-matrix/baseline-check.log`)
 
@@ -200,7 +202,147 @@ containment: OK
 that the verdict flips, then restores it and checks that it flips back. Exit 1 if any expected flip is missing.
 
 ```
-(controls.log not found: run labctl controls / matrix)
+  -- lab already running scenario caa-signed: reused, reset with attack off
+negative controls, 2026-11-01T04:29:49+0100
+######## A. caa-signed / web+ns: the REFUSED rests on the resolver validating
+    [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+    [dns      ] victim.rs CAA: SERVFAIL ad=0
+    [dns      ] victim.rs CAA with CD: NOERROR []
+    [caa      ] victim.rs: SERVFAIL without CD, NOERROR with CD -> reachable but DNSSEC-bogus
+    [decision ] REFUSED: DNSSEC validation failed (reachable but bogus)
+  [ok  ] A1 validating: REFUSED, reachable but bogus: REFUSED: DNSSEC validation failed (reachable but bogus)
+  -- module-config: "iterator" in unbound.conf, kill -HUP unbound
+  -- resolver reloaded, answers rnids.rs with NOERROR after 0.0s
+    [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+    [dns      ] victim.rs CAA: NOERROR ad=0
+    [dns      ] rs CAA: NOERROR ad=0
+    [dns      ] . CAA: NOERROR ad=0
+    [caa      ] no CAA anywhere up to the root
+    [caa      ] allowed: no issue tag: any CA may issue
+    [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']
+    [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met
+    [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker
+  [ok  ] A2 validation off: ISSUED: ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker
+  -- validator restored
+  -- resolver reloaded, answers rnids.rs with NOERROR ad after 0.0s
+    [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+    [dns      ] victim.rs CAA: SERVFAIL ad=0
+    [dns      ] victim.rs CAA with CD: NOERROR []
+    [caa      ] victim.rs: SERVFAIL without CD, NOERROR with CD -> reachable but DNSSEC-bogus
+    [decision ] REFUSED: DNSSEC validation failed (reachable but bogus)
+  [ok  ] A3 validating again: REFUSED: REFUSED: DNSSEC validation failed (reachable but bogus)
+######## B. tight-maxlength / web: the REFUSED rests on ROV at the transits
+  [ok  ] B1 transit2 drops 203.0.113.0/28 (ROV): % Network not in table
+    [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+    [dns      ] victim.rs CAA: NOERROR ad=0
+    [dns      ] rs CAA: NOERROR ad=1
+    [dns      ] . CAA: NOERROR ad=1
+    [caa      ] no CAA anywhere up to the root
+    [caa      ] allowed: no issue tag: any CA may issue
+    [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']
+    [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [quorum   ] primary FAILED; remotes 1/4 corroborate (need >= 4 remotes, at most 1 failing): NOT met
+    [decision ] REFUSED: domain control not demonstrated
+  [ok  ] B2 with ROV: REFUSED, domain control not demonstrated: REFUSED: domain control not demonstrated
+  -- no route-map ROV in on transit2<-origin2 and transit1<-transit2, soft out from origin2
+  -- ROV off: transit tables settled after 0.6s, 203.0.113.10 answered by 'attacker' after 0.0s
+  [ok  ] B3 transit1 carries 203.0.113.0/28 as rpki invalid: shown
+    [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+    [dns      ] victim.rs CAA: NOERROR ad=0
+    [dns      ] rs CAA: NOERROR ad=1
+    [dns      ] . CAA: NOERROR ad=1
+    [caa      ] no CAA anywhere up to the root
+    [caa      ] allowed: no issue tag: any CA may issue
+    [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']
+    [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met
+    [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker
+  [ok  ] B4 ROV removed: ISSUED: ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker
+  -- route-map ROV restored
+  -- ROV on: transit tables settled after 0.6s, 203.0.113.10 answered by 'victim' after 0.0s
+    [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+    [dns      ] victim.rs CAA: NOERROR ad=0
+    [dns      ] rs CAA: NOERROR ad=1
+    [dns      ] . CAA: NOERROR ad=1
+    [caa      ] no CAA anywhere up to the root
+    [caa      ] allowed: no issue tag: any CA may issue
+    [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']
+    [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [quorum   ] primary FAILED; remotes 1/4 corroborate (need >= 4 remotes, at most 1 failing): NOT met
+    [decision ] REFUSED: domain control not demonstrated
+  [ok  ] B5 ROV back: REFUSED: REFUSED: domain control not demonstrated
+######## C. baseline / web: the ISSUED rests on the attacker serving; the feed reads the live table
+  -- feed network-info 203.0.113.10 before the attack: {'prefix': '203.0.113.0/24', 'asns': ['65000']}
+  [ok  ] C1 feed shows the forged more-specific with the victim's origin: {'prefix': '203.0.113.0/28', 'asns': ['65000']}
+    [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+    [dns      ] victim.rs CAA: NOERROR ad=0
+    [dns      ] rs CAA: NOERROR ad=1
+    [dns      ] . CAA: NOERROR ad=1
+    [caa      ] no CAA anywhere up to the root
+    [caa      ] allowed: no issue tag: any CA may issue
+    [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']
+    [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met
+    [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker
+  [ok  ] C2 attacker serving: ISSUED: ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker
+  -- ip addr del 203.0.113.10/28 dev eth1 on the attacker (hijack still announced)
+    [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+    [dns      ] victim.rs CAA: NOERROR ad=0
+    [dns      ] rs CAA: NOERROR ad=1
+    [dns      ] . CAA: NOERROR ad=1
+    [caa      ] no CAA anywhere up to the root
+    [caa      ] allowed: no issue tag: any CA may issue
+    [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']
+    [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: OSError: [Errno 113] Host is unreachable: does NOT corroborate
+    [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: OSError: [Errno 113] Host is unreachable: does NOT corroborate
+    [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: OSError: [Errno 113] Host is unreachable: does NOT corroborate
+    [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: OSError: [Errno 113] Host is unreachable: does NOT corroborate
+    [quorum   ] primary FAILED; remotes 0/4 corroborate (need >= 4 remotes, at most 1 failing): NOT met
+    [decision ] REFUSED: domain control not demonstrated
+  [ok  ] C3 attacker silent: REFUSED, unreachable: REFUSED: domain control not demonstrated
+    [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
+    [dns      ] victim.rs CAA: NOERROR ad=0
+    [dns      ] rs CAA: NOERROR ad=1
+    [dns      ] . CAA: NOERROR ad=1
+    [caa      ] no CAA anywhere up to the root
+    [caa      ] allowed: no issue tag: any CA may issue
+    [dns      ] victim.rs A: NOERROR ad=0 ['203.0.113.10']
+    [http-01  ] primary behind AS65002 (192.0.2.10) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r1      behind AS65003 (192.0.2.18) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r2      behind AS65100 (192.0.2.22) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [http-01  ] r3      behind AS65000 (192.0.2.26) -> 203.0.113.10: HTTP 404 from host 'victim': does NOT corroborate
+    [http-01  ] r4      behind AS65002 (192.0.2.11) -> 203.0.113.10: HTTP 200 from host 'attacker': corroborates
+    [quorum   ] primary ok; remotes 3/4 corroborate (need >= 4 remotes, at most 1 failing): met
+    [decision ] ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker
+  [ok  ] C4 address restored: ISSUED: ISSUED: certificate for victim.rs to https://ca.lab/acct/attacker
+######## D. baseline: the scanner's verdict follows the ROA day it is given
+  [ok  ] D1 ROA day as rendered: open-web: open-web (CRITICAL 10.0)
+  -- rewrite the ROA day: every maxLength = the prefix length
+  [ok  ] D2 tight ROA day: contested: contested (LOW 1.1)
+  [ok  ] D3 ROA day restored: open-web: open-web (CRITICAL 10.0)
+controls: all expected flips observed
 ```
 
 ## 8. Tear down

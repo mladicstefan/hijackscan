@@ -131,9 +131,11 @@ SERVFAIL. The CA asks once more with the CD bit: an answer now means the zone is
 (an unreachable or lame zone fails both ways), and it fails closed either way. This is the project's central
 claim: CAA account pinning in a signed zone closes the exposure, and the scanner's `closed` verdict predicted it.
 
-Collateral worth knowing: a validating resolver keeps the bogus verdict for its `val-bogus-ttl` (60 s by
-default), so the legitimate owner is also refused for that long after the hijack ends. `attack off` waits it
-out before the control run.
+Collateral worth knowing: a validating resolver keeps the bogus verdict after the hijack ends, so the legitimate
+owner is also refused through that resolver for a while. In Unbound the DNSKEY it could not fetch from the forged
+nameserver is held for `BOGUS_KEY_TTL`, 60 s hard-coded in `validator/validator.h`; `val-bogus-ttl` does not shorten
+it (measured: 63 s). The lab flushes the resolver's cache between steps instead of waiting (`unbound-control
+flush_zone`/`flush_bogus`, logged in each `*-attack.log`); `labctl --measure-lockout matrix` times the lockout first.
 
 ## 6. Containment (`lab/logs/latest-matrix/baseline-check.log`)
 
