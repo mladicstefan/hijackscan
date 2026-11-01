@@ -9,3 +9,4 @@ data/*
 !data/samples/
 .superpowers/
 lab/build/
+lab/.labctl.lock

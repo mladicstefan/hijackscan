@@ -18,6 +18,7 @@ LAB_MEASURE_LOCKOUT=1) makes `attack off` first time how long the resolver keeps
 from __future__ import annotations
 
 import argparse
+import fcntl
 import ipaddress
 import json
 import os
@@ -111,6 +112,9 @@ def collector_paths(prefix: str) -> list[dict]:
     return json.loads(vtysh("collector", f"show bgp ipv4 unicast {prefix} json") or "{}").get("paths", [])
 
 
+RTR_RESET_AFTER = 15  # seconds a ROV transit may stay unsynced before wait_bgp issues `rpki reset`
+
+
 def wait_bgp(rov_routers: list[str] = (), prefix: str | None = None, timeout: float = 90) -> None:
     """Every BGP session Established and, on the ROV transits, the RTR cache connected (ROV without a cache lets
     every route through as `notfound`, which would pass the forged more-specific unchecked). Then, with `prefix`,
@@ -118,11 +122,18 @@ def wait_bgp(rov_routers: list[str] = (), prefix: str | None = None, timeout: fl
     routers = [n for n, v in NODES.items() if v.role == "router"]
     t0 = last = time.time()
     n_collector_peers = 0
+    reset_done: set[str] = set()
     while time.time() - t0 < timeout:
         pending = []
         for r in rov_routers:
             if "connected" not in vtysh(r, "show rpki cache-connection").lower():
                 pending.append(f"{r}: RTR cache not connected")
+                if time.time() - t0 >= RTR_RESET_AFTER and r not in reset_done:
+                    # Safety net: a fresh rtrlib session (`rpki reset`) reconnects within retry_interval, whatever
+                    # kept the first one from syncing (render/frr.py has the known cause: timer order).
+                    reset_done.add(r)
+                    vtysh(r, "rpki reset")
+                    console.note(f"{r}: RTR cache not connected after {time.time() - t0:.0f}s: issued `rpki reset`")
         for r in routers:
             raw = vtysh(r, "show bgp summary json")
             if not raw:
@@ -407,10 +418,28 @@ def current_scenario(build: Path) -> dict:
     return json.loads((build / "scenario.json").read_text())
 
 
+def lock(path: Path = LAB_DIR / ".labctl.lock"):
+    """One labctl run at a time: every command shares the same containers and build directory, so two runs
+    (say a matrix and a controls) silently corrupt each other's results. Fails fast naming the holder."""
+    f = path.open("a+")
+    try:
+        fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        f.seek(0)
+        console.fail("another labctl run is active", f"{f.read().strip() or '?'}; wait for it or stop it first")
+        raise SystemExit(1) from None
+    f.seek(0)
+    f.truncate()
+    f.write(f"pid {os.getpid()}: {' '.join(sys.argv[1:])}\n")
+    f.flush()
+    return f  # held until the process exits
+
+
 def main() -> int:
     global MEASURE_LOCKOUT
     a = parser().parse_args()
     console.setup()
+    _lock = lock()  # noqa: F841
     MEASURE_LOCKOUT = a.measure_lockout
     if a.cmd == "render":
         render(a.scenario, a.build)
