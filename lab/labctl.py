@@ -28,7 +28,7 @@ import console  # noqa: E402
 from console import log  # noqa: E402
 from render import SCENARIOS, load_scenario, render_all  # noqa: E402
 from render.dns import TTL  # noqa: E402
-from render.topology import FEED_PORT, LAB, NODES  # noqa: E402
+from render.topology import FEED_PORT, LAB, LAB_IMAGE, NODES  # noqa: E402
 
 LAB_DIR = Path(__file__).resolve().parent
 ROOT = LAB_DIR.parent
@@ -70,6 +70,9 @@ def render(scenario: Path, build: Path) -> dict:
 
 
 def deploy(build: Path) -> None:
+    if sh("docker", "image", "inspect", LAB_IMAGE, check=False, quiet=True).returncode != 0:
+        console.stage(f"build image {LAB_IMAGE}")
+        sh("docker", "build", "-t", LAB_IMAGE, str(LAB_DIR / "image"))
     console.stage("deploy: containerlab up")
     sh("containerlab", "deploy", "-t", str(build / "lab.clab.yml"), "--reconfigure")
     console.stage("deploy: waiting for BGP sessions and RTR caches")
