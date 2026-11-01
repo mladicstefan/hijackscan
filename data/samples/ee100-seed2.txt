@@ -1,0 +1,129 @@
+# hijackscan-sample v1
+# source=zone.ee.part-aa zone.ee.part-ab
+# apex=ee
+# soa_serial=1793464230
+# seed=2
+# n=100
+# population=204698
+# population_ds=52785
+# sample_ds=28
+# ns_operator=zone.eu delegations=78228 ds=50446
+# ns_operator=zone.ee delegations=78223 ds=50446
+# ns_operator=zonedata.net delegations=78197 ds=50446
+# ns_operator=elkdata.ee delegations=34556 ds=2
+# ns_operator=elkdata.net delegations=32582 ds=1
+# ns_operator=cloudflare.com delegations=16174 ds=1265
+# ns_operator=netsto.net delegations=8688 ds=0
+# ns_operator=estpak.ee delegations=5600 ds=1
+# ns_operator=dnsip.com delegations=5199 ds=0
+# ns_operator=radicenter.eu delegations=4963 ds=5
+# ns_operator=radicenter.com delegations=4855 ds=5
+# ns_operator=radicenter.ee delegations=4854 ds=5
+# ns_operator=radicenter.fi delegations=4853 ds=5
+# ns_operator=xundns.com delegations=3833 ds=0
+# ns_operator=domeeninimi.ee delegations=2846 ds=0
+# ns_operator=virtuaal.com delegations=2587 ds=1
+# ns_operator=serveriai.lt delegations=1784 ds=1
+# ns_operator=alidns.com delegations=1678 ds=1
+# ns_operator=netim.net delegations=1648 ds=111
+# ns_operator=wavecom.ee delegations=1646 ds=5
+75268.ee
+alcostore.ee
+aiahambaravi.ee
+klaarnordic.ee
+comistar.ee
+vitamiiniinfo.ee
+teiepidu.ee
+impresan.ee
+foorum.ee
+saviaeg.ee
+ekviliibrium.ee
+scandimetal.ee
+4623.ee
+retrodj.ee
+timpka.ee
+casinooverviews.ee
+malware.ee
+spoviimistlus.ee
+langobard.ee
+veljemaailm.ee
+oracdisain.ee
+kookpaika.ee
+practnet.ee
+meistriarendus.ee
+oixio.ee
+goldsilver.ee
+4655.ee
+36071.ee
+knjdw.ee
+moodultrepp.ee
+itestra.ee
+krullipark.ee
+maagiahaldjas.ee
+peiler.ee
+civicon.ee
+qutest.ee
+d-wear.ee
+eviljasalv.ee
+estonianharbours.ee
+31835.ee
+cx3.ee
+jetparcel.ee
+creative.ee
+bestremt.ee
+orsay-fashion.ee
+orthoq.ee
+kividjalinnud.ee
+oz.ee
+terratub.ee
+quanloop.ee
+dekker-dev2.ee
+meloodia.ee
+loodusaed.ee
+virumaaprojekt.ee
+peetersirge.ee
+xn--mbeck-jua.ee
+kny.ee
+rsc.ee
+kihtforge.ee
+klc3w.ee
+melukorraldus.ee
+chanterax.ee
+x-zero.ee
+lehemees.ee
+valguskild.ee
+volley-toetused.ee
+mobileproxy.ee
+tafffest.ee
+pghgl.ee
+flowerbar.ee
+nordamber.ee
+hammelbergi.ee
+nuvola.ee
+ogdolls.ee
+paekiviliiv.ee
+kiiktool.ee
+tarklend.ee
+milieu.ee
+mnxzy8.ee
+kepkasteel.ee
+raplakk.ee
+vesilennuki.ee
+puutumatu.ee
+vendomar.ee
+mining.ee
+ninuacasino.ee
+talverehv.ee
+enerhyd.ee
+jelleadly.ee
+turbakool.ee
+clochee.ee
+shotgun.ee
+goldenshot.ee
+xn--vrvigaraa-v2a61o.ee
+naturella.ee
+inflowexperience.ee
+idealauto.ee
+unetu.ee
+olybetgift.ee
+radakodu.ee
