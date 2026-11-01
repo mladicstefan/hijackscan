@@ -26,6 +26,11 @@ The lab needs containerlab (installed with `curl -sL https://containerlab.dev/se
 Docker, membership of the `docker` and `clab_admins` groups (or sudo), `ldns` on the host and the lab image
 (`docker build -t hijackscan-lab:latest lab/image`). Step by step: [docs/lab.md §4](docs/lab.md).
 
+Run the lab as your user, not with `sudo` (root-owned files in `lab/build` and `lab/logs` break later runs).
+A VPN with DNS-leak protection (Mullvad and others) blocks port 53 to the lab resolver, and the scanner then
+fails its self-test with `resolver does not validate DNSSEC`: disconnect it, including lockdown / kill-switch mode,
+while the lab runs ([docs/lab.md §4](docs/lab.md)).
+
 ## Quick start
 
 ```bash
