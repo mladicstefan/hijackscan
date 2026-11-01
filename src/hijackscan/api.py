@@ -13,7 +13,7 @@ from functools import lru_cache
 from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, HTTPException, Query
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import store
@@ -123,14 +123,32 @@ def domain_history(domain: str):
 
 # --------------------------------------------------------------------------- the web page
 
-# `npm run build` in web/ writes the page to web/dist; when it is there, this server delivers it at "/".
-# Mounted last, so every /api and /docs route above wins. Without a build, "/" points to the API docs.
+# `npm run build` in web/ writes the page to web/dist: index.html plus assets/ (file names carry a content
+# hash). web/dist is not in git, so every machine builds it once. Checked on every request: a build made
+# while the server runs shows up on the next refresh, and a missing build explains itself.
 WEB_DIST = project_root() / "web" / "dist"
 
-if (WEB_DIST / "index.html").is_file():
-    app.mount("/", StaticFiles(directory=WEB_DIST, html=True), name="web")
-else:
+NOT_BUILT = """<!doctype html><html lang="en"><head><meta charset="utf-8"><title>hijackscan: page not built</title>
+<meta name="color-scheme" content="light dark"></head>
+<body style="font:16px/1.5 system-ui,sans-serif;max-width:40rem;margin:3rem auto;padding:0 1rem">
+<h1>The web page is not built yet</h1>
+<p>The API runs (try <a href="/docs">/docs</a>), but <code>web/dist/</code> does not exist on this machine.
+It is generated, not stored in git. Build it once, then refresh this page:</p>
+<pre style="background:rgba(127,127,127,.15);padding:.8rem;border-radius:6px">cd web
+npm install      # needs Node.js 20.19 or newer
+npm run build</pre>
+<p>Run them in the same environment as <code>uv</code> (WSL or Windows, not both).</p>
+</body></html>"""
 
-    @app.get("/", include_in_schema=False)
-    def root():
-        return RedirectResponse("/docs")
+
+@app.get("/", include_in_schema=False)
+def page():
+    index = WEB_DIST / "index.html"
+    if index.is_file():
+        # no-cache: after a rebuild the browser fetches the new index.html, which names the new asset files
+        return FileResponse(index, headers={"Cache-Control": "no-cache"})
+    return HTMLResponse(NOT_BUILT, status_code=503)
+
+
+# The scripts and styles. check_dir=False: the server also starts before the first build.
+app.mount("/assets", StaticFiles(directory=WEB_DIST / "assets", check_dir=False), name="assets")
