@@ -202,8 +202,7 @@ containment: OK
 that the verdict flips, then restores it and checks that it flips back. Exit 1 if any expected flip is missing.
 
 ```
-  -- lab already running scenario caa-signed: reused, reset with attack off
-negative controls, 2026-11-01T04:29:49+0100
+negative controls, 2026-11-01T04:46:23+0100
 ######## A. caa-signed / web+ns: the REFUSED rests on the resolver validating
     [request  ] victim.rs for account https://ca.lab/acct/attacker (attacker) via http-01, CA lab-ca
     [dns      ] victim.rs CAA: SERVFAIL ad=0
