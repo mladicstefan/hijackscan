@@ -21,15 +21,17 @@ Design and results: [design/formula.md](design/formula.md) (the risk formula), [
 | Python ≥ 3.11 and [uv](https://docs.astral.sh/uv/) | everything | `uv sync` installs the Python dependencies (dnspython, httpx, rich, publicsuffix2) |
 | Network access to a DNSSEC-validating resolver | the scanner | default Quad9 over DoT (`9.9.9.9:853`); `scripts/check_resolver.py` proves it validates |
 | **[containerlab](https://containerlab.dev/)** + Docker | the validation lab only | system packages, not installed by `uv`; the scanner runs without them |
+| `ldns` (`ldns-keygen`, `ldns-signzone`) | the validation lab only | signs the lab zones on the host |
 
 The lab needs containerlab (installed with `curl -sL https://containerlab.dev/setup | sudo -E bash -s "install-containerlab"`),
-Docker, membership of the `docker` and `clab_admins` groups (or sudo), the ldns tools on the host (Debian/Ubuntu: `sudo apt install ldnsutils`, Arch: `pacman -S ldns`) and the lab image
-(`docker build -t hijackscan-lab:latest lab/image`). Step by step: [docs/lab.md §4](docs/lab.md).
+Docker, membership of the `docker` and `clab_admins` groups, `ldns` on the host and the lab image
+(`docker build -t hijackscan-lab:latest lab/image`, again whenever `lab/image/Dockerfile` changes).
+Log out and back in after joining the groups. Step by step: [docs/lab.md §4](docs/lab.md).
 
-Run the lab as your user, not with `sudo` (root-owned files in `lab/build` and `lab/logs` break later runs).
+Run the lab as your user, not with `sudo`: root-owned files in `lab/build` and `lab/logs` break later runs.
 A VPN with DNS-leak protection (Mullvad and others) blocks port 53 to the lab resolver, and the scanner then
-fails its self-test with `resolver does not validate DNSSEC`: disconnect it, including lockdown / kill-switch mode,
-while the lab runs ([docs/lab.md §4](docs/lab.md)).
+fails its self-test with `resolver does not validate DNSSEC`. Disconnect it, including lockdown / kill-switch
+mode, while the lab runs.
 
 ## Quick start
 
