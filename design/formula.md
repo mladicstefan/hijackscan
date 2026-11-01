@@ -268,9 +268,12 @@ The 13 collection errors were a Windows file-name bug (IPv6 colons in RIPEstat c
   forged more-specific still forwards to the attacker). Records are also bypassable: Hetzner's ASPA (published after
   the incident [9]) lists nine providers, three of which (AS2914, AS3356, AS6453) publish no ASPA, so a path forged
   through them passes verification. Modelling it would not change any score today.
-- **"No ROA" counts as forgeable at any prefix length** (inherited from `score.py`). For a /24 (IPv4) or /48 (IPv6)
-  without a ROA, no routable more-specific exists; the attacker gets an exact-prefix contest that ROV never drops,
-  not a guaranteed global win. Those domains may be over-scored; to be decided.
+- **No ROA at or beyond the routable cap is correctly treated as contest-only**. For a /24 (IPv4) or /48 (IPv6) without
+  a ROA, derive_address requires announced_len < limit for forgeable_more_specific, so an exact-cap announcement
+  with no ROA falls through to the contest path rather than being scored as a guaranteed more-specific win
+  (fixed in f476f96). A shorter announcement (e.g. /23) without a ROA is still correctly marked forgeable, since a
+  /24 more-specific is routable and nothing invalidates it.
+
 
 ## 11. Implementation
 
