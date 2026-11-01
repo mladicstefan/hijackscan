@@ -28,7 +28,7 @@ import console  # noqa: E402
 from console import log  # noqa: E402
 from render import SCENARIOS, load_scenario, render_all  # noqa: E402
 from render.dns import TTL  # noqa: E402
-from render.topology import FEED_PORT, LAB, NODES  # noqa: E402
+from render.topology import FEED_PORT, LAB, LAB_IMAGE, NODES  # noqa: E402
 
 LAB_DIR = Path(__file__).resolve().parent
 ROOT = LAB_DIR.parent
@@ -38,7 +38,15 @@ BUILD = LAB_DIR / "build"
 def sh(*cmd: str, check: bool = True, quiet: bool = False) -> subprocess.CompletedProcess:
     if not quiet:
         console.cmd(" ".join(cmd))
-    return subprocess.run(cmd, check=check, capture_output=quiet, text=True)
+    try:
+        return subprocess.run(cmd, check=check, capture_output=quiet, text=True)
+    except FileNotFoundError:
+        hint = {
+            "containerlab": 'curl -sL https://containerlab.dev/setup | sudo -E bash -s "install-containerlab"',
+            "docker": "https://docs.docker.com/engine/install/",
+        }.get(cmd[0], "install it and retry")
+        console.fail(f"{cmd[0]} not found", hint)
+        raise SystemExit(1) from None
 
 
 def dexec(node: str, *cmd: str, quiet: bool = True) -> str:
@@ -62,6 +70,9 @@ def render(scenario: Path, build: Path) -> dict:
 
 
 def deploy(build: Path) -> None:
+    if sh("docker", "image", "inspect", LAB_IMAGE, check=False, quiet=True).returncode != 0:
+        console.stage(f"build image {LAB_IMAGE}")
+        sh("docker", "build", "-t", LAB_IMAGE, str(LAB_DIR / "image"))
     console.stage("deploy: containerlab up")
     sh("containerlab", "deploy", "-t", str(build / "lab.clab.yml"), "--reconfigure")
     console.stage("deploy: waiting for BGP sessions and RTR caches")
@@ -76,17 +87,26 @@ def wait_bgp(rov_routers: list[str] = (), timeout: float = 90) -> None:
     """Every BGP session Established and, on the ROV transits, the RTR cache connected (ROV without a cache lets
     every route through as `notfound`, which would pass the forged more-specific unchecked)."""
     routers = [n for n, v in NODES.items() if v.role == "router"]
-    t0 = time.time()
+    t0 = last = time.time()
     while time.time() - t0 < timeout:
         pending = []
         for r in rov_routers:
             if "connected" not in vtysh(r, "show rpki cache-connection").lower():
                 pending.append(f"{r}: RTR cache not connected")
         for r in routers:
-            peers = json.loads(vtysh(r, "show bgp summary json") or "{}").get("ipv4Unicast", {}).get("peers", {})
+            raw = vtysh(r, "show bgp summary json")
+            if not raw:
+                pending.append(f"{r}: vtysh gave no output (is FRR running? docker logs clab-{LAB}-{r})")
+                continue
+            peers = json.loads(raw).get("ipv4Unicast", {}).get("peers", {})
             pending += [f"{r}->{p}" for p, i in peers.items() if i.get("state") != "Established"]
             if not peers:
                 pending.append(f"{r}: no peers yet")
+        if pending and time.time() - last >= 10:
+            last = time.time()
+            console.note(
+                f"waiting ({time.time() - t0:.0f}s): " + ", ".join(pending[:4]) + (" …" if len(pending) > 4 else "")
+            )
         if not pending:
             console.ok(f"all BGP sessions established and RTR caches connected after {time.time() - t0:.0f}s")
             time.sleep(3)  # let the last UPDATEs propagate

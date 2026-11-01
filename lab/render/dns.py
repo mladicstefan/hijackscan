@@ -9,6 +9,7 @@ second (collect/resolver_check.py).
 from __future__ import annotations
 
 import hashlib
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -95,6 +96,12 @@ def _write_zone(d: Path, origin: str, records: list[str], keybase: Path | None, 
 
 
 def render_dns(sc: dict, build: Path) -> None:
+    for tool in ("ldns-keygen", "ldns-signzone"):
+        if not shutil.which(tool):
+            raise SystemExit(
+                f"{tool} not found: install the ldns tools "
+                "(Debian/Ubuntu: sudo apt install ldnsutils; Arch: pacman -S ldns)"
+            )
     keys = build / "dns" / "keys"
     keys.mkdir(parents=True, exist_ok=True)
     zones = build / "resolver" / "zones"
