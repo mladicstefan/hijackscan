@@ -7,8 +7,6 @@ lab/
 
 data/*
 !data/samples/
-!data/demo/
-!data/out/
 .superpowers/
 lab/build/
 lab/.labctl.lock
